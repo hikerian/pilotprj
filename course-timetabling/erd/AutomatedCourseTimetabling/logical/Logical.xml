@@ -1,0 +1,7 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<LogicalDesign class="oracle.dbtools.crest.model.design.logical.LogicalDesign" name="Logical" id="11124549-1AD3-6DB3-A7A8-8FC2C099095B" mainViewID="E9CA1CBA-4A08-4CC8-4A50-052E5AB3B291">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 07:33:56 UTC</createdTime>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<shouldBeOpen>false</shouldBeOpen>
+</LogicalDesign>

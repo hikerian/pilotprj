@@ -1,0 +1,52 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="91300370-FF3D-EC65-80AB-A2D4B3DE160C" name="TT_GRADE_CLASS">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 08:13:45 UTC</createdTime>
+<generatorID>0FC99757-4D6C-AE4E-2728-DBAAD868656C</generatorID>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="GRADE" id="C5D1B294-0B16-9BD6-7D12-4CAACC33CE36">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 08:13:45 UTC</createdTime>
+<generatorID>DE02EC9B-B988-603D-24FC-C0B1F9CA8C36</generatorID>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="CLASS" id="C8E2458E-0DF8-CB4F-B8F0-0B1D7838C9DF">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 08:13:45 UTC</createdTime>
+<comment><![CDATA[분반]]></comment>
+<commentInRDBMS><![CDATA[분반]]></commentInRDBMS>
+<generatorID>CE1F488B-76E5-1302-41E8-45382DCC3EC0</generatorID>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>10 CHAR</dataTypeSize>
+<ownDataTypeParameters>10 CHAR,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="C50FF510-8C25-FF3D-A1D5-6F721D4777A4" name="TT_GRADE_CLASS_PK">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 08:13:45 UTC</createdTime>
+<generatorID>3D15C0EA-BE4D-8BEC-96CC-DA132ACDE2EB</generatorID>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="C5D1B294-0B16-9BD6-7D12-4CAACC33CE36"/>
+<colUsage columnID="C8E2458E-0DF8-CB4F-B8F0-0B1D7838C9DF"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

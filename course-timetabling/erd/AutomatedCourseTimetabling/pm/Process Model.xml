@@ -1,0 +1,7 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ProcessModel class="oracle.dbtools.crest.model.design.process.ProcessModel" name="Process Model" id="6940965C-5F75-5F80-472B-6755E5BDD79B">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 07:33:56 UTC</createdTime>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<shouldBeOpen>false</shouldBeOpen>
+</ProcessModel>

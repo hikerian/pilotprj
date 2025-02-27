@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="hikerian.timetabling.mapper.GradeClassMapper">
+
+  <insert id="insertGradeClass">
+insert into tt_grade_class(grade, class_nm) values(#{grade}, #{class})
+  </insert>
+  
+  <select id="getAllGradeClass" resultType="hikerian.timetabling.dto.GradeClass">
+select grade, class_nm
+  from tt_grade_class
+  </select>
+
+</mapper>

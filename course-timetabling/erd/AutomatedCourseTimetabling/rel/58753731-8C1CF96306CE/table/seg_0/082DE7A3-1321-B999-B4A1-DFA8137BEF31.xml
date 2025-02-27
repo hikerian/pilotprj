@@ -1,0 +1,54 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="082DE7A3-1321-B999-B4A1-DFA8137BEF31" name="TT_INSTRUCTOR">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 08:13:45 UTC</createdTime>
+<generatorID>EB622F16-5C60-DCA3-9785-DB694F1837F7</generatorID>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="INSTRUCTOR_ID" id="082D7A85-669D-4F93-CCF0-1F0E2AFA116A">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 08:13:45 UTC</createdTime>
+<comment><![CDATA[강사ID]]></comment>
+<commentInRDBMS><![CDATA[강사ID]]></commentInRDBMS>
+<generatorID>752B0591-E14A-B8EA-5413-A318FAF8824B</generatorID>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>10 CHAR</dataTypeSize>
+<ownDataTypeParameters>10 CHAR,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="NM" id="F92A21C0-13BE-9E47-C066-15DFA17CE90D">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 08:13:45 UTC</createdTime>
+<comment><![CDATA[이름]]></comment>
+<commentInRDBMS><![CDATA[이름]]></commentInRDBMS>
+<generatorID>8EBEA8EE-1A96-F8A9-422C-02FC971F4E0D</generatorID>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>20 CHAR</dataTypeSize>
+<ownDataTypeParameters>20 CHAR,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="1855C06F-6418-6948-3D36-817AD6F5A5EF" name="TT_INSTRUCTOR_PK">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 08:13:45 UTC</createdTime>
+<generatorID>4E0E8B93-ABC6-71A5-4F8C-9BB40664047B</generatorID>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="082D7A85-669D-4F93-CCF0-1F0E2AFA116A"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+</Table>

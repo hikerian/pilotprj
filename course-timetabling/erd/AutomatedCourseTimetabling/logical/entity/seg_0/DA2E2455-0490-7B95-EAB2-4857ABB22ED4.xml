@@ -1,0 +1,95 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="DA2E2455-0490-7B95-EAB2-4857ABB22ED4" name="TT_COURSE_INSTRUCTOR">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 07:59:33 UTC</createdTime>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<engineerTo>
+<item key="58753731-1022-738C-44F5-8C1CF96306CE" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="COURSE_ID" id="2364C503-10E0-9791-6CAD-E6FAA0797934">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 08:00:04 UTC</createdTime>
+<comment><![CDATA[강의ID]]></comment>
+<generatorID>2AF9A851-D1E1-49A8-1092-64C82AA67CBE</generatorID>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<engineerTo>
+<item key="58753731-1022-738C-44F5-8C1CF96306CE" value="true"/>
+</engineerTo>
+<referedAttribute>980C7F50-4F91-5032-999D-1FCDC7D9C0AC</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>10 CHAR</dataTypeSize>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="INSTRUCTOR_ID" id="114332EA-0EA9-114B-0975-8D34C461D507">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 08:00:14 UTC</createdTime>
+<comment><![CDATA[강사ID]]></comment>
+<generatorID>B9157573-21DF-6597-78A1-307AE330F154</generatorID>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<engineerTo>
+<item key="58753731-1022-738C-44F5-8C1CF96306CE" value="true"/>
+</engineerTo>
+<referedAttribute>752B0591-E14A-B8EA-5413-A318FAF8824B</referedAttribute>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>10 CHAR</dataTypeSize>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="CLASS_NMS" id="8ACB32F4-C1EF-3B70-53F0-C08EFD6D9794">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 08:00:54 UTC</createdTime>
+<comment><![CDATA[분반(A,B,C)]]></comment>
+<commentInRDBMS><![CDATA[분반(A,B,C)]]></commentInRDBMS>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<engineerTo>
+<item key="58753731-1022-738C-44F5-8C1CF96306CE" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>100 CHAR</dataTypeSize>
+<ownDataTypeParameters>100 CHAR,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="CLASS_CNT" id="F5B7A885-E9CF-7A81-7534-DADC57C5E150">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 08:08:25 UTC</createdTime>
+<comment><![CDATA[반 갯수]]></comment>
+<commentInRDBMS><![CDATA[반 갯수]]></commentInRDBMS>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<engineerTo>
+<item key="58753731-1022-738C-44F5-8C1CF96306CE" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="2A3E54ED-B0A3-60CF-B1F7-83F84541B873" name="TT_COURSE_INSTRUCTOR PK">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 08:01:07 UTC</createdTime>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<engineerTo>
+<item key="58753731-1022-738C-44F5-8C1CF96306CE" value="true"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>2364C503-10E0-9791-6CAD-E6FAA0797934</attributeRef>
+<attributeRef>114332EA-0EA9-114B-0975-8D34C461D507</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

@@ -1,0 +1,94 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Entity class="oracle.dbtools.crest.model.design.logical.Entity" directorySegmentName="seg_0" id="EB737723-47A9-F38C-4B5A-AF46603E5015" name="TT_COURSE">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 07:35:29 UTC</createdTime>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<engineerTo>
+<item key="58753731-1022-738C-44F5-8C1CF96306CE" value="true"/>
+</engineerTo>
+<adequatelyNormalized>NO</adequatelyNormalized>
+<expectedVolumes>0</expectedVolumes>
+<fwdEngineeringStrategyName>Single Table</fwdEngineeringStrategyName>
+<growthPercent>0</growthPercent>
+<growthType>Year</growthType>
+<maxVolumes>9999999</maxVolumes>
+<minVolumes>0</minVolumes>
+<normalForm>Third</normalForm>
+<attributes itemClass="oracle.dbtools.crest.model.design.logical.Attribute">
+<Attribute name="COURSE_ID" id="980C7F50-4F91-5032-999D-1FCDC7D9C0AC">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 07:36:43 UTC</createdTime>
+<comment><![CDATA[강의ID]]></comment>
+<commentInRDBMS><![CDATA[강의ID]]></commentInRDBMS>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<engineerTo>
+<item key="58753731-1022-738C-44F5-8C1CF96306CE" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>10 CHAR</dataTypeSize>
+<ownDataTypeParameters>10 CHAR,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="COURSE_NM" id="22DAD963-D773-A0B6-02B7-9DAF13657674">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 07:37:48 UTC</createdTime>
+<comment><![CDATA[강의명]]></comment>
+<commentInRDBMS><![CDATA[강의명]]></commentInRDBMS>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<engineerTo>
+<item key="58753731-1022-738C-44F5-8C1CF96306CE" value="true"/>
+</engineerTo>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>100 CHAR</dataTypeSize>
+<ownDataTypeParameters>100 CHAR,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="COURSE_TIME" id="275AF3CB-869A-652F-53BE-6195BE66C539">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 07:43:50 UTC</createdTime>
+<comment><![CDATA[강의시수]]></comment>
+<commentInRDBMS><![CDATA[강의시수]]></commentInRDBMS>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<engineerTo>
+<item key="58753731-1022-738C-44F5-8C1CF96306CE" value="true"/>
+</engineerTo>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+<Attribute name="GRADE" id="2E0CF6BE-E356-C689-3ED9-3E376A401BB5">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 07:54:08 UTC</createdTime>
+<comment><![CDATA[학년]]></comment>
+<commentInRDBMS><![CDATA[학년]]></commentInRDBMS>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<engineerTo>
+<item key="58753731-1022-738C-44F5-8C1CF96306CE" value="true"/>
+</engineerTo>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT011</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+</Attribute>
+</attributes>
+<identifiers itemClass="oracle.dbtools.crest.model.design.logical.CandidateKey">
+<identifier id="205D2D9E-1D35-7F56-C14A-A640462143B2" name="TT_COURSE PK">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 07:37:18 UTC</createdTime>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<shouldEngineer>false</shouldEngineer>
+<engineerTo>
+<item key="58753731-1022-738C-44F5-8C1CF96306CE" value="false"/>
+</engineerTo>
+<pk>true</pk>
+<usedAttributes>
+<attributeRef>980C7F50-4F91-5032-999D-1FCDC7D9C0AC</attributeRef>
+</usedAttributes>
+</identifier>
+</identifiers>
+</Entity>

@@ -1,0 +1,8 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<OSDM_Design class="oracle.dbtools.crest.model.design.Design" name="AutomatedCourseTimetabling" id="F45407F2-0219-1CAC-5326-433D00E41CFE" version="3.5">
+<createdBy>user</createdBy>
+<createdTime>2025-02-27 07:33:56 UTC</createdTime>
+<ownerDesignName>AutomatedCourseTimetabling</ownerDesignName>
+<capitalNames>false</capitalNames>
+<designId>F45407F2-0219-1CAC-5326-433D00E41CFE</designId>
+</OSDM_Design>

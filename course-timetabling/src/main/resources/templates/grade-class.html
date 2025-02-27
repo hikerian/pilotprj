@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Open Chatting</title>
+</head>
+<body>
+	<table>
+		<thead>
+			<th>Grade</th>
+			<th>Class Name</th>
+		</thead>
+		<tbody>
+			<tr th:each="gradeClass: ${gradeClassList}">
+				<td th:text="${gradeClass.grade}"></td>
+				<td th:text="${gradeClass.classNm}"></td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>
