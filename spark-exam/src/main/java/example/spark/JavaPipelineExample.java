@@ -13,6 +13,12 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
 
+/**
+ * @see https://spark.apache.org/docs/latest/ml-pipeline.html
+ * @see https://github.com/apache/spark/blob/master/examples/src/main/java/org/apache/spark/examples/ml/JavaDocument.java
+ * @see https://github.com/apache/spark/blob/master/examples/src/main/java/org/apache/spark/examples/ml/JavaLabeledDocument.java
+ * @see https://github.com/apache/spark/blob/master/examples/src/main/java/org/apache/spark/examples/ml/JavaPipelineExample.java
+ */
 public class JavaPipelineExample {
 
 	public static void main(String[] args) {
