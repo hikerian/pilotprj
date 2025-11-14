@@ -5,6 +5,9 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.SparkSession;
 
 
+/**
+ * @see https://spark.apache.org/docs/latest/quick-start.html
+ */
 public class SimpleApp {
 
 	public static void main(String[] args) {
