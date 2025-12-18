@@ -1,24 +1,49 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>machinelearning</groupId>
-  <artifactId>tensorflow-example</artifactId>
-  <version>0.0.1</version>
-  <name>tensorflow-example</name>
-  <dependencies>
-  	<dependency>
-  		<groupId>org.tensorflow</groupId>
-  		<artifactId>tensorflow-core-platform</artifactId>
-  		<version>1.0.0-rc.2</version>
-  	</dependency>
-    <dependency>
-      <groupId>org.tensorflow</groupId>
-      <artifactId>tensorflow-framework</artifactId>
-      <version>1.0.0-rc.2</version>
-    </dependency>
-  </dependencies>
-  <properties>
-  	<maven.compiler.source>21</maven.compiler.source>
-  	<java.version>21</java.version>
-  	<maven.compiler.target>21</maven.compiler.target>
-  </properties>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>machinelearning</groupId>
+	<artifactId>tensorflow-example</artifactId>
+	<version>0.0.1</version>
+	<name>tensorflow-example</name>
+	<dependencies>
+		<dependency>
+			<groupId>org.tensorflow</groupId>
+			<artifactId>tensorflow-core-platform</artifactId>
+			<version>${tendorflow-version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.tensorflow</groupId>
+					<artifactId>tensorflow-core-native</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.tensorflow</groupId>
+			<artifactId>tensorflow-core-api</artifactId>
+			<version>${tendorflow-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.tensorflow</groupId>
+			<artifactId>tensorflow-core-native</artifactId>
+			<version>${tendorflow-version}</version>
+			<classifier>windows-x86_64</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.tensorflow</groupId>
+			<artifactId>tensorflow-framework</artifactId>
+			<version>${tendorflow-version}</version>
+		</dependency>
+	</dependencies>
+	<properties>
+		<maven.compiler.source>21</maven.compiler.source>
+		<java.version>21</java.version>
+		<maven.compiler.target>21</maven.compiler.target>
+		<tendorflow-version>1.1.0</tendorflow-version>
+	</properties>
+	<description>TensorFlow for Java
+https://github.com/tensorflow/java
+
+TensorFlow Java Examples
+https://github.com/tensorflow/java-models</description>
 </project>

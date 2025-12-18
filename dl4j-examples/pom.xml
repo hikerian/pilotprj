@@ -6,7 +6,11 @@
 	<artifactId>dl4j-examples</artifactId>
 	<version>0.0.1</version>
 	<name>dl4j-examples</name>
-	<description>A set of examples introducing the DL4J framework</description>
+	<description>A set of examples introducing the DL4J framework
+
+https://github.com/deeplearning4j/deeplearning4j-examples/tree/master
+
+Deeplearning4J는 거의 망한 듯</description>
 	<properties>
 		<dl4j-master.version>1.0.0-M2.1</dl4j-master.version>
 		<!-- Change the nd4j.backend property to nd4j-cuda-X-platform to use
@@ -154,12 +158,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-  <id>only-eclipse</id>
-  <activation>
-    <property>
-      <name>m2e.version</name>
-    </property>
-  </activation>
+
 	<build>
 		<plugins>
 
@@ -189,10 +188,7 @@
 							<rules>
 								<requireMavenVersion>
 									<version>[${maven.minimum.version},)</version>
-									<message>********** Minimum Maven Version is
-										${maven.minimum.version}. Please upgrade
-										Maven before continuing (run "mvn
-										--version" to check). **********</message>
+									<message>********** Minimum Maven Version is ${maven.minimum.version}. Please upgrade  Maven before continuing (run "mvn --version" to check). **********</message>
 								</requireMavenVersion>
 							</rules>
 						</configuration>

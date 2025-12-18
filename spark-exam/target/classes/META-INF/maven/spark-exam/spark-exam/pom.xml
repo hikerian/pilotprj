@@ -6,25 +6,37 @@
 	<artifactId>spark-exam</artifactId>
 	<version>0.0.1</version>
 	<name>spark-exam</name>
-	<description>https://spark.apache.org/docs/latest/ml-pipeline.html</description>
+	<description>https://spark.apache.org/docs/latest/ml-pipeline.html
+
+
+https://github.com/apache/spark
+
+https://spark.apache.org/docs/latest/spark-standalone.html</description>
 	<dependencies>
 		<dependency> <!-- Spark dependency -->
 			<groupId>org.apache.spark</groupId>
 			<artifactId>spark-sql_2.13</artifactId>
-			<version>4.0.1</version>
+			<version>4.1.0</version>
 			<scope>provided</scope>
 		</dependency>
-<dependency>
-    <groupId>org.apache.spark</groupId>
-    <artifactId>spark-mllib_2.13</artifactId>
-    <version>4.0.1</version>
-    <scope>provided</scope>
-</dependency>
+		<dependency>
+			<groupId>org.apache.spark</groupId>
+			<artifactId>spark-mllib_2.13</artifactId>
+			<version>4.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+	
+			<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>2.0.17</version>
+		</dependency>
+	
 	</dependencies>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>21</java.version>
-    <maven.compiler.source>21</maven.compiler.source>
-    <maven.compiler.target>21</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 	</properties>
 </project>
