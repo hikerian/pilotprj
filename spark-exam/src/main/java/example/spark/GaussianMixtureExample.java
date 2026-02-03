@@ -26,7 +26,8 @@ public class GaussianMixtureExample {
 		Dataset<Row> dataset = spark.read().format("libsvm").load("E:/work/workspaces/pilotprj/.git/pilotprj/spark-exam/src/main/resources/data/mllib/sample_kmeans_data.txt");
 		
 		// Trains a GaussianMixture model
-		GaussianMixture gmm = new GaussianMixture().setK(2);
+//		GaussianMixture gmm = new GaussianMixture().setK(2);
+		GaussianMixture gmm = new GaussianMixture();
 		GaussianMixtureModel model = gmm.fit(dataset);
 		
 		final String modelPath = "E:/work/workspaces/pilotprj/.git/pilotprj/spark-exam/src/main/resources/data/mllib/model/gmm";
