@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Implementation of density-based clustering algorithm DBSCAN.
@@ -49,12 +50,12 @@ public class DBSCANClusterer<V> {
 	/**
 	 * internal list of input values to be clustered
 	 */
-	private ArrayList<V> inputValues = null;
+	private List<V> inputValues = null;
 	
 	/**
 	 * index maintaining visited points
 	 */
-	private HashSet<V> visitedPoints = new HashSet<>();
+	private Set<V> visitedPoints = new HashSet<>();
 	
 	
 	
@@ -63,7 +64,6 @@ public class DBSCANClusterer<V> {
 		this.setMinimalNumberOfMembersForCluster(minNumElements);
 		this.setMaximalDistanceOfClusterMembers(maxDistance);
 		this.setDistanceMetric(metric);
-		
 	}
 	
 	public void setInputValues(final Collection<V> collection) throws DBSCANClusteringException {
@@ -119,12 +119,11 @@ public class DBSCANClusterer<V> {
         List<List<V>> resultList = new ArrayList<>();
         
         this.visitedPoints.clear();
-        List<V> neighbours = null;
         
         for(V p : this.inputValues) {
         	if(this.visitedPoints.contains(p) == false) {
         		this.visitedPoints.add(p);
-                neighbours = this.getNeighbours(p);
+                List<V> neighbours = this.getNeighbours(p);
         		
         		if(neighbours.size() >= this.minimumNumberOfClusterMembers) {
         			
