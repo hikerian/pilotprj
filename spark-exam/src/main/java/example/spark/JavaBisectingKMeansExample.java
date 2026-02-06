@@ -1,6 +1,5 @@
 package example.spark;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.apache.spark.ml.clustering.BisectingKMeans;
