@@ -1,0 +1,8 @@
+{
+    "name": "monitor",
+    "version": "0.0.9",
+    "private": true,
+    "scripts": {
+        "build": "webpack --config webpack.monitor.js"
+    }
+}

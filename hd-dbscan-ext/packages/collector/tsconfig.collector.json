@@ -1,0 +1,11 @@
+﻿{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "rootDir": "./src",
+        "outFile": "../../dist/collector/collector.js"
+    },
+    "include": [
+        "src/**/*",
+        "../shared/src/**/*"
+    ]
+}

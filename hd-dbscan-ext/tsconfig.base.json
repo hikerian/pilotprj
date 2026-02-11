@@ -1,0 +1,17 @@
+﻿{
+    "compilerOptions": {
+        "target": "es6",
+        "moduleResolution": "node",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "outDir": "./dist",
+        "sourceMap": true,
+        "listFiles": true,
+        "removeComments": true
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}

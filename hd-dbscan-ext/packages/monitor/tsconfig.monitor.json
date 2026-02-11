@@ -1,0 +1,10 @@
+﻿{
+    "extends":  "../../tsconfig.base.json",
+    "compilerOptions":  {
+                            "rootDir":  "./src",
+                            "outFile":  "../../dist/monitor/monitor.js"
+                        },
+    "include":  [
+                    "src/**/*"
+                ]
+}

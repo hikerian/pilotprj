@@ -1,0 +1,39 @@
+{
+    "manifest_version": 3,
+    "name": "HD-DBSCAN Collector",
+    "version": "0.0.9",
+    "description": "High-Dimensional Density-Based Spatial Clustering of Applications with Noise Collector",
+    "permissions": [
+        "tabs",
+        "windows",
+        "scripting",
+        "activeTab",
+        "storage",
+        "webNavigation",
+        "cookies",
+        "downloads"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "background": {
+        "service_worker": "collector/collector.js"
+    },
+    "action": {
+        "default_title": "Show AIQBot Inspector",
+        "default_icon": "inspector/icon.png"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "monitor/monitor.js"
+            ],
+            "all_frames": true,
+            "run_at": "document_idle",
+            "world": "ISOLATED"
+        }
+    ]
+}

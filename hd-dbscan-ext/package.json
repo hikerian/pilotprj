@@ -1,0 +1,29 @@
+{
+  "name": "hddbscan-collector",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run build:collector && npm run build:inspector && npm run build:monitor && npm run build:manifest",
+    "build:collector": "npm run build --workspace=packages/collector",
+    "build:inspector": "npm run build --workspace=packages/inspector",
+    "build:monitor": "npm run build --workspace=packages/monitor",
+    "build:manifest": "copy manifest.json dist\\",
+    "watch": "webpack --watch --mode=development"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/chrome": "^0.1.33",
+    "copy-webpack-plugin": "^13.0.1",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.3",
+    "webpack": "^5.104.1",
+    "webpack-cli": "^6.0.1"
+  }
+}
