@@ -4,7 +4,8 @@ namespace hddbscan.monitor {
     let port: chrome.runtime.Port = chrome.runtime.connect({ name: "hddbscan-monitor" });
 
     port.onMessage.addListener((message: any) => {
-        console.log("received message: " + message);
+        console.log("received message: ");
+        console.log(message);
 
         let action: string = message["action"];
         if (action === undefined) {
@@ -13,58 +14,100 @@ namespace hddbscan.monitor {
 
         switch (action) {
             case "scan": {
-                scan();
+                let comps: any = scan();
+                port.postMessage({
+                    action: "page-components",
+                    payload: comps
+                });
                 break;
             }
             default: {
-                return;
+
             }
         }
     });
 
     function scan(): any {
-        let nodeList: NodeListOf<HTMLElement> = document.querySelectorAll(".cl-control");
+        let comps: any = {
+            targetList: []
+        };
+        let targetList: any[] = comps['targetList'];
+
+        let nodeList: NodeListOf<HTMLElement> = document.querySelectorAll(".cl-control:not(.cl-container,.cl-notifier)");
         nodeList.forEach((element: HTMLElement) => {
-            let xpath: string = getXPath(element);
+            let eventTarget: any = {
+                target: {}
+            };
+            let targetInfo: any = eventTarget['target'];
 
-            console.log("xpath: " + xpath);
+            let selector: string = generateCSSSelector(element);
+            targetInfo["selector"] = selector;
+            console.log(`selector: ${selector}`);
 
+            targetInfo["classNames"] = getClassNames(element);
+            targetInfo["text"] = element.textContent;
+            targetInfo["clientRect"] = element.getBoundingClientRect();
+
+            targetList[targetList.length] = eventTarget;
         });
 
-
-        return {};
+        return comps;
     }
 
-    function getXPath(element: HTMLElement): string {
-        if (element.id !== '') {
-            // Use ID for a unique and more stable XPath if available
-            return '//*[@id="' + element.id + '"]';
-        }
-        if (element === document.body) {
-            return '/html/body';
-        }
-
-        const index: number = getElementIndex(element);
-        const tagName: string = element.tagName.toLowerCase();
-
-        const parentNode: ParentNode | null = element.parentNode;
-
-        const path = (parentNode ? getXPath(<HTMLElement>(parentNode!)) : '') + '/' + tagName + '[' + index + ']';
-
-        return path;
+    function getClassNames(element: HTMLElement): string[] {
+        let classNames: string[] = Array.from(element.classList);
+        return classNames ? classNames : [];
     }
 
-    function getElementIndex(element: HTMLElement): number {
-        let index = 1;
-        let sibling = element.previousElementSibling;
-        while (sibling) {
-            if (sibling.nodeType === 1 && sibling.tagName === element.tagName) {
-                index++;
+    function generateCSSSelector(element: HTMLElement): string {
+        if (!element || !element.parentElement) {
+            return ""; // Return empty if no element or no parent
+        }
+
+        let selector: string = "";
+
+        // Traverse up the DOM from the element to its parent
+        while (element.parentElement) {
+            let tagName: string = element.tagName.toLowerCase();
+            let segment: string = tagName;
+
+            // Add Id if it exists(IDs should be unique)
+            if (element.id) {
+                segment += "#" + element.id;
+            } else {
+                // Add classes if no ID, separating with dots
+                let classNames: string = Array.from(element.classList).join(".");
+                if (classNames) {
+                    segment += "." + classNames;
+                }
             }
-            sibling = sibling.previousElementSibling;
+
+            // Add nth-of-type to handle sibling elements of the same type without unique ID/classes
+            const parent: HTMLElement = element.parentElement;
+            const siblings: Element[] = Array.from(parent.children);
+            const sameTagSiblings: Element[] = siblings.filter(el => el.tagName === element.tagName);
+
+            if (!element.id && sameTagSiblings.length > 1) {
+                // Use : nth-of-type() for specificity among similar siblings
+                const index = sameTagSiblings.indexOf(element) + 1;
+                segment += `:nth-of-type(${index})`;
+            }
+
+            // Prepend the segment to the selector
+            selector = segment + (selector ? " > " + selector : "");
+
+            // Move the the parent element
+            element = parent;
         }
-        return index;
+
+        return selector.trim();
     }
+
+
+
+
+
+
 
 }
 

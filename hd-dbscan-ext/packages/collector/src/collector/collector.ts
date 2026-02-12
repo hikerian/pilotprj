@@ -13,12 +13,31 @@ namespace hddbscan.collector {
         monitorPort = port;
 
         monitorPort.onMessage.addListener((message: any) => {
+            if (!message) {
+                return;
+            }
+            let action: string = message['action'];
+            switch (action) {
+                case "page-components": {
+                    let payload: any = message['payload'];
 
+                    console.log(`${action}`);
+                    console.log(payload);
+
+                    // send to spring server
+
+                    break;
+                }
+                default: {
+
+                }
+            }
         });
     });
 
     chrome.action.onClicked.addListener((tab: chrome.tabs.Tab) => {
-        console.log("ActionClicked: " + tab);
+        console.log("ActionClicked: ");
+        console.log(tab);
         if (monitorPort === undefined) {
             console.log("not connected");
         }
