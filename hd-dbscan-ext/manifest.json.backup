@@ -21,7 +21,8 @@
     },
     "action": {
         "default_title": "Show HD-DBSCAN Inspector",
-        "default_icon": "inspector/icon.png"
+        "default_icon": "inspector/icon.png",
+        "default_popup": "inspector/inspector.html"
     },
     "content_scripts": [
         {

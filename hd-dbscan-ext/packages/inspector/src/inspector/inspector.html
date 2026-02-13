@@ -2,225 +2,33 @@
 <!DOCTYPE html>
 <html lang="ko">
 
-  <head>
-    <meta charset="utf-8" />
+<head>
+  <meta charset="utf-8" />
   <meta charset="UTF-8">
-  <title>AIQBot Inspector Version 0.02</title>
+  <title>High-Dimensional DBSCAN</title>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      background-color: #1b1b26; 
-      color: #e0e0e0;
-    }
-
-    #toolbar {
-      display: flex;
-      gap: 8px;
-      padding: 8px;
-      background: #252736; 
-      border-bottom: 1px solid #3b3f50;
-    }
-
-    #toolbar button {
-      background: #3a7d44; 
-      color: #ffffff;
-      border: none;
-      padding: 3px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.2s;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-    }
-
-    #toolbar button:hover {
-      background:#5ca666; 
-    }
-
-    #toolbar input {
-      flex: 1;
-      padding: 6px 12px;
-      border-radius: 6px;
-      border: 1px solid #555;
-      background-color: #2c2f42;
-      color: #e0e0e0;
-    }
-
-    #editor {
-      
-      flex: 1 1 auto;
-      min-height: 0;
-      background-color: #12121b; 
-      color: #d0d0d0;
-      font-size: 16px;
-      line-height: 1.5;
-      font-family: 'Fira Code', monospace;
-      padding: 12px;
-      overflow-y: auto;
-      white-space: pre;
-    }
-
-    #editor ::selection {
-      background: #2c2f42;
-    }
-
-    #queuePanel {
-      
-      flex: 0 0 140px;
-      min-height: 120px;
-      display: flex;
-      background-color: #1a1c27;
-      border-top: 1px solid #3b3f50;
-      font-size: 12px;
-      overflow: auto;
-    }
-
-    .queue-column {
-      flex: 1;
-      padding: 6px;
-      border-right: 1px solid #33384a;
-      box-sizing: border-box;
-      max-height: 100%;
-      overflow-y: auto;
-    }
-
-    .queue-column:last-child {
-      border-right: none;
-    }
-
-    .queue-column h3 {
-      margin: 0 0 4px 0;
-      font-size: 12px;
-      color: #a0a4c0;
-    }
-
-    .queue-item {
-      padding: 2px 0;
-      border-bottom: 1px dashed #33384a;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    
-    .keyword { color: #c678dd; }
-    .string { color: #98c379; }
-    .function { color: #61afef; }
-
-    .custom-dialog-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: flex; justify-content: center; align-items: center;
-  z-index: 9999;
-}
-
-.custom-dialog-box {
-  background: #fff;
-  padding: 20px;
-  width: 320px;
-  max-width: 90%;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  display: flex; flex-direction: column;
-  gap: 12px;
-  animation: dialog-fade 0.2s ease-out;
-}
-
-.custom-dialog-message {
-  font-size: 16px;
-  color: #333;
-}
-
-.custom-dialog-input {
-  padding: 8px 10px;
-  font-size: 14px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  outline: none;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.custom-dialog-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.custom-dialog-buttons button {
-  padding: 6px 14px;
-  font-size: 14px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.custom-dialog-ok {
-  background-color: #4CAF50;
-  color: white;
-}
-.custom-dialog-ok:hover {
-  background-color: #45a049;
-}
-
-.custom-dialog-cancel {
-  background-color: #f44336;
-  color: white;
-}
-.custom-dialog-cancel:hover {
-  background-color: #e53935;
-}
-
-@keyframes dialog-fade {
-  from { transform: translateY(-20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
   </style>
 </head>
 
-<body>
-  <div id="toolbar">
-    <button id="startRecording">Record</button>
-    <button id="pauseRecording">Pause</button>
-    <button id="playTestCase">Play</button>
-    <button id="deleteCurrentLine">Delete</button>
-    <button id="deleteAllLines">Clear</button>
-    <button id="clearAndRefresh">Refresh</button>
-    <button id="saveButton">Save</button>
-    <button id="toggleLanguage">자연어 보기</button>
-    <!-- <input type="text" id="urlInput" placeholder="URL 입력 후 Enter"> -->
-    <div id="modeSelector"
-       style="display:inline-flex; align-items:center; gap:6px; color:#e0e0e0; font-size:14px;">
-    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
-      <input type="radio" name="mode" value="safe">
-      즉시
-    </label>
-    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
-      <input type="radio" name="mode" value="raw" checked>
-      기록
-    </label>
-  </div>
-</div>
-  <div id="editor"></div>
-  <div id="queuePanel">
-    <div class="queue-column" id="queueTemp"><h3>Temp Queue</h3></div>
-    <div class="queue-column" id="queueMain"><h3>Main Queue</h3></div>
-    <div class="queue-column" id="queueGarbage"><h3>Garbage</h3></div>
-  </div>
+<body style="width:200px; height:100px;">
+  <h3>High-Dimensional DBSCAN</h3>
+  <label for="inpTitle">Page Title</label><br />
+  <input type="text" id="inpTitle" name="inptitle" value="" style="display:block;width:98%;" /><br />
+  <button id="btnClt">Collect</button>&nbsp;<button id="btnSave">Save</button><br />
+  <table id="tblComps" style="width:100%">
+    <caption> Page Components </caption>
+    <thead>
+      <tr>
+        <th>Selector</th>
+        <th>ClassNames</th>
+        <th>Text</th>
+        <th>ClientRect</th>
+        <th>Select</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
   <script src="inspector.js"></script>
 </body>
 
 </html>
-
-
-
-
-
-

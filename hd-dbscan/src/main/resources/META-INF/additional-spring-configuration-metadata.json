@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "page-component.file.dir",
+  "type": "java.lang.String",
+  "description": "페이지의 컴포넌트 목록을 저장할 파일의 디렉토리 경로"
+}]}

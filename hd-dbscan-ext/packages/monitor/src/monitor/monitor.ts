@@ -1,31 +1,63 @@
 ﻿﻿
 namespace hddbscan.monitor {
 
-    let port: chrome.runtime.Port = chrome.runtime.connect({ name: "hddbscan-monitor" });
+    // selected element highlight
+    let highlightCssClassName: string = 'hd-dbscan-highlight';
+    let style: HTMLStyleElement = document.createElement("style");
+    style.innerHTML = `.${highlightCssClassName} {border: 2px dashed red;}`;
 
-    port.onMessage.addListener((message: any) => {
-        console.log("received message: ");
-        console.log(message);
+    // connect collector
+    let port: chrome.runtime.Port | undefined = undefined;
+    function connect() {
+        port = chrome.runtime.connect({ name: "hddbscan-monitor" });
 
-        let action: string = message["action"];
-        if (action === undefined) {
-            return;
-        }
+        port.onMessage.addListener((message: any) => {
+            console.log("received message: ");
+            console.log(message);
 
-        switch (action) {
-            case "scan": {
-                let comps: any = scan();
-                port.postMessage({
-                    action: "page-components",
-                    payload: comps
-                });
-                break;
+            let action: string = message["action"];
+            if (action === undefined) {
+                return;
             }
-            default: {
 
+            switch (action) {
+                case "scan": {
+                    let comps: any = scan();
+                    port!.postMessage({
+                        action: "page-components",
+                        payload: comps
+                    });
+                    break;
+                }
+                case "highlight": {
+                    let selector: string = message["selector"];
+                    let element: HTMLElement | null = document.querySelector(selector);
+                    if (!element) {
+                        console.error(`${selector} not found`);
+                        return;
+                    }
+                    let classList: DOMTokenList = element.classList;
+                    // toggle
+                    if (classList.contains(highlightCssClassName)) {
+                        classList.remove(highlightCssClassName);
+                    } else {
+                        classList.add(highlightCssClassName);
+                    }
+                    break;
+                }
+                default: {
+
+                }
             }
-        }
-    });
+        });
+
+        port.onDisconnect.addListener(() => {
+            console.log("monitor port disconnected, try connecting...");
+            port = chrome.runtime.connect({ name: "hddbscan-monitor" });
+            connect();
+        });
+    }
+    connect();
 
     function scan(): any {
         let comps: any = {
@@ -45,13 +77,23 @@ namespace hddbscan.monitor {
             console.log(`selector: ${selector}`);
 
             targetInfo["classNames"] = getClassNames(element);
-            targetInfo["text"] = element.textContent;
+            targetInfo["text"] = getText(element);
             targetInfo["clientRect"] = element.getBoundingClientRect();
 
             targetList[targetList.length] = eventTarget;
         });
 
+        console.log(targetList);
+
         return comps;
+    }
+
+    function getText(element: HTMLElement): string {
+        let text: string = element.textContent;
+        if (text.length > 30) {
+            text = text.substring(0, 30) + "...";
+        }
+        return text;
     }
 
     function getClassNames(element: HTMLElement): string[] {
@@ -102,12 +144,6 @@ namespace hddbscan.monitor {
 
         return selector.trim();
     }
-
-
-
-
-
-
 
 }
 
