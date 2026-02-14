@@ -1,40 +1,49 @@
 ﻿﻿namespace hddbscan.inspector {
-    let port: chrome.runtime.Port = chrome.runtime.connect({ name: "hddbscan-inspector" });
-
     let pageComps: any = {};
 
-    port.onMessage.addListener((message: any) => {
-        if (!message) {
-            return;
-        }
-        let action: string = message['action'];
-        switch (action) {
-            case "collection-result": {
-                let payload: any = message['payload'];
-                pageComps = payload;
+    // connect collector
+    let port: chrome.runtime.Port | undefined = undefined;
+    function connect() {
+        const portNm = "hddbscan-inspector";
 
-                console.log(`${action}`);
-                console.log(payload);
+        port = chrome.runtime.connect({ name: portNm });
 
-                let tblComps: HTMLTableElement = <HTMLTableElement>document.getElementById("tblComps");
-                let tbody: HTMLTableSectionElement = tblComps.tBodies[0];
-
-                let compList: any[] = payload['targetList'];
-
-                createCompNode(tbody, compList);
-
-                // TODO implements....
-                // 선택된 컴포넌트 목록을 보여주고 선택하면 하이라이트 하게 지원...
-
-
-                break;
+        port.onMessage.addListener((message: any) => {
+            if (!message) {
+                return;
             }
-            default: {
+            let action: string = message['action'];
+            switch (action) {
+                case "collection-result": {
+                    let payload: any = message['payload'];
+                    pageComps = payload;
+
+                    console.log(`${action}`);
+                    console.log(payload);
+
+                    let tblComps: HTMLTableElement = <HTMLTableElement>document.getElementById("tblComps");
+                    let tbody: HTMLTableSectionElement = tblComps.tBodies[0];
+
+                    let compList: any[] = payload['targetList'];
+
+                    createCompNode(tbody, compList);
+
+                    break;
+                }
+                default: {
+
+                }
 
             }
+        });
 
-        }
-    });
+        port.onDisconnect.addListener(() => {
+            console.log("inspector port disconnected, try connecting...");
+            port = chrome.runtime.connect({ name: portNm });
+            connect();
+        });
+    }
+    connect();
 
     function createCompNode(tbody: HTMLTableSectionElement, compList: any[]) {
         Array.from(tbody.childNodes).forEach((node: ChildNode) => {
@@ -49,23 +58,21 @@
             let clientRect: string = JSON.stringify(comp['clientRect']);
 
             let tr: HTMLTableRowElement = document.createElement("tr");
-            tr.appendChild(createCompFeature(selector)); // <th>Selector</th>
-            tr.appendChild(createCompFeature(classNames)); // <th>ClassNames</th>
-            tr.appendChild(createCompFeature(text)); // <th>Text</th>
-            tr.appendChild(createCompFeature(clientRect)); // <th>ClientRect</th>
+            tr.appendChild(createCompFeature(selector, 300)); // <th>Selector</th>
+            tr.appendChild(createCompFeature(classNames, 250)); // <th>ClassNames</th>
+            tr.appendChild(createCompFeature(text, 150)); // <th>Text</th>
+            tr.appendChild(createCompFeature(clientRect, 250)); // <th>ClientRect</th>
             tr.appendChild(createSelectButton(selector)); // <th>Select</th>
 
             tbody.appendChild(tr);
         });
     }
 
-    function createCompFeature(featureValue: string): HTMLTableCellElement {
+    function createCompFeature(featureValue: string, width: number): HTMLTableCellElement {
         let td: HTMLTableCellElement = document.createElement("td");
         let div: HTMLDivElement = document.createElement("div");
-        div.style.display = "inline-block";
-        div.style.width = "100%";
-        div.style.whiteSpace = "nowrap";
-        div.style.overflow = "hidden";
+        div.classList.add("feature");
+        div.style.width = `${width}px`;
         td.appendChild(div);
 
         let textNode: Text = document.createTextNode(featureValue);
@@ -80,6 +87,7 @@
         td.appendChild(btn);
 
         btn.setAttribute("data-selector", selector);
+        btn.style.width = '80px';
         let textNode: Text = document.createTextNode("Select");
         btn.appendChild(textNode);
         btn.onclick = doOnCompSelect;
@@ -89,6 +97,13 @@
 
     let doOnCompSelect = function (this: any) {
         console.log(this);
+        let btn: HTMLButtonElement = this as HTMLButtonElement;
+        let selector: string = btn.getAttribute("data-selector")!;
+
+        port!.postMessage({
+            action: "highlight"
+            , selector: selector
+        });
     }
 
     // 시점을 잡을 수 없음
@@ -105,7 +120,7 @@
 
         let btnClt: HTMLElement = document.getElementById("btnClt")!;
         btnClt.onclick = function () {
-            port.postMessage({
+            port!.postMessage({
                 action: "collect"
             });
         }

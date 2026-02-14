@@ -57,6 +57,21 @@ namespace hddbscan.collector {
 
                             break;
                         }
+                        case "highlight": {
+                            if (monitorPort === undefined) {
+                                console.log("not connected");
+                                // TODO send feedback
+                            } else {
+                                let selector: string = message['selector'];
+
+                                monitorPort.postMessage({
+                                    action: "highlight"
+                                    , selector: selector
+                                });
+                            }
+
+                            break;
+                        }
                         default: {
 
                         }
@@ -92,7 +107,7 @@ namespace hddbscan.collector {
         chrome.windows.create({
             url: chrome.runtime.getURL("inspector/inspector.html")
             , type: "popup"
-            , width: 1024
+            , width: 1200
             , height: 700
         }
             , (insWindow?: chrome.windows.Window | undefined) => {
