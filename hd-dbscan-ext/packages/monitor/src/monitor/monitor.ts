@@ -67,20 +67,17 @@ namespace hddbscan.monitor {
 
         let nodeList: NodeListOf<HTMLElement> = document.querySelectorAll(".cl-control:not(.cl-container,.cl-notifier)");
         nodeList.forEach((element: HTMLElement) => {
-            let eventTarget: any = {
-                target: {}
-            };
-            let targetInfo: any = eventTarget['target'];
+            let targetInfo: any = {};
 
             let selector: string = generateCSSSelector(element);
             targetInfo["selector"] = selector;
-            console.log(`selector: ${selector}`);
+            // console.log(`selector: ${selector}`);
 
             targetInfo["classNames"] = getClassNames(element);
             targetInfo["text"] = getText(element);
             targetInfo["clientRect"] = element.getBoundingClientRect();
 
-            targetList[targetList.length] = eventTarget;
+            targetList[targetList.length] = targetInfo;
         });
 
         console.log(targetList);

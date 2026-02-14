@@ -74,21 +74,32 @@ namespace hddbscan.collector {
         }
     });
 
+    let inspectorWindowId: number | undefined;
     chrome.action.onClicked.addListener((tab: chrome.tabs.Tab) => {
         console.log("ActionClicked: ");
         console.log(tab);
 
+        if (inspectorWindowId) {
+            chrome.windows.update(inspectorWindowId!, { focused: true }).catch(() => {
+                createNewInspector();
+            });
+        } else {
+            createNewInspector();
+        }
+    });
+
+    function createNewInspector() {
         chrome.windows.create({
             url: chrome.runtime.getURL("inspector/inspector.html")
             , type: "popup"
-            , width: 900
+            , width: 1024
             , height: 700
         }
-            , (window?: chrome.windows.Window | undefined) => {
-                console.log(window);
+            , (insWindow?: chrome.windows.Window | undefined) => {
+                console.log(insWindow);
+                inspectorWindowId = insWindow?.id;
             }
         );
-
-    });
+    }
 
 }
