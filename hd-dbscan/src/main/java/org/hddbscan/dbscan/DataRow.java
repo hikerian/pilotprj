@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -60,6 +61,32 @@ public class DataRow {
 	protected void setParent(DataSet parent) {
 		this.parent = parent;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(datas, id, parent);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DataRow other = (DataRow) obj;
+		return Objects.equals(datas, other.datas) && Objects.equals(id, other.id)
+				&& Objects.equals(parent, other.parent);
+	}
+
+	@Override
+	public String toString() {
+		return "DataRow [id=" + id + ", datas=" + datas + ", parent=" + parent + "]";
+	}
+
+
 	
+
 
 }

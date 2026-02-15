@@ -84,9 +84,17 @@ namespace hddbscan.monitor {
         }
 
         // let nodeList: NodeListOf<HTMLElement> = document.querySelectorAll(".cl-control:not(.cl-container,.cl-notifier)");
-        let nodeList: NodeListOf<HTMLElement> = el.querySelectorAll(".cl-control:not(.cl-container,.cl-notifier)");
+        let nodeList: NodeListOf<HTMLElement> = el.querySelectorAll(".cl-control:not(.cl-container,.cl-notifier,.cl-embeddedapp)");
         nodeList.forEach((element: HTMLElement) => {
             let targetInfo: any = {};
+
+            // 보이지 않는 node는 skip
+            let style: CSSStyleDeclaration = window.getComputedStyle(element);
+            if (style.display === 'none') {
+                console.log('hidden element');
+                console.log(element);
+                return;
+            }
 
             let selector: string = generateCSSSelector(element);
             targetInfo["selector"] = selector;

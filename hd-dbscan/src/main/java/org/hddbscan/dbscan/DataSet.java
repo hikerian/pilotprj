@@ -3,10 +3,11 @@ package org.hddbscan.dbscan;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 
-public class DataSet {
+public class DataSet implements Iterable<DataRow> {
 	private List<String> labels = new ArrayList<>();
 	private List<DataRow> rowList = new ArrayList<>();
 	
@@ -56,6 +57,16 @@ public class DataSet {
 	
 	public void shuffle() {
 		Collections.shuffle(this.rowList);
+	}
+
+	@Override
+	public Iterator<DataRow> iterator() {
+		return this.rowList.iterator();
+	}
+
+	@Override
+	public String toString() {
+		return "DataSet [labels=" + labels + ", rowList=" + rowList + "]";
 	}
 
 

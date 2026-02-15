@@ -33,7 +33,7 @@ import java.util.Set;
 public class DBSCANClusterer<V> {
 	
 	/**
-	 * maximum distance of values th be considered as cluster
+	 * maximum distance of values to be considered as cluster
 	 */
 	private double epsilon = 1f;
 	

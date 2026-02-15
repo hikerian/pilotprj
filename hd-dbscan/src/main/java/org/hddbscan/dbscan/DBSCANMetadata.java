@@ -6,6 +6,7 @@ import java.util.List;
 
 
 public class DBSCANMetadata {
+	private final Double DEFAULT_EPS = 1.0D;
 	private int minPts = 4;
 	private List<Double> epsList = new ArrayList<>();
 	
@@ -39,6 +40,9 @@ public class DBSCANMetadata {
 	}
 	
 	public Double getEps(int index) {
+		if(this.epsList.size() <= index) {
+			return this.DEFAULT_EPS;
+		}
 		return this.epsList.get(index);
 	}
 

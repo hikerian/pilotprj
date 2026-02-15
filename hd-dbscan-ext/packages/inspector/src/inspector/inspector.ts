@@ -58,10 +58,10 @@
             let clientRect: string = JSON.stringify(comp['clientRect']);
 
             let tr: HTMLTableRowElement = document.createElement("tr");
-            tr.appendChild(createCompFeature(selector, 300)); // <th>Selector</th>
-            tr.appendChild(createCompFeature(classNames, 250)); // <th>ClassNames</th>
-            tr.appendChild(createCompFeature(text, 150)); // <th>Text</th>
-            tr.appendChild(createCompFeature(clientRect, 250)); // <th>ClientRect</th>
+            tr.appendChild(createCompFeature(selector, 350)); // <th>Selector</th>
+            tr.appendChild(createCompFeature(classNames, 300)); // <th>ClassNames</th>
+            tr.appendChild(createCompFeature(text, 110)); // <th>Text</th>
+            tr.appendChild(createCompFeature(clientRect, 200)); // <th>ClientRect</th>
             tr.appendChild(createSelectButton(selector)); // <th>Select</th>
 
             tbody.appendChild(tr);
@@ -71,12 +71,14 @@
     function createCompFeature(featureValue: string, width: number): HTMLTableCellElement {
         let td: HTMLTableCellElement = document.createElement("td");
         let div: HTMLDivElement = document.createElement("div");
-        div.classList.add("feature");
-        div.style.width = `${width}px`;
         td.appendChild(div);
 
         let textNode: Text = document.createTextNode(featureValue);
         div.appendChild(textNode);
+
+        div.classList.add("feature");
+        div.style.width = `${width}px`;
+        div.setAttribute("title", featureValue);
 
         return td;
     }
