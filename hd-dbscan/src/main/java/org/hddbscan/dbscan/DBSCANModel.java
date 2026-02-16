@@ -12,14 +12,27 @@ public class DBSCANModel {
 	
 	
 	public static class DBSCANGroup {
+		private String id;
 		private List<DBSCANRange> rangeList = new ArrayList<>();
+		private List<DataRow> dataList;
 		
 		
-		public DBSCANGroup() {
+		public DBSCANGroup(String id) {
+			this.id = id;
 		}
 		
 		public void addRange(DBSCANRange range) {
 			this.rangeList.add(range);
+		}
+		
+		public void setDataRowList(List<DataRow> dataList) {
+			this.dataList = dataList;
+		}
+
+		@Override
+		public String toString() {
+			return "DBSCANGroup [id=" + id + ", rangeList=" + rangeList + "\n, dataList=" + dataList + "]\n\n";
+//			return "DBSCANGroup [id=" + id + ", rangeList=" + rangeList + "]\n";
 		}
 		
 	}
@@ -38,16 +51,28 @@ public class DBSCANModel {
 	
 	public void addGroup(List<DBSCANCluster> groupCluster) {
 		final int colSize = this.labels.size();
+		this.log.debug("ColSize: {}", colSize);
 		
 		for(DBSCANCluster cluster : groupCluster) {
-			DBSCANGroup group = new DBSCANGroup();
+			DBSCANGroup group = new DBSCANGroup("group-" + (this.groups.size() + 1));
 			this.groups.add(group);
 			
 			for(int i = 0; i < colSize; i++) {
 				DBSCANRange range = cluster.getRange(i);
 				group.addRange(range);
 			}
+			
+			group.setDataRowList(new ArrayList<>(cluster.getDataList()));
 		}
+	}
+	
+	public int getGroupCount() {
+		return this.groups.size();
+	}
+
+	@Override
+	public String toString() {
+		return "DBSCANModel [labels=" + labels + ", groups=\n" + groups + "]";
 	}
 
 

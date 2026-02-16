@@ -1,5 +1,6 @@
 package org.hddbscan.dbscan;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -9,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DataSet implements Iterable<DataRow> {
 	private List<String> labels = new CopyOnWriteArrayList<>();
+//	private List<String> attrLabels = new CopyOnWriteArrayList<>();
 	private List<DataRow> rowList = new CopyOnWriteArrayList<>();
 	
 	
@@ -19,6 +21,11 @@ public class DataSet implements Iterable<DataRow> {
 		this.labels.clear();
 		Collections.addAll(this.labels, labels);
 	}
+	
+//	public void setAttrLabels(String...labels) {
+//		this.attrLabels.clear();
+//		Collections.addAll(this.attrLabels, labels);
+//	}
 	
 	public List<String> getLabels() {
 		return this.labels;
@@ -67,11 +74,21 @@ public class DataSet implements Iterable<DataRow> {
 	public Iterator<DataRow> iterator() {
 		return this.rowList.iterator();
 	}
+	
+	public void print(Appendable out) throws IOException {
+		out.append("DataSet:\n");
+		out.append("id,").append(String.join(",", this.labels)).append('\n');
+		for(DataRow dataRow : this.rowList) {
+			dataRow.print(out);
+		}
+	}
 
 	@Override
 	public String toString() {
+//		return "DataSet [labels=" + labels + ", attrLabels=" + attrLabels + ", rowList=" + rowList + "]";
 		return "DataSet [labels=" + labels + ", rowList=" + rowList + "]";
 	}
+
 
 
 

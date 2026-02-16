@@ -21,6 +21,10 @@ public class DBSCANCluster {
 		}
 	}
 	
+	public List<DataRow> getDataList() {
+		return this.dataList;
+	}
+	
 	public List<DBSCANCluster> getChildren() {
 		return this.children;
 	}
@@ -76,8 +80,8 @@ public class DBSCANCluster {
 	}
 	
 	public DBSCANRange getRange(int col) {
-		double min = 0D;
-		double max = 0D;
+		double min = Double.MAX_VALUE;
+		double max = Double.MIN_VALUE;
 		
 		for(DataRow row : this.dataList) {
 			Number value = row.getData(col);

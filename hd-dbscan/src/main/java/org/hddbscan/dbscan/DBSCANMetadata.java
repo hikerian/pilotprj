@@ -6,7 +6,7 @@ import java.util.List;
 
 
 public class DBSCANMetadata {
-	private final Double DEFAULT_EPS = 1.0D;
+	private Double DEFAULT_EPS = 1.0D;
 	private int minPts = 4;
 	private List<Double> epsList = new ArrayList<>();
 	

@@ -1,5 +1,6 @@
 package org.hddbscan.dbscan;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,11 +8,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.IntFunction;
 
 
 public class DataRow {
 	private String id;
 	private List<Number> datas = new ArrayList<>();
+//	private List<Object> attrs = new ArrayList<>();
 	private DataSet parent;
 	
 	
@@ -26,10 +29,15 @@ public class DataRow {
 		return this.id;
 	}
 	
-	public void setData(Number... values) {
+	public void setData(Number...values) {
 		this.datas.clear();
 		Collections.addAll(this.datas, values);
 	}
+	
+//	public void setAttrs(Object...values) {
+//		this.attrs.clear();
+//		Collections.addAll(this.attrs, values);
+//	}
 	
 	public void setData(Map<String, Number> valueSet) {
 		Set<Entry<String, Number>> entrySet = valueSet.entrySet();
@@ -64,7 +72,8 @@ public class DataRow {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(datas, id, parent);
+//		return Objects.hash(attrs, datas, id);
+		return Objects.hash(datas, id);
 	}
 
 	@Override
@@ -76,17 +85,22 @@ public class DataRow {
 		if (getClass() != obj.getClass())
 			return false;
 		DataRow other = (DataRow) obj;
-		return Objects.equals(datas, other.datas) && Objects.equals(id, other.id)
-				&& Objects.equals(parent, other.parent);
+//		return Objects.equals(attrs, other.attrs) && Objects.equals(datas, other.datas) && Objects.equals(id, other.id);
+		return Objects.equals(datas, other.datas) && Objects.equals(id, other.id);
 	}
 
 	@Override
 	public String toString() {
+//		return "DataRow [id=" + id + ", datas=" + datas + ", attrs=" + attrs + "]";
 		return "DataRow [id=" + id + ", datas=" + datas + "]";
 	}
 
+	public void print(Appendable out) throws IOException {
+		out.append(this.id).append(',');
+		out.append(String.join(",", this.datas.stream().map((value)->String.valueOf(value.doubleValue())).toList()))
+			.append('\n');
+	}
 
-	
 
 
 }

@@ -84,7 +84,7 @@ namespace hddbscan.monitor {
         }
 
         // let nodeList: NodeListOf<HTMLElement> = document.querySelectorAll(".cl-control:not(.cl-container,.cl-notifier)");
-        let nodeList: NodeListOf<HTMLElement> = el.querySelectorAll(".cl-control:not(.cl-container,.cl-notifier,.cl-embeddedapp)");
+        let nodeList: NodeListOf<HTMLElement> = el.querySelectorAll(".cl-control:not(.cl-container,.cl-notifier,.cl-embeddedapp,.cl-grid)");
         nodeList.forEach((element: HTMLElement) => {
             let targetInfo: any = {};
 
@@ -100,6 +100,7 @@ namespace hddbscan.monitor {
             targetInfo["selector"] = selector;
             // console.log(`selector: ${selector}`);
 
+            targetInfo["major"] = false;
             targetInfo["classNames"] = getClassNames(element);
             targetInfo["text"] = getText(element);
             targetInfo["clientRect"] = element.getBoundingClientRect();
@@ -120,9 +121,20 @@ namespace hddbscan.monitor {
         if (!text || text == "") {
             text = element.getAttribute("aria-label");
         }
+        if ((!text || text == "") && element.hasChildNodes()) {
+            let children: HTMLCollection = element.children;
+            for (let i = 0; i < children.length; i++) {
+                let child: HTMLElement = children.item(i) as HTMLElement;
+                text = getText(child);
+                if (text && text != "") {
+                    return text;
+                }
+            }
+        }
 
         return text ? text : "";
     }
+
 
     function getClassNames(element: HTMLElement): string[] {
         let classNames: string[] = Array.from(element.classList);

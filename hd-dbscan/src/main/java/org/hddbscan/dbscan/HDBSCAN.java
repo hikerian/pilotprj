@@ -16,11 +16,15 @@ import org.slf4j.LoggerFactory;
 public class HDBSCAN {
 	private final Logger log = LoggerFactory.getLogger(HDBSCAN.class);
 	
-	private final DBSCANMetadata metadata;
+	private DBSCANMetadata metadata;
 	
 	
 	public HDBSCAN() {
 		this.metadata = new DBSCANMetadata();
+	}
+	
+	public void setMetadata(DBSCANMetadata metadata) {
+		this.metadata = metadata;
 	}
 	
 	public DBSCANMetadata getMetadata() {
@@ -41,6 +45,9 @@ public class HDBSCAN {
 			
 			hd.add(()-> {
 				List<DBSCANCluster> clusterList = dbscan.fit(inputValues, colIdx, eps, minPts);
+				
+				System.out.println("EPS!!: " + eps);
+				
 				return clusterList;
 			});
 		}
@@ -52,6 +59,7 @@ public class HDBSCAN {
 			excSvc.awaitTermination(2L, TimeUnit.MINUTES);
 			
 			final DBSCANModelBuilder modelBuilder = new DBSCANModelBuilder();
+			modelBuilder.setLabels(inputValues.getLabels());
 			
 			result.forEach((Future<List<DBSCANCluster>> clusterList) -> {
 				try {
@@ -71,7 +79,7 @@ public class HDBSCAN {
 			
 		} catch (InterruptedException e) {
 			Thread.interrupted();
-			log.error("InterruptedException", e);
+			this.log.error("InterruptedException", e);
 			
 			throw new RuntimeException(e);
 		}

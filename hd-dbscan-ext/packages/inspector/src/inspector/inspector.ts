@@ -55,6 +55,7 @@
             let classNameList: string[] = comp['classNames'];
             let classNames: string = Array.isArray(classNameList) ? classNameList.join(",") : "" + classNameList;
             let text: string = comp['text'];
+            let major: boolean = comp['major'];
             let clientRect: string = JSON.stringify(comp['clientRect']);
 
             let tr: HTMLTableRowElement = document.createElement("tr");
@@ -62,6 +63,7 @@
             tr.appendChild(createCompFeature(classNames, 300)); // <th>ClassNames</th>
             tr.appendChild(createCompFeature(text, 110)); // <th>Text</th>
             tr.appendChild(createCompFeature(clientRect, 200)); // <th>ClientRect</th>
+            tr.appendChild(createCheckbox(major, selector)); // <th>Major</th>
             tr.appendChild(createSelectButton(selector)); // <th>Select</th>
 
             tbody.appendChild(tr);
@@ -96,7 +98,6 @@
 
         return td;
     }
-
     let doOnCompSelect = function (this: any) {
         console.log(this);
         let btn: HTMLButtonElement = this as HTMLButtonElement;
@@ -107,6 +108,42 @@
             , selector: selector
         });
     }
+
+    function createCheckbox(value: boolean, selector: string): HTMLTableCellElement {
+        let td: HTMLTableCellElement = document.createElement("td");
+        let chk: HTMLInputElement = document.createElement("input");
+        chk.type = "checkbox";
+        chk.value = "true";
+        chk.checked = value;
+        td.appendChild(chk);
+
+        chk.setAttribute("data-selector", selector);
+        chk.style.width = '50px';
+        chk.onclick = doOnCompCheck;
+
+        return td;
+    }
+    let doOnCompCheck = function (this: any) {
+        console.log(this);
+        let chk: HTMLInputElement = this as HTMLInputElement;
+        let selector: string = chk.getAttribute("data-selector")!;
+        let checked: boolean = chk.checked;
+
+        let compList: any[] = pageComps['targetList'];
+
+        compList.some((comp: any) => {
+            if (comp['selector'] === selector) {
+                comp['major'] = checked;
+
+                document.getElementById("msg-viewer")!.innerText = `matched checked:${checked}`;
+
+                return true;
+            }
+
+            return false;
+        });
+    }
+
 
     // 시점을 잡을 수 없음
     // if (document.readyState === "complete") {
