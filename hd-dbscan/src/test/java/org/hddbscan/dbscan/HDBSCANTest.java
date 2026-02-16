@@ -40,8 +40,8 @@ public class HDBSCANTest {
 			}
 			
 		});
-//		for(File file : files) {
-		    File file = files[0];
+		for(File file : files) {
+//		    File file = files[0];
 		    
 		    System.out.println("FileName: " + file.getAbsolutePath());
 		    
@@ -74,7 +74,7 @@ public class HDBSCANTest {
 //				}
 				
 			}
-//		}
+		}
 		
 //		System.out.println("==============================");
 //		System.out.println(classNameList);
@@ -82,24 +82,25 @@ public class HDBSCANTest {
 //		System.out.println(textList);
 //		System.out.println("==============================");
 		
-		out.println("==============================");
-		uiDataSet.print(out);
+		final String delimiter = "\t";
+			
+//		out.println("==============================");
+//		uiDataSet.print(out, delimiter);
 				
 		DataSet dataSet = uiDataSet.toDataSet();
 		DBSCANMetadata metadata = uiDataSet.getMetadata();
 		
 		out.println("==============================");
-		dataSet.print(out);
+		dataSet.print(out, delimiter);
 		
 		HDBSCAN hbscan = new HDBSCAN();
 		hbscan.setMetadata(metadata);
 		DBSCANModel model = hbscan.fit(dataSet);
 		
 		out.println("==============================");
-		out.println(model);
+		model.print(out, delimiter);
 		
 		out.flush();
-		out.close();
 		}
 		
 	}

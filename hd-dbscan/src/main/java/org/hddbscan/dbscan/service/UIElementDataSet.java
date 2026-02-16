@@ -40,6 +40,11 @@ public class UIElementDataSet {
 		double width = clientRect.getAsNumber("width").doubleValue();
 		double height = clientRect.getAsNumber("height").doubleValue();
 		
+		if(width == 0D || height == 0D) {
+			// 크기가 0이면 skip!
+			return;
+		}
+		
 		UIElementDataRow dataRow = new UIElementDataRow();
 		dataRow.setId(id);
 		dataRow.setButtonEl(this.isContains(this.BUTTON_CLASSES, classNms));
@@ -95,11 +100,11 @@ public class UIElementDataSet {
 		return metadata;
 	}
 	
-	public void print(Appendable out) throws IOException {
+	public void print(Appendable out, String delimiter) throws IOException {
 		out.append("UIElementDataSet:\n");
-		out.append("id,").append(String.join(",", this.labels)).append('\n');
+		out.append("id").append(delimiter).append(String.join(delimiter, this.labels)).append('\n');
 		for(UIElementDataRow dataRow : this.dataRowList) {
-			dataRow.print(out);
+			dataRow.print(out, delimiter);
 		}
 	}
 	

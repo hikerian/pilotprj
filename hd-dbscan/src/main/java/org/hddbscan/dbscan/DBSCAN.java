@@ -46,6 +46,41 @@ public class DBSCAN {
 	 * @return
 	 */
 	public List<DBSCANCluster> fit(DataSet inputValues, int colIdx, double eps, int minPts) {
+		List<DataRow> rowList = inputValues.getAllRows();
+		
+		return this.fit(rowList, colIdx, eps, minPts);
+//		List<DBSCANCluster> resultList = new ArrayList<>();
+//		Set<DataRow> visited = new HashSet<>();
+//		
+//		for(DataRow p : inputValues) {
+//			if(visited.contains(p) == false) {
+//				visited.add(p);
+//				List<DataRow> neighbours = this.getNeighbours(p, inputValues, colIdx, eps);
+//				
+//				if(neighbours.size() >= minPts) {
+//					int idx = 0;
+//					while(neighbours.size() > idx) {
+//						DataRow r = neighbours.get(idx);
+//						if(visited.contains(r) == false) {
+//							visited.add(r);
+//							List<DataRow> individualNeighbours = this.getNeighbours(r, inputValues, colIdx, eps);
+//							if(individualNeighbours.size() >= minPts) {
+//								neighbours = this.mergeRightToLeft(neighbours, individualNeighbours);
+//							}
+//						}
+//						
+//						idx++;
+//					}
+//					resultList.add(new DBSCANCluster(neighbours));
+//				}
+//			}
+//		}
+//		
+//		
+//		return resultList;
+	}
+	
+	public List<DBSCANCluster> fit(List<DataRow> inputValues, int colIdx, double eps, int minPts) {
 		List<DBSCANCluster> resultList = new ArrayList<>();
 		Set<DataRow> visited = new HashSet<>();
 		
@@ -77,7 +112,7 @@ public class DBSCAN {
 		return resultList;
 	}
 	
-	private List<DataRow> getNeighbours(DataRow p, DataSet inputValues, int colIdx, double eps) {
+	private List<DataRow> getNeighbours(DataRow p, List<DataRow> inputValues, int colIdx, double eps) {
 		List<DataRow> neighbours = new ArrayList<>();
 		for(DataRow candidate : inputValues) {
 			if(this.distance(p.getData(colIdx), candidate.getData(colIdx)) <= eps) {
@@ -86,6 +121,16 @@ public class DBSCAN {
 		}
 		return neighbours;
 	}
+	
+//	private List<DataRow> getNeighbours(DataRow p, DataSet inputValues, int colIdx, double eps) {
+//		List<DataRow> neighbours = new ArrayList<>();
+//		for(DataRow candidate : inputValues) {
+//			if(this.distance(p.getData(colIdx), candidate.getData(colIdx)) <= eps) {
+//				neighbours.add(candidate);
+//			}
+//		}
+//		return neighbours;
+//	}
 	
 	private <V> List<V> mergeRightToLeft(List<V> neighbours1, List<V> neighbours2) {
 		for(V p : neighbours2) {

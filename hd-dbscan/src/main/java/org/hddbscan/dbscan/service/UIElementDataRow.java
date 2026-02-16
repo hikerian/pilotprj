@@ -92,8 +92,8 @@ public class UIElementDataRow {
 		return row;
 	}
 	
-	public void print(Appendable out) throws IOException {
-		out.append(String.join(","
+	public void print(Appendable out, String delimiter) throws IOException {
+		out.append(String.join(delimiter
 				, this.id
 				, String.valueOf(this.buttonEl)
 				, String.valueOf(this.inputEl)

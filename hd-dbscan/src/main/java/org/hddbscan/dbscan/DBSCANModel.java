@@ -1,5 +1,6 @@
 package org.hddbscan.dbscan;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,18 @@ public class DBSCANModel {
 //			return "DBSCANGroup [id=" + id + ", rangeList=" + rangeList + "]\n";
 		}
 		
+		public void print(Appendable out, String delimiter) throws IOException {
+			out.append(this.id).append(delimiter).append(this.id).append(delimiter);
+			out.append(String.join(delimiter, this.rangeList.stream().map((value)-> "{min:" + value.getMin() + ",max:" + value.getMax() + "}").toList()))
+			   .append("\n");
+			
+			for(DataRow dataRow : this.dataList) {
+				out.append(this.id).append(delimiter);
+				dataRow.print(out, delimiter);
+			}
+			out.append('\n');
+		}
+		
 	}
 
 	
@@ -47,6 +60,20 @@ public class DBSCANModel {
 	
 	public void setLabels(List<String> labelList) {
 		this.labels.addAll(labelList);
+	}
+	
+	public void addGroup(DBSCANCluster groupCluster) {
+		final int colSize = this.labels.size();
+		this.log.debug("ColSize: {}", colSize);
+		
+		DBSCANGroup group = new DBSCANGroup("group-" + (this.groups.size() + 1));
+		this.groups.add(group);
+
+		for(int i = 0; i < colSize; i++) {
+			DBSCANRange range = groupCluster.getRange(i);
+			group.addRange(range);
+		}
+		group.setDataRowList(new ArrayList<>(groupCluster.getDataList()));
 	}
 	
 	public void addGroup(List<DBSCANCluster> groupCluster) {
@@ -73,6 +100,17 @@ public class DBSCANModel {
 	@Override
 	public String toString() {
 		return "DBSCANModel [labels=" + labels + ", groups=\n" + groups + "]";
+	}
+	
+	public void print(Appendable out, String delimiter) throws IOException {
+		out.append("DBSCANModel:\n");
+		out.append("groupId").append(delimiter)
+			.append("id").append(delimiter)
+			.append(String.join(delimiter, this.labels)).append('\n');
+		for(DBSCANGroup group : this.groups) {
+			group.print(out, delimiter);
+		}
+		
 	}
 
 

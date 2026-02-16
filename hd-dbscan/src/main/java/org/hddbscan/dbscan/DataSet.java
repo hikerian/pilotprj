@@ -46,6 +46,10 @@ public class DataSet implements Iterable<DataRow> {
 		}
 	}
 	
+	public List<DataRow> getAllRows() {
+		return this.rowList;
+	}
+	
 	public int getColumnCount() {
 		return this.labels.size();
 	}
@@ -75,11 +79,11 @@ public class DataSet implements Iterable<DataRow> {
 		return this.rowList.iterator();
 	}
 	
-	public void print(Appendable out) throws IOException {
+	public void print(Appendable out, String delimiter) throws IOException {
 		out.append("DataSet:\n");
-		out.append("id,").append(String.join(",", this.labels)).append('\n');
+		out.append("id").append(delimiter).append(String.join(delimiter, this.labels)).append('\n');
 		for(DataRow dataRow : this.rowList) {
-			dataRow.print(out);
+			dataRow.print(out, delimiter);
 		}
 	}
 

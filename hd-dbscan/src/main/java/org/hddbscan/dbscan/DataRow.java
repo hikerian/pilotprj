@@ -95,9 +95,9 @@ public class DataRow {
 		return "DataRow [id=" + id + ", datas=" + datas + "]";
 	}
 
-	public void print(Appendable out) throws IOException {
-		out.append(this.id).append(',');
-		out.append(String.join(",", this.datas.stream().map((value)->String.valueOf(value.doubleValue())).toList()))
+	public void print(Appendable out, String delimiter) throws IOException {
+		out.append(this.id).append(delimiter);
+		out.append(String.join(delimiter, this.datas.stream().map((value)->String.valueOf(value.doubleValue())).toList()))
 			.append('\n');
 	}
 

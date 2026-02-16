@@ -16,6 +16,28 @@ import org.slf4j.LoggerFactory;
 public class HDBSCAN {
 	private final Logger log = LoggerFactory.getLogger(HDBSCAN.class);
 	
+	
+	private static class ColumnCluster {
+		private final int colIdx;
+		private final List<DBSCANCluster> clusterList;
+		
+		
+		ColumnCluster(int colIdx, List<DBSCANCluster> clusterList) {
+			this.colIdx = colIdx;
+			this.clusterList = clusterList;
+		}
+		
+		public int getColIdx() {
+			return this.colIdx;
+		}
+		
+		public List<DBSCANCluster> getCluster() {
+			return this.clusterList;
+		}
+		
+	}
+	
+	
 	private DBSCANMetadata metadata;
 	
 	
@@ -36,9 +58,12 @@ public class HDBSCAN {
 
 		int colCnt = inputValues.getColumnCount();
 		int minPts = this.metadata.getMinPts();
+		
+		this.log.info("ColCnt: {}, MinPts: {}", colCnt, minPts);
+		
 		final DBSCAN dbscan = new DBSCAN();
 		
-		List<Callable<List<DBSCANCluster>>> hd = new ArrayList<>();
+		List<Callable<ColumnCluster>> hd = new ArrayList<>();
 		for(int i = 0 ; i < colCnt; i++) {
 			final int colIdx = i;
 			final double eps = this.metadata.getEps(i);
@@ -46,25 +71,26 @@ public class HDBSCAN {
 			hd.add(()-> {
 				List<DBSCANCluster> clusterList = dbscan.fit(inputValues, colIdx, eps, minPts);
 				
-				System.out.println("EPS!!: " + eps);
-				
-				return clusterList;
+				log.info("callable: colIdx: {}, eps: {}, clusterSize: {}", colIdx, eps, clusterList.size());
+
+				return new ColumnCluster(colIdx, clusterList);
 			});
 		}
 		
 		try {
-			List<Future<List<DBSCANCluster>>> result = excSvc.invokeAll(hd);
+			List<Future<ColumnCluster>> result = excSvc.invokeAll(hd);
 			
 			excSvc.shutdown();
 			excSvc.awaitTermination(2L, TimeUnit.MINUTES);
 			
-			final DBSCANModelBuilder modelBuilder = new DBSCANModelBuilder();
-			modelBuilder.setLabels(inputValues.getLabels());
+			final DBSCANModelBuilder modelBuilder = new DBSCANModelBuilder(colCnt);
+			modelBuilder.setLabels(inputValues.getLabels())
+				.setMetadata(this.metadata);
 			
-			result.forEach((Future<List<DBSCANCluster>> clusterList) -> {
+			result.forEach((Future<ColumnCluster> clusterList) -> {
 				try {
-					List<DBSCANCluster> clusters = clusterList.get();
-					modelBuilder.add(clusters);
+					ColumnCluster columnCluster = clusterList.get();
+					modelBuilder.set(columnCluster.getColIdx(), columnCluster.getCluster());
 				} catch (ExecutionException e) {
 					log.error("ExecutionException", e);
 				} catch (InterruptedException e) {

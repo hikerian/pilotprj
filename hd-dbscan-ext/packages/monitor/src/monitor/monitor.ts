@@ -103,7 +103,13 @@ namespace hddbscan.monitor {
             targetInfo["major"] = false;
             targetInfo["classNames"] = getClassNames(element);
             targetInfo["text"] = getText(element);
-            targetInfo["clientRect"] = element.getBoundingClientRect();
+
+            let clientRect: DOMRect = element.getBoundingClientRect();
+            if (clientRect.width === 0 || clientRect.height === 0) {
+                // 크기가 0이면 skip!
+                return;
+            }
+            targetInfo["clientRect"] = clientRect;
 
             targetList[targetList.length] = targetInfo;
         });
