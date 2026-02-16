@@ -82,7 +82,7 @@ public class DataRow {
 
 	@Override
 	public String toString() {
-		return "DataRow [id=" + id + ", datas=" + datas + ", parent=" + parent + "]";
+		return "DataRow [id=" + id + ", datas=" + datas + "]";
 	}
 
 

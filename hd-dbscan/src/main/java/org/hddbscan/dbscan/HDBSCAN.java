@@ -3,9 +3,11 @@ package org.hddbscan.dbscan;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +27,7 @@ public class HDBSCAN {
 		return this.metadata;
 	}
 	
-	public void fit(final DataSet inputValues) {
+	public DBSCANModel fit(final DataSet inputValues) {
 		ExecutorService excSvc = Executors.newFixedThreadPool(3);
 
 		int colCnt = inputValues.getColumnCount();
@@ -46,10 +48,32 @@ public class HDBSCAN {
 		try {
 			List<Future<List<DBSCANCluster>>> result = excSvc.invokeAll(hd);
 			
-			 // TODO
+			excSvc.shutdown();
+			excSvc.awaitTermination(2L, TimeUnit.MINUTES);
+			
+			final DBSCANModelBuilder modelBuilder = new DBSCANModelBuilder();
+			
+			result.forEach((Future<List<DBSCANCluster>> clusterList) -> {
+				try {
+					List<DBSCANCluster> clusters = clusterList.get();
+					modelBuilder.add(clusters);
+				} catch (ExecutionException e) {
+					log.error("ExecutionException", e);
+				} catch (InterruptedException e) {
+					Thread.interrupted();
+					log.error("InterruptedException", e);
+				}
+			});
+			
+			DBSCANModel model = modelBuilder.build();
+			
+			return model;
+			
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Thread.interrupted();
+			log.error("InterruptedException", e);
+			
+			throw new RuntimeException(e);
 		}
 		
 		

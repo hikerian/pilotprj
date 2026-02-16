@@ -1,15 +1,15 @@
 package org.hddbscan.dbscan;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class DataSet implements Iterable<DataRow> {
-	private List<String> labels = new ArrayList<>();
-	private List<DataRow> rowList = new ArrayList<>();
+	private List<String> labels = new CopyOnWriteArrayList<>();
+	private List<DataRow> rowList = new CopyOnWriteArrayList<>();
 	
 	
 	public DataSet() {
@@ -18,6 +18,10 @@ public class DataSet implements Iterable<DataRow> {
 	public void setLabels(String... labels) {
 		this.labels.clear();
 		Collections.addAll(this.labels, labels);
+	}
+	
+	public List<String> getLabels() {
+		return this.labels;
 	}
 	
 	public void removeAllLabels() {
