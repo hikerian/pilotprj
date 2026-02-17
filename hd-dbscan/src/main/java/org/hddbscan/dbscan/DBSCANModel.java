@@ -2,6 +2,7 @@ package org.hddbscan.dbscan;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -52,10 +53,25 @@ public class DBSCANModel {
 
 	
 	private List<String> labels = new ArrayList<>();
+	private int minPts;
+	private Double[] epsList;
+	
 	private List<DBSCANGroup> groups = new ArrayList<>();
 	
 	
 	public DBSCANModel() {
+	}
+	
+	public void setMetadata(DBSCANMetadata metadata) {
+		this.minPts = metadata.getMinPts();
+		this.epsList = new Double[metadata.getEpsCount()];
+		for(int i = 0; i < this.epsList.length; i++) {
+			this.epsList[i] = metadata.getEps(i);
+		}
+	}
+	
+	public int getMinPts() {
+		return this.minPts;
 	}
 	
 	public void setLabels(List<String> labelList) {
@@ -103,9 +119,12 @@ public class DBSCANModel {
 	}
 	
 	public void print(Appendable out, String delimiter) throws IOException {
-		out.append("DBSCANModel:\n");
-		out.append("groupId").append(delimiter)
-			.append("id").append(delimiter)
+		out.append("DBSCANModel:\n")
+			.append("minPts:").append(String.valueOf(this.minPts)).append('\n')
+			.append(", epsList:").append(
+					String.join(delimiter, Arrays.stream(this.epsList).map((eps)->String.valueOf(eps)).toArray((size)->new String[size]))
+					).append('\n')
+			.append("groupId").append(delimiter).append("id").append(delimiter)
 			.append(String.join(delimiter, this.labels)).append('\n');
 		for(DBSCANGroup group : this.groups) {
 			group.print(out, delimiter);

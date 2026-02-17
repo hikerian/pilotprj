@@ -20,6 +20,8 @@ import net.minidev.json.parser.JSONParser;
 public class HDBSCANTest {
 
 	public static void main(String[] args) throws Exception {
+		long startTime = System.currentTimeMillis();
+		
 		final String dir = "C:/tmp/hd-dbscan/";
 		
 		File logFile = new File(dir, System.currentTimeMillis() + "-log.txt");
@@ -102,6 +104,8 @@ public class HDBSCANTest {
 		
 		out.flush();
 		}
+		
+		System.out.println("Spent " + (System.currentTimeMillis() - startTime) + " ms.");
 		
 	}
 

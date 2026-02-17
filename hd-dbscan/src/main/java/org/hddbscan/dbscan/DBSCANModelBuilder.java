@@ -105,6 +105,7 @@ public class DBSCANModelBuilder {
 	
 	public DBSCANModel build() {
 		DBSCANModel model = new DBSCANModel();
+		model.setMetadata(this.metadata);
 		model.setLabels(this.labels);
 		
 		final int colCnt = this.labels.size();

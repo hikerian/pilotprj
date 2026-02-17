@@ -36,7 +36,7 @@ public class DataSet implements Iterable<DataRow> {
 	}
 	
 	public void addRow(DataRow row) {
-		row.setParent(this);
+//		row.setParent(this);
 		this.rowList.add(row);
 	}
 	
