@@ -2,17 +2,47 @@ package org.hddbscan.entity;
 
 import java.util.Objects;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
+
+
+@Entity
+@Table(name="ui_elements")
+@IdClass(UiElementsId.class)
 public class UiElements {
+	@Id
+	@Column(name="page_id", length=22, nullable=false)
 	private long pageId;
+	
+	@Id
+	@Column(name="element_id", length=22, nullable=false)
 	private long id;
 
+	@Column(name="selector", length=255, nullable=false)
 	private String selector;
+	
+	@Column(name="classNames", length=255, nullable=false)
 	private String classNames;
+	
+	@Column(name="text", length=255, nullable=false)
 	private String text;
+	
+	@Column(name="left", length=10, nullable=false)
 	private double left;
+	
+	@Column(name="top", length=10, nullable=false)
 	private double top;
+	
+	@Column(name="width", length=10, nullable=false)
 	private double width;
+	
+	@Column(name="height", length=10, nullable=false)
 	private double height;
+	
+	@Column(name="major_yn", length=1, nullable=false)
 	private boolean major;
 
 	

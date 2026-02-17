@@ -2,19 +2,27 @@ package org.hddbscan.entity;
 
 import java.util.Objects;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
+
+@Entity
+@Table(name="ui_page")
 public class UiPage {
+	@Id
+	@Column(name="page_id", length=22, nullable=false)
 	private long id;
+	
+	@Column(name="page_nm", length=100, nullable=false)
 	private String nm;
+	
+	@Column(name="page_desc", length=300, nullable=false)
+	private String desc;
 
 
 	public UiPage() {
-	}
-
-	public UiPage(long id, String nm) {
-		super();
-		this.id = id;
-		this.nm = nm;
 	}
 
 	public long getId() {
@@ -33,9 +41,17 @@ public class UiPage {
 		this.nm = nm;
 	}
 
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, nm);
+		return Objects.hash(desc, id, nm);
 	}
 
 	@Override
@@ -47,13 +63,14 @@ public class UiPage {
 		if (getClass() != obj.getClass())
 			return false;
 		UiPage other = (UiPage) obj;
-		return id == other.id && Objects.equals(nm, other.nm);
+		return Objects.equals(desc, other.desc) && id == other.id && Objects.equals(nm, other.nm);
 	}
 
 	@Override
 	public String toString() {
-		return "UiPage [id=" + id + ", nm=" + nm + "]";
+		return "UiPage [id=" + id + ", nm=" + nm + ", desc=" + desc + "]";
 	}
+
 
 
 }
