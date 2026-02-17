@@ -54,6 +54,8 @@ public class HDBSCAN {
 	}
 	
 	public DBSCANModel fit(final DataSet inputValues) {
+		// TODO 1depth 군집화 -> 군집화된 클러스터에서 2depth 군집화 -> 이렇게 되면 모든 요소가 군집을 이루게 되는 문제를 고려해야 함.
+		
 		ExecutorService excSvc = Executors.newFixedThreadPool(3);
 
 		int colCnt = inputValues.getColumnCount();
