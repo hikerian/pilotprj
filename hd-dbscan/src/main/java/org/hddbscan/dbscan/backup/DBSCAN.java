@@ -1,4 +1,4 @@
-package org.hddbscan.dbscan;
+package org.hddbscan.dbscan.backup;
 
 import java.util.ArrayList;
 import java.util.HashSet;

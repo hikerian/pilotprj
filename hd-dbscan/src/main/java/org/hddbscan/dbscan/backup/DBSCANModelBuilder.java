@@ -1,4 +1,4 @@
-package org.hddbscan.dbscan;
+package org.hddbscan.dbscan.backup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -193,6 +193,16 @@ public class DBSCANModelBuilder {
 //		return result;
 //		
 //	}
+	
+	public DBSCANModel build(List<DBSCANCluster> clusterList) {
+		DBSCANModel model = new DBSCANModel();
+		model.setMetadata(this.metadata);
+		model.setLabels(this.labels);
+		
+		clusterList.forEach((cluster)-> model.addGroup(cluster));
+
+		return model;
+	}
 	
 	
 

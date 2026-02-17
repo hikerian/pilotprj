@@ -1,4 +1,4 @@
-package org.hddbscan.dbscan;
+package org.hddbscan.dbscan.backup;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,24 +30,11 @@ public class DBSCANModel {
 		public void setDataRowList(List<DataRow> dataList) {
 			this.dataList = dataList;
 		}
-		
-		public boolean accept(DataRow data) {
-			for(int i = 0; i > this.rangeList.size(); i++) {
-				DBSCANRange range = this.rangeList.get(i);
-				Number value = data.getData(i);
-				double dv = value.doubleValue();
-				
-				if(dv < range.getMin() || dv > range.getMax()) {
-					return false;
-				}
-			}
-			
-			return true;
-		}
 
 		@Override
 		public String toString() {
-			return "DBSCANGroup [id=" + this.id + ", rangeList=" + this.rangeList + "\n, dataList=" + this.dataList + "]\n\n";
+			return "DBSCANGroup [id=" + id + ", rangeList=" + rangeList + "\n, dataList=" + dataList + "]\n\n";
+//			return "DBSCANGroup [id=" + id + ", rangeList=" + rangeList + "]\n";
 		}
 		
 		public void print(Appendable out, String delimiter) throws IOException {
@@ -75,12 +62,6 @@ public class DBSCANModel {
 	public DBSCANModel() {
 	}
 	
-	public List<DBSCANGroup> predict(DataRow data) {
-		List<DBSCANGroup> acceptGroups = this.groups.stream().filter((group) -> group.accept(data)).toList();
-		
-		return acceptGroups;
-	}
-	
 	public void setMetadata(DBSCANMetadata metadata) {
 		this.minPts = metadata.getMinPts();
 		this.epsList = new Double[metadata.getEpsCount()];
@@ -97,12 +78,6 @@ public class DBSCANModel {
 		this.labels.addAll(labelList);
 	}
 	
-	public void addGroup(List<DBSCANCluster> groupCluster) {		
-		for(DBSCANCluster cluster : groupCluster) {
-			this.addGroup(cluster);
-		}
-	}
-	
 	public void addGroup(DBSCANCluster groupCluster) {
 		final int colSize = this.labels.size();
 		this.log.debug("ColSize: {}", colSize);
@@ -117,6 +92,23 @@ public class DBSCANModel {
 		group.setDataRowList(new ArrayList<>(groupCluster.getDataList()));
 	}
 	
+	public void addGroup(List<DBSCANCluster> groupCluster) {
+		final int colSize = this.labels.size();
+		this.log.debug("ColSize: {}", colSize);
+		
+		for(DBSCANCluster cluster : groupCluster) {
+			DBSCANGroup group = new DBSCANGroup("group-" + (this.groups.size() + 1));
+			this.groups.add(group);
+			
+			for(int i = 0; i < colSize; i++) {
+				DBSCANRange range = cluster.getRange(i);
+				group.addRange(range);
+			}
+			
+			group.setDataRowList(new ArrayList<>(cluster.getDataList()));
+		}
+	}
+	
 	public int getGroupCount() {
 		return this.groups.size();
 	}
@@ -128,7 +120,8 @@ public class DBSCANModel {
 	
 	public void print(Appendable out, String delimiter) throws IOException {
 		out.append("DBSCANModel:\n")
-			.append("minPts:").append(String.valueOf(this.minPts)).append(", epsList:").append(
+			.append("minPts:").append(String.valueOf(this.minPts)).append('\n')
+			.append(", epsList:").append(
 					String.join(delimiter, Arrays.stream(this.epsList).map((eps)->String.valueOf(eps)).toArray((size)->new String[size]))
 					).append('\n')
 			.append("groupId").append(delimiter).append("id").append(delimiter)
@@ -138,7 +131,6 @@ public class DBSCANModel {
 		}
 		
 	}
-
 
 
 }

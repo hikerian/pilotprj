@@ -1,13 +1,9 @@
 package org.hddbscan.dbscan;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,28 +11,6 @@ import org.slf4j.LoggerFactory;
 
 public class HDBSCAN {
 	private final Logger log = LoggerFactory.getLogger(HDBSCAN.class);
-	
-	
-	private static class ColumnCluster {
-		private final int colIdx;
-		private final List<DBSCANCluster> clusterList;
-		
-		
-		ColumnCluster(int colIdx, List<DBSCANCluster> clusterList) {
-			this.colIdx = colIdx;
-			this.clusterList = clusterList;
-		}
-		
-		public int getColIdx() {
-			return this.colIdx;
-		}
-		
-		public List<DBSCANCluster> getCluster() {
-			return this.clusterList;
-		}
-		
-	}
-	
 	
 	private DBSCANMetadata metadata;
 	
@@ -54,68 +28,94 @@ public class HDBSCAN {
 	}
 	
 	public DBSCANModel fit(final DataSet inputValues) {
-		// TODO 1depth 군집화 -> 군집화된 클러스터에서 2depth 군집화 -> 이렇게 되면 모든 요소가 군집을 이루게 되는 문제를 고려해야 함.
-		
-		ExecutorService excSvc = Executors.newFixedThreadPool(3);
-
 		int colCnt = inputValues.getColumnCount();
 		int minPts = this.metadata.getMinPts();
-		
-		this.log.info("ColCnt: {}, MinPts: {}", colCnt, minPts);
-		
-		final DBSCAN dbscan = new DBSCAN();
-		
-		List<Callable<ColumnCluster>> hd = new ArrayList<>();
-		for(int i = 0 ; i < colCnt; i++) {
-			final int colIdx = i;
-			final double eps = this.metadata.getEps(i);
-			
-			hd.add(()-> {
-				List<DBSCANCluster> clusterList = dbscan.fit(inputValues, colIdx, eps, minPts);
-				
-				log.info("callable: colIdx: {}, eps: {}, clusterSize: {}", colIdx, eps, clusterList.size());
 
-				return new ColumnCluster(colIdx, clusterList);
-			});
+		this.log.info("ColCnt: {}, MinPts: {}", colCnt, minPts);
+
+		List<DBSCANCluster> clusterList = new ArrayList<>();
+		clusterList.add(new DBSCANCluster(inputValues.getAllRows()));
+
+		for (int i = 0; i < colCnt; i++) {
+			double eps = this.metadata.getEps(i);
+
+			List<DBSCANCluster> mergeList = new ArrayList<>();
+
+			for (DBSCANCluster cluster : clusterList) {
+				List<DBSCANCluster> newClusterList = this.fit(cluster.getDataList(), i, eps, minPts);
+
+				mergeList.addAll(newClusterList);
+			}
+
+			clusterList = mergeList;
 		}
 		
-		try {
-			List<Future<ColumnCluster>> result = excSvc.invokeAll(hd);
-			
-			excSvc.shutdown();
-			excSvc.awaitTermination(2L, TimeUnit.MINUTES);
-			
-			final DBSCANModelBuilder modelBuilder = new DBSCANModelBuilder(colCnt);
-			modelBuilder.setLabels(inputValues.getLabels())
-				.setMetadata(this.metadata);
-			
-			result.forEach((Future<ColumnCluster> clusterList) -> {
-				try {
-					ColumnCluster columnCluster = clusterList.get();
-					modelBuilder.set(columnCluster.getColIdx(), columnCluster.getCluster());
-				} catch (ExecutionException e) {
-					log.error("ExecutionException", e);
-				} catch (InterruptedException e) {
-					Thread.interrupted();
-					log.error("InterruptedException", e);
-				}
-			});
-			
-			DBSCANModel model = modelBuilder.build();
-			
-			return model;
-			
-		} catch (InterruptedException e) {
-			Thread.interrupted();
-			this.log.error("InterruptedException", e);
-			
-			throw new RuntimeException(e);
-		}
+		// create Model
+		DBSCANModel model = new DBSCANModel();
+		model.setMetadata(this.metadata);
+		model.setLabels(inputValues.getLabels());
 		
+		clusterList.forEach((cluster)-> model.addGroup(cluster));
 		
+
+		return model;
+
 	}
 	
+	private List<DBSCANCluster> fit(List<DataRow> inputValues, int colIdx, double eps, int minPts) {
+		List<DBSCANCluster> resultList = new ArrayList<>();
+		Set<DataRow> visited = new HashSet<>();
+		
+		for(DataRow p : inputValues) {
+			if(visited.contains(p) == false) {
+				visited.add(p);
+				List<DataRow> neighbours = this.getNeighbours(p, inputValues, colIdx, eps);
+				
+				if(neighbours.size() >= minPts) {
+					int idx = 0;
+					while(neighbours.size() > idx) {
+						DataRow r = neighbours.get(idx);
+						if(visited.contains(r) == false) {
+							visited.add(r);
+							List<DataRow> individualNeighbours = this.getNeighbours(r, inputValues, colIdx, eps);
+							if(individualNeighbours.size() >= minPts) {
+								neighbours = this.mergeRightToLeft(neighbours, individualNeighbours);
+							}
+						}
+						
+						idx++;
+					}
+					resultList.add(new DBSCANCluster(neighbours));
+				}
+			}
+		}
+		
+		
+		return resultList;
+	}
 	
+	private List<DataRow> getNeighbours(DataRow p, List<DataRow> inputValues, int colIdx, double eps) {
+		List<DataRow> neighbours = new ArrayList<>();
+		for(DataRow candidate : inputValues) {
+			if(this.distance(p.getData(colIdx), candidate.getData(colIdx)) <= eps) {
+				neighbours.add(candidate);
+			}
+		}
+		return neighbours;
+	}
 	
+	private <V> List<V> mergeRightToLeft(List<V> neighbours1, List<V> neighbours2) {
+		for(V p : neighbours2) {
+			if(neighbours1.contains(p) == false) {
+				neighbours1.add(p);
+			}
+		}
+		return neighbours1;
+	}
+	
+	private Double distance(Number val1, Number val2) {
+		return Math.abs(val1.doubleValue() - val2.doubleValue());
+	}
+
 
 }
