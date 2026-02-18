@@ -5,16 +5,16 @@ import java.util.Objects;
 
 public class UiElementsId {
 	private long pageId;
-	private long id;
+	private long elementId;
 	
 	
 	public UiElementsId() {
 	}
 
-	public UiElementsId(long pageId, long id) {
+	public UiElementsId(long pageId, long elementId) {
 		super();
 		this.pageId = pageId;
-		this.id = id;
+		this.elementId = elementId;
 	}
 
 	public long getPageId() {
@@ -25,17 +25,17 @@ public class UiElementsId {
 		this.pageId = pageId;
 	}
 
-	public long getId() {
-		return id;
+	public long getElementId() {
+		return elementId;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public void setElementId(long elementId) {
+		this.elementId = elementId;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, pageId);
+		return Objects.hash(elementId, pageId);
 	}
 
 	@Override
@@ -47,12 +47,12 @@ public class UiElementsId {
 		if (getClass() != obj.getClass())
 			return false;
 		UiElementsId other = (UiElementsId) obj;
-		return id == other.id && pageId == other.pageId;
+		return elementId == other.elementId && pageId == other.pageId;
 	}
 
 	@Override
 	public String toString() {
-		return "UiElementsId [pageId=" + pageId + ", id=" + id + "]";
+		return "UiElementsId [pageId=" + pageId + ", elementId=" + elementId + "]";
 	}
 
 

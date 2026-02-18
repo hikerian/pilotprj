@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<title>High-Dimensional Density-Based Spatial Clustering of Applications with Noise</title>
+<script src="asset/jquery.js"></script>
+<script>
+function clearChild(tbodyElement) {
+	Array.from(tbodyElement.childNodes).forEach((node) => {
+	    tbodyElement.removeChild(node);
+	});
+}	
+
+function createChk(pageId) {
+	var td = document.createElement("td");
+	var inpChk = document.createElement("input");
+	inpChk.type = "checkbox";
+	inpChk.value = pageId;
+	inpChk.name = "chkPageId";
+	inpChk.checked = false;
+
+	td.appendChild(inpChk);
+	return td;
+}
+
+function createBtn(pageId, elementId) {
+	var td = document.createElement("td");
+	var inpBtn = document.createElement("input");
+	inpBtn.type = "button";
+	inpBtn.value = "Predict";
+	inpBtn.setAttribute("data-page-id", pageId);
+	inpBtn.setAttribute("data-element-id", elementId);
+	inpBtn.name = "btnElementSelect";
+	inpBtn.onclick = doPredict;
+
+	td.appendChild(inpBtn);
+	return td;
+}
+
+function createTd(txt) {
+	var td = document.createElement("td");
+	td.title = txt;
+	
+	if(txt.length > 100) {
+		txt = "..." + txt.substring(txt.length - 90, txt.length);
+	}
+	var textNode = document.createTextNode(txt);
+	td.appendChild(textNode);
+	return td;
+}
+
+function createBlank(id) {
+	var td = document.createElement("td");
+	var spanNode = document.createElement("span");
+	spanNode.id = id;
+	
+	td.appendChild(spanNode);
+	return td;
+}
+
+function doPredict() {
+	var pageId = this.getAttribute("data-page-id");
+	var elementId = this.getAttribute("data-element-id");
+	
+	$.ajax({
+		type: "GET",
+		contentType: "application/json",
+		headers: {},
+		url: "/rest/predict/" + pageId + "/" + elementId,
+		success: function(data) {
+			var blankNodeId = "blk-" + pageId + "." + elementId;
+			var blankNode = document.getElementById(blankNodeId);
+			var txtNode = document.createTextNode(data.payload.groups);
+			
+			blankNode.appendChild(txtNode);
+		}
+	});
+}
+
+$(document).ready(function() {
+	$("#btnRegister").on("click", function() {
+		var baseDir = $("#baseDir").val();
+		
+		$.ajax({
+			type: "POST",
+			contentType: "application/json",
+			headers: {},
+			data: JSON.stringify({
+				baseDir: baseDir
+			}),
+			url: "/rest/ui-compfiles/store",
+			success: function(data) {
+				alert(JSON.stringify(data));
+			}
+		});
+	});
+	
+	$("#btnLoad").on("click", function() {
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			headers: {},
+			url: "/rest/ui-pages",
+			success: function(data) {
+				var tbodyElement = document.getElementById("pageListBody");
+				clearChild(tbodyElement);
+				
+				var uiPageList = data.payload.uiPageList;
+				uiPageList.forEach((uiPage) => {
+					var tr = document.createElement("tr");
+					
+					var pageId = uiPage["pageId"];
+					var pageNm = uiPage["pageNm"];
+					var pageDesc = uiPage["pageDesc"];
+					
+					tr.appendChild(createChk(pageId));
+					tr.appendChild(createTd(pageId));
+					tr.appendChild(createTd(pageNm));
+					tr.appendChild(createTd(pageDesc));
+					
+					tbodyElement.appendChild(tr);
+				});
+			}
+		});
+	});
+
+	$("#btnLearn").on("click", function() {
+		var checkedValues = $('input[name="chkPageId"]:checked').map(function() {
+		    return $(this).val();
+		}).get();
+		
+		console.log(checkedValues.join(","));
+
+		$.ajax({
+			type: "POST",
+			contentType: "application/json",
+			headers: {},
+			data: JSON.stringify({
+				pageIds: checkedValues
+			}),
+			url: "/rest/learn-pages",
+			success: function(data) {
+				alert(JSON.stringify(data));
+			}
+		});
+	});
+	
+	$("#btnElementLoad").on("click", function() {
+		var checkedValues = $('input[name="chkPageId"]:checked').map(function() {
+		    return $(this).val();
+		}).get();
+		
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			headers: {},
+			url: "/rest/page-comps/" + checkedValues[0],
+			success: function(data) {
+				var tbodyElement = document.getElementById("elementListBody");
+				clearChild(tbodyElement);
+				
+				var uiElements = data.payload.uiElements;
+				uiElements.forEach((uiElement) => {
+					var tr = document.createElement("tr");
+					
+					tr.appendChild(createTd(uiElement["elementId"]));
+					tr.appendChild(createTd(uiElement["selectorText"]));
+					tr.appendChild(createTd(uiElement["classNames"]));
+					tr.appendChild(createTd("l:" + uiElement["posLeft"] + ", t:" + uiElement["posTop"]));
+					tr.appendChild(createTd("w:" + uiElement["uiWidth"] + ", h:" + uiElement["uiHeight"]));
+					tr.appendChild(createBtn(uiElement["pageId"], uiElement["elementId"]));
+					tr.appendChild(createBlank("blk-" + uiElement["pageId"] +"." + uiElement["elementId"]));
+					
+					tbodyElement.appendChild(tr);
+				});
+			}
+		});
+	});
+	
+
+});
+</script>
+</head>
+<body>
+	<h1>High-Dimensional Density-Based Spatial Clustering of Applications with Noise</h1>
+	<fieldset>
+		<legend>UI Component Registration</legend>
+		<div>
+			<label for="baseDir">Base Directory</label>
+			<input type="text" name="baseDir" id="baseDir" value="C:/tmp/hd-dbscan" style="width:365px;"/><br/>
+			<button id="btnRegister">Register</button>
+		</div>
+	</fieldset>
+	<fieldset>
+		<legend>Load Pages</legend>
+		<div>
+			<button id="btnLoad">Page Load</button>
+		</div>
+		<div>
+			<table>
+				<thead>
+					<tr>
+						<th>Check</th>
+						<th>Page Id</th>
+						<th>Page Title</th>
+						<th>Page Desc</th>
+					</tr>
+				</thead>
+				<tbody id="pageListBody"></tbody>
+			</table>
+		</div>
+		<div>
+			<button id="btnLearn">Learn</button>
+			<button id="btnElementLoad">PageElement Load</button>
+		</div>
+		<div>
+			<table>
+				<thead>
+					<tr>
+						<th>ElementId</th>
+						<th>Selector</th>
+						<th>ClassNames</th>
+						<th>Pos</th>
+						<th>Size</th>
+						<th>Predict</th>
+						<th>Group</th>
+					</tr>
+				</thead>
+				<tbody id="elementListBody"></tbody>
+			</table>
+		</div>
+	</fieldset>
+</body>
+</html>

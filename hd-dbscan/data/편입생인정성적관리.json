@@ -1,5 +1,5 @@
 {
-  "titile" : "편입생인정성적관리",
+  "title" : "편입생인정성적관리",
   "payload" : {
     "targetList" : [ {
       "selector" : "body > div#uuid-3h > div.cl-layout:nth-of-type(1) > div.cl-layout-content > div#uuid-57 > div.cl-layout > div.cl-layout-content > div#uuid-58 > div.content > div.cl-tabfolder-body:nth-of-type(2) > div#pt-58\\/tb-w0 > div#uuid-w6 > div#uuid-w9 > div.cl-layout.cl-scrollbar:nth-of-type(1) > div.cl-layout-content > div#uuid-wk > div.cl-control.cl-embeddedapp.cl-first-row > div#uuid-wm > div.cl-layout:nth-of-type(1) > div.cl-layout-content > div#uuid-ww",

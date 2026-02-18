@@ -12,46 +12,53 @@ import jakarta.persistence.Table;
 @Table(name="ui_page")
 public class UiPage {
 	@Id
-	@Column(name="page_id", length=22, nullable=false)
-	private long id;
+	@Column(name="page_id", columnDefinition="DECIMAL(5)", nullable=false)
+	private long pageId;
 	
-	@Column(name="page_nm", length=100, nullable=false)
-	private String nm;
+	@Column(name="page_nm", columnDefinition="VARCHAR(200)", nullable=false)
+	private String pageNm;
 	
-	@Column(name="page_desc", length=300, nullable=false)
-	private String desc;
+	@Column(name="page_desc", columnDefinition="VARCHAR(300)", nullable=false)
+	private String pageDesc;
 
 
 	public UiPage() {
 	}
 
-	public long getId() {
-		return id;
+	public UiPage(long pageId, String pageNm, String pageDesc) {
+		super();
+		this.pageId = pageId;
+		this.pageNm = pageNm;
+		this.pageDesc = pageDesc;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public long getPageId() {
+		return pageId;
 	}
 
-	public String getNm() {
-		return nm;
+	public void setPageId(long pageId) {
+		this.pageId = pageId;
 	}
 
-	public void setNm(String nm) {
-		this.nm = nm;
+	public String getPageNm() {
+		return pageNm;
 	}
 
-	public String getDesc() {
-		return desc;
+	public void setPageNm(String pageNm) {
+		this.pageNm = pageNm;
 	}
 
-	public void setDesc(String desc) {
-		this.desc = desc;
+	public String getPageDesc() {
+		return pageDesc;
+	}
+
+	public void setPageDesc(String pageDesc) {
+		this.pageDesc = pageDesc;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(desc, id, nm);
+		return Objects.hash(pageDesc, pageId, pageNm);
 	}
 
 	@Override
@@ -63,14 +70,14 @@ public class UiPage {
 		if (getClass() != obj.getClass())
 			return false;
 		UiPage other = (UiPage) obj;
-		return Objects.equals(desc, other.desc) && id == other.id && Objects.equals(nm, other.nm);
+		return Objects.equals(pageDesc, other.pageDesc) && pageId == other.pageId
+				&& Objects.equals(pageNm, other.pageNm);
 	}
 
 	@Override
 	public String toString() {
-		return "UiPage [id=" + id + ", nm=" + nm + ", desc=" + desc + "]";
+		return "UiPage [pageId=" + pageId + ", pageNm=" + pageNm + ", pageDesc=" + pageDesc + "]";
 	}
-
 
 
 }

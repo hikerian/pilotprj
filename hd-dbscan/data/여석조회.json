@@ -1,5 +1,5 @@
 {
-  "titile" : "여석조회",
+  "title" : "여석조회",
   "payload" : {
     "targetList" : [ {
       "selector" : "body > div#uuid-3h > div.cl-layout:nth-of-type(1) > div.cl-layout-content > div#uuid-57 > div.cl-layout > div.cl-layout-content > div#uuid-58 > div.content > div.cl-tabfolder-body:nth-of-type(2) > div#pt-58\\/tb-pn > div#uuid-pt > div#uuid-pw > div.cl-layout.cl-scrollbar:nth-of-type(1) > div.cl-layout-content > div#uuid-q8 > div.cl-control.cl-embeddedapp.cl-first-row > div#uuid-qa > div.cl-layout:nth-of-type(1) > div.cl-layout-content > div#uuid-qk",

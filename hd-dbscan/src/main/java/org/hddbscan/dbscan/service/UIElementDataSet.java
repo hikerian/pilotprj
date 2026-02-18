@@ -8,74 +8,46 @@ import java.util.List;
 import org.hddbscan.dbscan.DBSCANMetadata;
 import org.hddbscan.dbscan.DataRow;
 import org.hddbscan.dbscan.DataSet;
+import org.hddbscan.entity.UiElements;
 
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 
-public class UIElementDataSet {
-	private final List<String> BUTTON_CLASSES = Arrays.asList("btn-header-minus", "cl-button", "btn-search", "btn-restore", "btn-save", "btn-excel"
-			, "btn-setting", "btn-pop", "btn-new", "btn-delete", "btn-pop-search");
-	private final List<String> INPUT_CLASSES = Arrays.asList("cl-inputbox", "cl-combobox", "cl-numbereditor", "cl-checkbox", "cl-dateinput");
-	private final List<String> OUTPUT_CLASSES = Arrays.asList("cl-output", "data-title", "table-row-cnt");
-	
+public class UIElementDataSet {	
 	private final List<UIElementDataRow> dataRowList;
 	private final String[] labels = {"isButton", "isInput", "isOutput", "left", "top"};
-//	private final String[] attrLabels = {"width", "height", "selector", "text", "classNames", "major"};
 	
 	
 	public UIElementDataSet() {
 		this.dataRowList = new ArrayList<>();
 	}
 	
-	public void addRow(String id, JSONObject target) {
-		String selector = target.getAsString("selector");
-		boolean major = (boolean) target.get("major");
-		JSONArray classNameArray = (JSONArray) target.get("classNames");
-		String[] classNms = classNameArray.toArray(new String[0]);
-		String text = target.getAsString("text");
-		JSONObject clientRect = (JSONObject)target.get("clientRect");
-		double left = clientRect.getAsNumber("left").doubleValue();
-		double top = clientRect.getAsNumber("top").doubleValue();
-		double width = clientRect.getAsNumber("width").doubleValue();
-		double height = clientRect.getAsNumber("height").doubleValue();
-		
-		if(width == 0D || height == 0D) {
-			// 크기가 0이면 skip!
+	public void addRow(UIElementDataRow dataRow) {
+		this.dataRowList.add(dataRow);
+	}
+	
+	public void addRow(UiElements uiElements) {
+		UIElementDataRow dataRow = UIElementDataRow.convert(uiElements);
+		if(dataRow == null) {
 			return;
 		}
-		
-		UIElementDataRow dataRow = new UIElementDataRow();
-		dataRow.setId(id);
-		dataRow.setButtonEl(this.isContains(this.BUTTON_CLASSES, classNms));
-		dataRow.setInputEl(this.isContains(this.INPUT_CLASSES, classNms));
-		dataRow.setOutputEl(this.isContains(this.OUTPUT_CLASSES, classNms));
-		dataRow.setLeft(left);
-		dataRow.setTop(top);
-//		dataRow.setWidth(width);
-//		dataRow.setHeight(height);
-//		dataRow.setSelector(selector);
-//		dataRow.setText(text);
-//		dataRow.setClassNames(classNms);
-//		dataRow.setMajor(major);
 		
 		this.dataRowList.add(dataRow);
 	}
 	
-	private boolean isContains(List<String> container, String[] items) {
-		for(String item : items) {
-			if(container.contains(item)) {
-				return true;
-			}
+	public void addRow(String id, JSONObject target) {
+		UIElementDataRow dataRow = UIElementDataRow.convert(id, target);
+		if(dataRow == null) {
+			return;
 		}
-		return false;
+		
+		this.dataRowList.add(dataRow);
 	}
 	
 	public DataSet toDataSet() {
 		DataSet dataSet = new DataSet();
 		
 		dataSet.setLabels(this.labels);
-//		dataSet.setAttrLabels(this.attrLabels);
 		
 		for(UIElementDataRow uiDataRow : this.dataRowList) {
 			DataRow dataRow = uiDataRow.toDataRow();
@@ -94,7 +66,7 @@ public class UIElementDataSet {
 		metadata.addEps(0.5D);   // isButton
 		metadata.addEps(0.5D);   // isInput
 		metadata.addEps(0.5D);   // isOutput
-		metadata.addEps(100D);   // left
+		metadata.addEps(200D);   // left
 		metadata.addEps(50D);    // top
 		
 		return metadata;
@@ -110,8 +82,6 @@ public class UIElementDataSet {
 	
 	@Override
 	public String toString() {
-//		return "UIElementDataSet [dataRowList=" + dataRowList + ", labels=" + Arrays.toString(labels) + ", attrLabels="
-//				+ Arrays.toString(attrLabels) + "]";
 		return "UIElementDataSet [dataRowList=" + dataRowList + ", labels=" + Arrays.toString(labels) + "]";
 	}
 

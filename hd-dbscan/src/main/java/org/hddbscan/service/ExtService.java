@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import net.minidev.json.JSONObject;
-import net.minidev.json.JSONStyle;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
 
@@ -59,16 +58,6 @@ public class ExtService {
 			objectMapper.writerWithDefaultPrettyPrinter().writeValue(out, data);
 			
 			this.log.debug("writerWithDefaultPrettyPrinter");
-			
-//			data.writeJSONString(out, JSONStyle.LT_COMPRESS);
-//			data.writeJSONString(out, new JSONStyle() {
-//				public void objectNext(Appendable out) throws IOException {
-//				   out.append('\n').append(',');
-//				}
-//				public boolean indent() {
-//					return true;
-//				}
-//			});
 		} catch (IOException e) {
 			this.log.error("savePageComponentFile error", e);
 			throw new RuntimeException(e);

@@ -180,7 +180,7 @@
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.setRequestHeader("Accept", "application/json");
             xhr.send(JSON.stringify({
-                titile: pageTitle, payload: pageComps
+                title: pageTitle, payload: pageComps
             }));
         }
 

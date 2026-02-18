@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 
+import org.hddbscan.dbscan.feature.ComputableFeature;
+
 
 public class DataRow {
 	private String id;

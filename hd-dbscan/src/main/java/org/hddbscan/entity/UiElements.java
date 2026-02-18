@@ -14,54 +14,54 @@ import jakarta.persistence.Table;
 @IdClass(UiElementsId.class)
 public class UiElements {
 	@Id
-	@Column(name="page_id", length=22, nullable=false)
+	@Column(name="page_id", columnDefinition="DECIMAL(5)", nullable=false)
 	private long pageId;
 	
 	@Id
-	@Column(name="element_id", length=22, nullable=false)
-	private long id;
+	@Column(name="element_id", columnDefinition="DECIMAL(5)", nullable=false)
+	private long elementId;
 
-	@Column(name="selector", length=255, nullable=false)
-	private String selector;
+	@Column(name="selector_text", columnDefinition="VARCHAR(1000)", nullable=false)
+	private String selectorText;
 	
-	@Column(name="classNames", length=255, nullable=false)
+	@Column(name="class_names", columnDefinition="VARCHAR(1000)", nullable=false)
 	private String classNames;
 	
-	@Column(name="text", length=255, nullable=false)
-	private String text;
+	@Column(name="ctnt_text", columnDefinition="VARCHAR(1000)", nullable=false)
+	private String ctntText;
 	
-	@Column(name="left", length=10, nullable=false)
-	private double left;
+	@Column(name="pos_left", columnDefinition="DECIMAL(10, 2)", nullable=false)
+	private double posLeft;
 	
-	@Column(name="top", length=10, nullable=false)
-	private double top;
+	@Column(name="pos_top", columnDefinition="DECIMAL(10, 2)", nullable=false)
+	private double posTop;
 	
-	@Column(name="width", length=10, nullable=false)
-	private double width;
+	@Column(name="ui_width", columnDefinition="DECIMAL(10, 2)", nullable=false)
+	private double uiWidth;
 	
-	@Column(name="height", length=10, nullable=false)
-	private double height;
+	@Column(name="ui_height", columnDefinition="DECIMAL(10, 2)", nullable=false)
+	private double uiHeight;
 	
-	@Column(name="major_yn", length=1, nullable=false)
-	private boolean major;
+	@Column(name="major_yn", columnDefinition="VARCHAR(1)", nullable=false)
+	private String majorYn;
 
 	
 	public UiElements() {
 	}
 
-	public UiElements(long pageId, long id, String selector, String classNames, String text, double left, double top,
-			double width, double height, boolean major) {
+	public UiElements(long pageId, long elementId, String selectorText, String classNames, String ctntText,
+			double posLeft, double posTop, double uiWidth, double uiHeight, String majorYn) {
 		super();
 		this.pageId = pageId;
-		this.id = id;
-		this.selector = selector;
+		this.elementId = elementId;
+		this.selectorText = selectorText;
 		this.classNames = classNames;
-		this.text = text;
-		this.left = left;
-		this.top = top;
-		this.width = width;
-		this.height = height;
-		this.major = major;
+		this.ctntText = ctntText;
+		this.posLeft = posLeft;
+		this.posTop = posTop;
+		this.uiWidth = uiWidth;
+		this.uiHeight = uiHeight;
+		this.majorYn = majorYn;
 	}
 
 	public long getPageId() {
@@ -72,20 +72,20 @@ public class UiElements {
 		this.pageId = pageId;
 	}
 
-	public long getId() {
-		return id;
+	public long getElementId() {
+		return elementId;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public void setElementId(long elementId) {
+		this.elementId = elementId;
 	}
 
-	public String getSelector() {
-		return selector;
+	public String getSelectorText() {
+		return selectorText;
 	}
 
-	public void setSelector(String selector) {
-		this.selector = selector;
+	public void setSelectorText(String selectorText) {
+		this.selectorText = selectorText;
 	}
 
 	public String getClassNames() {
@@ -96,57 +96,58 @@ public class UiElements {
 		this.classNames = classNames;
 	}
 
-	public String getText() {
-		return text;
+	public String getCtntText() {
+		return ctntText;
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public void setCtntText(String ctntText) {
+		this.ctntText = ctntText;
 	}
 
-	public double getLeft() {
-		return left;
+	public double getPosLeft() {
+		return posLeft;
 	}
 
-	public void setLeft(double left) {
-		this.left = left;
+	public void setPosLeft(double posLeft) {
+		this.posLeft = posLeft;
 	}
 
-	public double getTop() {
-		return top;
+	public double getPosTop() {
+		return posTop;
 	}
 
-	public void setTop(double top) {
-		this.top = top;
+	public void setPosTop(double posTop) {
+		this.posTop = posTop;
 	}
 
-	public double getWidth() {
-		return width;
+	public double getUiWidth() {
+		return uiWidth;
 	}
 
-	public void setWidth(double width) {
-		this.width = width;
+	public void setUiWidth(double uiWidth) {
+		this.uiWidth = uiWidth;
 	}
 
-	public double getHeight() {
-		return height;
+	public double getUiHeight() {
+		return uiHeight;
 	}
 
-	public void setHeight(double height) {
-		this.height = height;
+	public void setUiHeight(double uiHeight) {
+		this.uiHeight = uiHeight;
 	}
 
-	public boolean isMajor() {
-		return major;
+	public String getMajorYn() {
+		return majorYn;
 	}
 
-	public void setMajor(boolean major) {
-		this.major = major;
+	public void setMajorYn(String majorYn) {
+		this.majorYn = majorYn;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(classNames, height, id, left, major, pageId, selector, text, top, width);
+		return Objects.hash(classNames, ctntText, elementId, majorYn, pageId, posLeft, posTop, selectorText, uiHeight,
+				uiWidth);
 	}
 
 	@Override
@@ -158,21 +159,22 @@ public class UiElements {
 		if (getClass() != obj.getClass())
 			return false;
 		UiElements other = (UiElements) obj;
-		return Objects.equals(classNames, other.classNames)
-				&& Double.doubleToLongBits(height) == Double.doubleToLongBits(other.height) && id == other.id
-				&& Double.doubleToLongBits(left) == Double.doubleToLongBits(other.left) && major == other.major
-				&& pageId == other.pageId && Objects.equals(selector, other.selector)
-				&& Objects.equals(text, other.text)
-				&& Double.doubleToLongBits(top) == Double.doubleToLongBits(other.top)
-				&& Double.doubleToLongBits(width) == Double.doubleToLongBits(other.width);
+		return Objects.equals(classNames, other.classNames) && Objects.equals(ctntText, other.ctntText)
+				&& elementId == other.elementId && Objects.equals(majorYn, other.majorYn) && pageId == other.pageId
+				&& Double.doubleToLongBits(posLeft) == Double.doubleToLongBits(other.posLeft)
+				&& Double.doubleToLongBits(posTop) == Double.doubleToLongBits(other.posTop)
+				&& Objects.equals(selectorText, other.selectorText)
+				&& Double.doubleToLongBits(uiHeight) == Double.doubleToLongBits(other.uiHeight)
+				&& Double.doubleToLongBits(uiWidth) == Double.doubleToLongBits(other.uiWidth);
 	}
 
 	@Override
 	public String toString() {
-		return "UiElements [pageId=" + pageId + ", id=" + id + ", selector=" + selector + ", classNames=" + classNames
-				+ ", text=" + text + ", left=" + left + ", top=" + top + ", width=" + width + ", height=" + height
-				+ ", major=" + major + "]";
+		return "UiElements [pageId=" + pageId + ", elementId=" + elementId + ", selectorText=" + selectorText
+				+ ", classNames=" + classNames + ", ctntText=" + ctntText + ", posLeft=" + posLeft + ", posTop="
+				+ posTop + ", uiWidth=" + uiWidth + ", uiHeight=" + uiHeight + ", majorYn=" + majorYn + "]";
 	}
+
 
 
 }

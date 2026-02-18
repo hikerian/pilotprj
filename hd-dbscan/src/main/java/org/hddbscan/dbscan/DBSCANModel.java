@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,10 @@ public class DBSCANModel {
 			this.id = id;
 		}
 		
+		public String getId() {
+			return id;
+		}
+		
 		public void addRange(DBSCANRange range) {
 			this.rangeList.add(range);
 		}
@@ -31,11 +36,21 @@ public class DBSCANModel {
 			this.dataList = dataList;
 		}
 		
-		public boolean accept(DataRow data) {
-			for(int i = 0; i > this.rangeList.size(); i++) {
-				DBSCANRange range = this.rangeList.get(i);
+		public String getDataRowIds() {
+			return String.join(","
+					, this.dataList.stream().map((dataRow)-> '"' + dataRow.getId() + '"').collect(Collectors.toList()));
+		}
+		
+		public boolean isAcceptable(DataRow data) {
+			System.out.println("RangeList:" + this.rangeList);
+			
+			for(int i = 0; i < this.rangeList.size(); i++) {
 				Number value = data.getData(i);
 				double dv = value.doubleValue();
+				
+				DBSCANRange range = this.rangeList.get(i);
+				
+				System.out.println("value:" + value + ", range:" + range);
 				
 				if(dv < range.getMin() || dv > range.getMax()) {
 					return false;
@@ -76,7 +91,7 @@ public class DBSCANModel {
 	}
 	
 	public List<DBSCANGroup> predict(DataRow data) {
-		List<DBSCANGroup> acceptGroups = this.groups.stream().filter((group) -> group.accept(data)).toList();
+		List<DBSCANGroup> acceptGroups = this.groups.stream().filter((group) -> group.isAcceptable(data)).collect(Collectors.toList());
 		
 		return acceptGroups;
 	}

@@ -1,5 +1,5 @@
 {
-  "titile" : "진급결과조회",
+  "title" : "진급결과조회",
   "payload" : {
     "targetList" : [ {
       "selector" : "body > div#uuid-3h > div.cl-layout:nth-of-type(1) > div.cl-layout-content > div#uuid-57 > div.cl-layout > div.cl-layout-content > div#uuid-58 > div.content > div.cl-tabfolder-body:nth-of-type(2) > div#pt-58\\/tb-18v > div#uuid-191 > div#uuid-194 > div.cl-layout.cl-scrollbar:nth-of-type(1) > div.cl-layout-content > div#uuid-19i > div.cl-control.cl-embeddedapp.cl-first-row > div#uuid-19k > div.cl-layout:nth-of-type(1) > div.cl-layout-content > div#uuid-19u",
