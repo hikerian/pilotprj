@@ -9,13 +9,13 @@ select nvl(max(page_id), 0) + 1
 
 <entry key="uiPageInsert">
 insert into ui_page(page_id, page_nm, page_desc)
-       values (:id, :nm, :desc)
+       values (:pageId, :pageNm, :pageDesc)
 </entry>
 
 
 <entry key="uiElementsInsert">
 insert into ui_elements(page_id, element_id, selector_text, class_names, ctnt_text, pos_left, pos_top, ui_width, ui_height, major_yn)
-       values (:pageId, :id, :selector, :classNames, :text, :left, :top, :width, :height, :majorYn)
+       values (:pageId, :elementId, :selectorText, :classNames, :ctntText, :posLeft, :posTop, :uiWidth, :uiHeight, :majorYn)
 </entry>
 
 <entry key="uiPageQuery">
@@ -54,28 +54,6 @@ select page_id
   from ui_elements
  where page_id = :pageId
    and element_id = :elementId
-</entry>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<entry key="propertyUpdate">
-update edmc_property set prop_value = :propValue
- where prop_type = :propType
-   and prop_nm = :propNm
 </entry>
 
 

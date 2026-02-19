@@ -1,5 +1,6 @@
 package org.hddbscan.dbscan.feature;
 
+
 public interface ComputableFeature {
 	/**
 	 * other 보다 크거나 같으면 true 아니면 false.
@@ -13,6 +14,10 @@ public interface ComputableFeature {
 	 * @return
 	 */
 	public boolean lessThanOrEqualTo(ComputableFeature other);
+	
 	public double distance(ComputableFeature other);
+	
+	public ComputableFeature min(ComputableFeature other);
+	public ComputableFeature max(ComputableFeature other);
 
 }

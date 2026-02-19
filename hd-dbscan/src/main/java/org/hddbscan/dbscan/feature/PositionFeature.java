@@ -4,24 +4,20 @@ import java.util.Objects;
 
 
 public class PositionFeature implements ComputableFeature {
-	private final double left;
-	private final double top;
-	private final double width;
-	private final double height;
+	private double left;
+	private double top;
 	
 	
-	public PositionFeature(double left, double top, double width, double height) {
+	public PositionFeature(double left, double top) {
 		this.left = left;
 		this.top = top;
-		this.width = width;
-		this.height = height;
 	}
 
 	@Override
 	public boolean greaterThanOrEqualTo(ComputableFeature other) {
 		PositionFeature the = (PositionFeature)other;
-		return this.left + this.width >= the.left + the.width
-				&& this.top + this.height >= the.top + the.height;
+		return this.left >= the.left
+				&& this.top >= the.top;
 	}
 
 	@Override
@@ -38,8 +34,34 @@ public class PositionFeature implements ComputableFeature {
 	}
 
 	@Override
+	public PositionFeature min(ComputableFeature other) {
+		PositionFeature the = (PositionFeature)other;
+		if(this.left < the.left) {
+			the.left = this.left;
+		}
+		if(this.top < the.top) {
+			the.top = this.top;
+		}
+		
+		return the;
+	}
+
+	@Override
+	public PositionFeature max(ComputableFeature other) {
+		PositionFeature the = (PositionFeature)other;
+		if(this.left > the.left) {
+			the.left = this.left;
+		}
+		if(this.top > the.top) {
+			the.top = this.top;
+		}
+		
+		return the;
+	}
+	
+	@Override
 	public int hashCode() {
-		return Objects.hash(height, left, top, width);
+		return Objects.hash(this.left, this.top);
 	}
 
 	@Override
@@ -51,15 +73,13 @@ public class PositionFeature implements ComputableFeature {
 		if (getClass() != obj.getClass())
 			return false;
 		PositionFeature other = (PositionFeature) obj;
-		return Double.doubleToLongBits(height) == Double.doubleToLongBits(other.height)
-				&& Double.doubleToLongBits(left) == Double.doubleToLongBits(other.left)
-				&& Double.doubleToLongBits(top) == Double.doubleToLongBits(other.top)
-				&& Double.doubleToLongBits(width) == Double.doubleToLongBits(other.width);
+		return Double.doubleToLongBits(this.left) == Double.doubleToLongBits(other.left)
+				&& Double.doubleToLongBits(this.top) == Double.doubleToLongBits(other.top);
 	}
 
 	@Override
 	public String toString() {
-		return "PositionFeature [left=" + left + ", top=" + top + ", width=" + width + ", height=" + height + "]";
+		return "PositionFeature [left=" + this.left + ", top=" + this.top + "]";
 	}
 
 

@@ -2,8 +2,9 @@ package org.hddbscan.dbscan.feature;
 
 import java.util.Objects;
 
+
 public class DoubleFeature implements ComputableFeature {
-	private final double value;
+	private double value;
 	
 	
 	public DoubleFeature(double value) {
@@ -27,10 +28,32 @@ public class DoubleFeature implements ComputableFeature {
 		DoubleFeature the = (DoubleFeature)other;
 		return Math.abs(this.value - the.value);
 	}
+	
+	@Override
+	public ComputableFeature min(ComputableFeature other) {
+		DoubleFeature the = (DoubleFeature)other;
+		
+		if(this.value < the.value) {
+			the.value = this.value;
+		}
+
+		return the;
+	}
+
+	@Override
+	public DoubleFeature max(ComputableFeature other) {
+		DoubleFeature the = (DoubleFeature)other;
+		
+		if(this.value > the.value) {
+			the.value = this.value;
+		}
+
+		return the;
+	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(value);
+		return Objects.hash(this.value);
 	}
 
 	@Override
@@ -42,12 +65,13 @@ public class DoubleFeature implements ComputableFeature {
 		if (getClass() != obj.getClass())
 			return false;
 		DoubleFeature other = (DoubleFeature) obj;
-		return Double.doubleToLongBits(value) == Double.doubleToLongBits(other.value);
+		return Double.doubleToLongBits(this.value) == Double.doubleToLongBits(other.value);
 	}
 
 	@Override
 	public String toString() {
-		return "DoubleFeature [value=" + value + "]";
+		return "DoubleFeature [value=" + this.value + "]";
 	}
+
 
 }
