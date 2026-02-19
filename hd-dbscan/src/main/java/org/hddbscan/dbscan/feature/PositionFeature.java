@@ -12,6 +12,14 @@ public class PositionFeature implements ComputableFeature {
 		this.left = left;
 		this.top = top;
 	}
+	
+	public double getLeft() {
+		return this.left;
+	}
+	
+	public double getTop() {
+		return this.top;
+	}
 
 	@Override
 	public boolean greaterThan(ComputableFeature other) {

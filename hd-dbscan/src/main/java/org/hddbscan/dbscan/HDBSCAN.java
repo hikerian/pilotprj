@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hddbscan.dbscan.feature.Distance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +38,10 @@ public class HDBSCAN {
 		clusterList.add(new DBSCANCluster(inputValues.getAllRows()));
 
 		for (int i = 0; i < colCnt; i++) {
-			double eps = this.metadata.getEps(i);
-
 			List<DBSCANCluster> mergeList = new ArrayList<>();
 
 			for (DBSCANCluster cluster : clusterList) {
-				List<DBSCANCluster> newClusterList = this.fit(cluster.getDataList(), i, eps, minPts);
+				List<DBSCANCluster> newClusterList = this.fit(cluster.getDataList(), i, minPts);
 
 				mergeList.addAll(newClusterList);
 			}
@@ -61,14 +60,14 @@ public class HDBSCAN {
 
 	}
 	
-	private List<DBSCANCluster> fit(List<DataRow> inputValues, int colIdx, double eps, int minPts) {
+	private List<DBSCANCluster> fit(List<DataRow> inputValues, int colIdx, int minPts) {
 		List<DBSCANCluster> resultList = new ArrayList<>();
 		Set<DataRow> visited = new HashSet<>();
 		
 		for(DataRow p : inputValues) {
 			if(visited.contains(p) == false) {
 				visited.add(p);
-				List<DataRow> neighbours = this.getNeighbours(p, inputValues, colIdx, eps);
+				List<DataRow> neighbours = this.getNeighbours(p, inputValues, colIdx);
 				
 				if(neighbours.size() >= minPts) {
 					int idx = 0;
@@ -76,7 +75,7 @@ public class HDBSCAN {
 						DataRow r = neighbours.get(idx);
 						if(visited.contains(r) == false) {
 							visited.add(r);
-							List<DataRow> individualNeighbours = this.getNeighbours(r, inputValues, colIdx, eps);
+							List<DataRow> individualNeighbours = this.getNeighbours(r, inputValues, colIdx);
 							if(individualNeighbours.size() >= minPts) {
 								neighbours = this.mergeRightToLeft(neighbours, individualNeighbours);
 							}
@@ -92,10 +91,12 @@ public class HDBSCAN {
 		return resultList;
 	}
 	
-	private List<DataRow> getNeighbours(DataRow p, List<DataRow> inputValues, int colIdx, double eps) {
+	private List<DataRow> getNeighbours(DataRow p, List<DataRow> inputValues, int colIdx) {
+		Distance distance = this.metadata.getEps(colIdx);
+		
 		List<DataRow> neighbours = new ArrayList<>();
 		for(DataRow candidate : inputValues) {
-			if(p.getData(colIdx).distance(candidate.getData(colIdx)) <= eps) {
+			if(distance.isNeighbours(p.getData(colIdx), candidate.getData(colIdx))) {
 				neighbours.add(candidate);
 			}
 		}

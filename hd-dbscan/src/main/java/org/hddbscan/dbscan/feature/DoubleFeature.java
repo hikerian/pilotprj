@@ -11,6 +11,10 @@ public class DoubleFeature implements ComputableFeature {
 		this.value = value;
 	}
 	
+	public double getValue() {
+		return this.value;
+	}
+	
 	@Override
 	public boolean greaterThan(ComputableFeature other) {
 		DoubleFeature the = (DoubleFeature)other;
