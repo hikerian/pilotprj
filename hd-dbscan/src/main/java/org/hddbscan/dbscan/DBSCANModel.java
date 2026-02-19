@@ -29,12 +29,18 @@ public class DBSCANModel {
 			return id;
 		}
 		
-		public void addRange(DBSCANRange range) {
+		void addRange(DBSCANRange range) {
 			this.rangeList.add(range);
 		}
 		
-		public void setDataRowList(List<DataRow> dataList) {
+		void setDataRowList(List<DataRow> dataList) {
 			this.dataList = dataList;
+		}
+		
+		public boolean hasDataRowId(String id) {
+			return this.dataList.stream().anyMatch((row)-> {
+				return id.equals(row.getId());
+			});
 		}
 		
 		public String getDataRowIds() {
@@ -76,6 +82,14 @@ public class DBSCANModel {
 				dataRow.print(out, delimiter);
 			}
 			out.append('\n');
+		}
+		
+		public void printRange(Appendable out, String delimiter) throws IOException {
+			out.append(
+				String.join(delimiter, this.rangeList.stream().map(
+						(value)-> "{min:" + value.getMin() + ",max:" + value.getMax() + "}"
+						).toList())
+			);
 		}
 		
 	}
@@ -135,6 +149,10 @@ public class DBSCANModel {
 	
 	public int getGroupCount() {
 		return this.groups.size();
+	}
+	
+	public List<DBSCANGroup> getGroups() {
+		return new ArrayList<DBSCANGroup>(this.groups);
 	}
 
 	@Override

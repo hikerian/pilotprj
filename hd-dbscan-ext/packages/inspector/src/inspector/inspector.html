@@ -37,6 +37,7 @@
       text-overflow: ellipsis;
     }
   </style>
+  <script src="jquery.js"></script>
 </head>
 
 <body>
@@ -57,7 +58,24 @@
       </tr>
     </thead>
     <tbody></tbody>
-  </table>
+  </table><br />
+  <button id="btnPageLoad">Page Load</button><br />
+  <table>
+    <thead>
+      <tr>
+        <th>Check</th>
+        <th>Page Id</th>
+        <th>Page Title</th>
+        <th>Page Desc</th>
+      </tr>
+    </thead>
+    <tbody id="pageListBody"></tbody>
+  </table><br />
+  <button id="btnModelGroupLoad">Model Group Load</button><br />
+  <div id="modelGroups">
+
+  </div>
+
   <script src="inspector.js"></script>
 </body>
 

@@ -20,8 +20,12 @@ public class UIElementDataRow {
 	private final static List<String> OUTPUT_CLASSES = Arrays.asList("cl-output", "data-title", "table-row-cnt");
 	
 	
+	public static String genId(UiElements uiElements) {
+		return String.format("%1$d-%2$d", uiElements.getPageId(), uiElements.getElementId());
+	}
+	
 	public static UIElementDataRow convert(UiElements uiElements) {
-		String id = String.format("%1$d-%2$d", uiElements.getPageId(), uiElements.getElementId());
+		String id = UIElementDataRow.genId(uiElements);
 		
 		String[] classNames = uiElements.getClassNames().split(",");
 		double left = uiElements.getPosLeft();

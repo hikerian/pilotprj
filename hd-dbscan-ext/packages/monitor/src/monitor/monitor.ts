@@ -33,7 +33,7 @@ namespace hddbscan.monitor {
                     break;
                 }
                 case "highlight": {
-                    let selector: string = message["selector"];
+                    let selector: string[] = message["selector"];
                     doHighlight(selector);
                     break;
                 }
@@ -160,25 +160,32 @@ namespace hddbscan.monitor {
             let segment: string = tagName;
 
             // Add Id if it exists(IDs should be unique)
-            if (element.id) {
-                let elementId: string = element.id;
-                elementId = elementId.replaceAll('/', '\\/');
+            // eXBuilder6에서 ID가 매번 변경되어 ID Selector는 사용할 수 없음
+            // if (element.id) {
+            //     let elementId: string = element.id;
+            //     elementId = elementId.replaceAll('/', '\\/');
 
-                segment += "#" + elementId;
-            } else {
-                // Add classes if no ID, separating with dots
-                let classNames: string = Array.from(element.classList).join(".");
-                if (classNames) {
-                    segment += "." + classNames;
-                }
+            //     segment += "#" + elementId;
+            // } else {
+            // Add classes if no ID, separating with dots
+            let classNames: string = Array.from(element.classList).join(".");
+            if (classNames) {
+                segment += "." + classNames;
             }
+            // }
 
             // Add nth-of-type to handle sibling elements of the same type without unique ID/classes
             const parent: HTMLElement = element.parentElement;
             const siblings: Element[] = Array.from(parent.children);
             const sameTagSiblings: Element[] = siblings.filter(el => el.tagName === element.tagName);
 
-            if (!element.id && sameTagSiblings.length > 1) {
+            // eXBuilder6에서 ID가 매번 변경되어 ID Selector는 사용할 수 없음
+            // if (!element.id && sameTagSiblings.length > 1) {
+            //     // Use : nth-of-type() for specificity among similar siblings
+            //     const index = sameTagSiblings.indexOf(element) + 1;
+            //     segment += `:nth-of-type(${index})`;
+            // }
+            if (sameTagSiblings.length > 1) {
                 // Use : nth-of-type() for specificity among similar siblings
                 const index = sameTagSiblings.indexOf(element) + 1;
                 segment += `:nth-of-type(${index})`;
@@ -195,24 +202,41 @@ namespace hddbscan.monitor {
     }
 
     // highlight
-    function doHighlight(selector: string) {
-        try {
-            let element: HTMLElement | null = document.querySelector(selector);
-            if (!element) {
-                console.error(`${selector} not found`);
-                return;
-            }
+    function doHighlight(selectors: string[]) {
+        let nodeList: NodeListOf<HTMLElement> = document.querySelectorAll('.' + highlightCssClassName);
+        nodeList.forEach((element: HTMLElement) => {
             let classList: DOMTokenList = element.classList;
-            // toggle
-            if (classList.contains(highlightCssClassName)) {
-                console.debug("highlight off")
+            classList.remove(highlightCssClassName);
+        });
 
-                classList.remove(highlightCssClassName);
-            } else {
-                console.debug("highlight on")
+        try {
+            selectors.forEach((selector: string) => {
+                let elementList: NodeListOf<HTMLElement> = document.querySelectorAll(selector);
+                if (elementList.length == 0) {
+                    console.error(`${selector} not found`);
+                    return;
+                }
+                elementList.forEach((element: HTMLElement) => {
+                    let classList: DOMTokenList = element.classList;
+                    classList.add(highlightCssClassName);
+                });
+            });
+            // let element: HTMLElement | null = document.querySelector(selector);
+            // if (!element) {
+            //     console.error(`${selector} not found`);
+            //     return;
+            // }
+            // let classList: DOMTokenList = element.classList;
+            // // toggle
+            // if (classList.contains(highlightCssClassName)) {
+            //     console.debug("highlight off")
 
-                classList.add(highlightCssClassName);
-            }
+            //     classList.remove(highlightCssClassName);
+            // } else {
+            //     console.debug("highlight on")
+
+            //     classList.add(highlightCssClassName);
+            // }
         } catch (e) {
             console.error(e);
             throw e;

@@ -25,7 +25,7 @@ module.exports = {
                     }
                 },
                 exclude: /node_modules/,
-            },
+            }
         ],
     },
     plugins: [
@@ -38,6 +38,10 @@ module.exports = {
                 {
                     from: 'src/inspector/icon.png',
                     to: 'inspector/icon.png'
+                },
+                {
+                    from: '../../node_modules/jquery/dist/jquery.js',
+                    to: 'inspector/jquery.js'
                 }
             ]
         })

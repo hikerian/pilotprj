@@ -29,7 +29,7 @@ public class ExtService {
 	}
 	
 	public String savePageComponentFile(JSONObject data) {
-		String pageTitle = data.getAsString("titile");
+		String pageTitle = data.getAsString("title");
 		
 		String fileName = pageTitle.replaceAll("\\s", "");
 		String checkFileName = fileName;

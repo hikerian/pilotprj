@@ -105,7 +105,7 @@
 
         port!.postMessage({
             action: "highlight"
-            , selector: selector
+            , selector: [selector]
         });
     }
 
@@ -154,6 +154,80 @@
     //     }
     // }
 
+    function clearChild(tbodyElement: HTMLElement) {
+        Array.from(tbodyElement.childNodes).forEach((node) => {
+            tbodyElement.removeChild(node);
+        });
+    }
+
+    function createChk(pageId: string) {
+        var td = document.createElement("td");
+        var inpChk = document.createElement("input");
+        inpChk.type = "checkbox";
+        inpChk.value = pageId;
+        inpChk.name = "chkPageId";
+        inpChk.checked = false;
+
+        td.appendChild(inpChk);
+        return td;
+    }
+
+    function createBtn(pageId: string, elementId: string) {
+        var td = document.createElement("td");
+        var inpBtn = document.createElement("input");
+        inpBtn.type = "button";
+        inpBtn.value = "Predict";
+        inpBtn.setAttribute("data-page-id", pageId);
+        inpBtn.setAttribute("data-element-id", elementId);
+        inpBtn.name = "btnElementSelect";
+        inpBtn.onclick = doPredict;
+
+        td.appendChild(inpBtn);
+        return td;
+    }
+
+    function createTd(txt: string) {
+        var td = document.createElement("td");
+        td.title = txt;
+
+        if (txt.length > 100) {
+            txt = "..." + txt.substring(txt.length - 90, txt.length);
+        }
+        var textNode = document.createTextNode(txt);
+        td.appendChild(textNode);
+        return td;
+    }
+
+    function createBlank(id: string) {
+        var td = document.createElement("td");
+        var spanNode = document.createElement("span");
+        spanNode.id = id;
+
+        td.appendChild(spanNode);
+        return td;
+    }
+
+    function doPredict(this: any) {
+        var pageId = this.getAttribute("data-page-id");
+        var elementId = this.getAttribute("data-element-id");
+
+        $.ajax({
+            type: "GET",
+            contentType: "application/json",
+            headers: {},
+            url: "/rest/predict/" + pageId + "/" + elementId,
+            success: function (data) {
+                let blankNodeId: string = "blk-" + pageId + "." + elementId;
+                let blankNode: HTMLElement = document.getElementById(blankNodeId)!;
+                let txtNode: Text = document.createTextNode(data.payload.groups);
+
+                blankNode.appendChild(txtNode);
+            }
+        });
+    }
+
+    let groupSelectors: any = {};
+
     function doOnload() {
         console.log("doOnload!");
 
@@ -184,6 +258,113 @@
             }));
         }
 
+        $("#btnPageLoad").on("click", () => {
+            $.ajax({
+                type: "GET",
+                contentType: "application/json",
+                headers: {},
+                url: "http://localhost:8080/rest/ui-pages",
+                success: (data: any) => {
+                    let tbodyElement: HTMLElement = document.getElementById("pageListBody")!;
+                    clearChild(tbodyElement);
+
+                    let uiPageList = data.payload.uiPageList;
+                    uiPageList.forEach((uiPage: any) => {
+                        let tr: HTMLTableRowElement = document.createElement("tr");
+
+                        let pageId: string = uiPage["pageId"];
+                        let pageNm: string = uiPage["pageNm"];
+                        let pageDesc: string = uiPage["pageDesc"];
+
+                        tr.appendChild(createChk(pageId));
+                        tr.appendChild(createTd(pageId));
+                        tr.appendChild(createTd(pageNm));
+                        tr.appendChild(createTd(pageDesc));
+
+                        tbodyElement.appendChild(tr);
+                    });
+                }
+            });
+        });
+
+        $("#btnModelGroupLoad").on("click", () => {
+            var checkedValues = $('input[name="chkPageId"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            $.ajax({
+                type: "GET",
+                contentType: "application/json",
+                headers: {},
+                url: "http://localhost:8080/rest/model-group/" + checkedValues[0],
+                success: (data: any) => {
+                    let groupElement: HTMLElement = document.getElementById("modelGroups")!;
+                    clearChild(groupElement);
+
+                    groupSelectors = {};
+
+                    let groupList = data.payload.groups;
+                    groupList.forEach((group: any) => {
+                        let groupId: string = group["id"];
+                        let rangeTxt: string = group["rangeText"];
+                        let elementList: any[] = group["uiElementList"];
+
+                        let selectors: string[] = [];
+                        groupSelectors[groupId] = selectors;
+
+                        let div: HTMLDivElement = document.createElement("div");
+
+                        createGroupSummary(div, groupId, rangeTxt);
+                        elementList.forEach((uiElement) => {
+                            createUiElementList(div, uiElement);
+                            selectors.push(uiElement['selectorText']);
+                        });
+
+                        groupElement.appendChild(div);
+                    });
+                }
+            });
+        });
+    }
+
+    function createGroupSummary(parentNode: HTMLElement, groupId: string, rangeTxt: string) {
+        let groupIdSpan: HTMLSpanElement = document.createElement("span");
+        groupIdSpan.appendChild(document.createTextNode(groupId));
+        parentNode.appendChild(groupIdSpan);
+
+        let rangeSpan: HTMLSpanElement = document.createElement("span");
+        rangeSpan.appendChild(document.createTextNode(rangeTxt));
+        parentNode.appendChild(rangeSpan);
+
+        let btn: HTMLButtonElement = document.createElement("button");
+        btn.appendChild(document.createTextNode("Select"));
+        btn.setAttribute("data-group-id", groupId);
+        btn.onclick = doHighlight;
+        parentNode.appendChild(btn);
+    }
+
+    function doHighlight(this: any) {
+        let groupId: string = this.getAttribute("data-group-id");
+
+        port!.postMessage({
+            action: "highlight"
+            , selector: groupSelectors[groupId]
+        });
+
+    }
+
+    function createUiElementList(parentNode: HTMLElement, uiElement: any) {
+        let div: HTMLDivElement = document.createElement("div");
+
+        let info: any = {
+            classNames: uiElement['classNames']
+            , left: uiElement['posLeft']
+            , top: uiElement['posTop']
+        };
+
+        div.appendChild(document.createTextNode(JSON.stringify(info)));
+
+        parentNode.appendChild(div);
     }
 
     doOnload();

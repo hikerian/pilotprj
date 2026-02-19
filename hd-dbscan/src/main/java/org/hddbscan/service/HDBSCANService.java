@@ -1,14 +1,16 @@
 package org.hddbscan.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.hddbscan.controller.ModelGroup;
 import org.hddbscan.dbscan.DBSCANMetadata;
 import org.hddbscan.dbscan.DBSCANModel;
+import org.hddbscan.dbscan.DBSCANModel.DBSCANGroup;
 import org.hddbscan.dbscan.DataRow;
 import org.hddbscan.dbscan.DataSet;
 import org.hddbscan.dbscan.HDBSCAN;
-import org.hddbscan.dbscan.DBSCANModel.DBSCANGroup;
 import org.hddbscan.dbscan.service.UIElementDataRow;
 import org.hddbscan.dbscan.service.UIElementDataSet;
 import org.hddbscan.entity.UiElements;
@@ -87,6 +89,38 @@ public class HDBSCANService {
 		}
 		
 		return groupList;
+	}
+	
+	public List<ModelGroup> getModelGroups(long pageId) {
+		List<ModelGroup> modelGroupList = new ArrayList<>();
+		
+		StringBuilder builder = new StringBuilder();
+		List<UiElements> uiElements = this.dao.selectUiElementsList(pageId);
+		
+		List<DBSCANGroup> groupList = this.model.getGroups();
+		for(DBSCANGroup group : groupList) {
+			String id = group.getId();
+			try {
+				group.printRange(builder, ",");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			String rangeTxt = builder.toString();
+			builder.delete(0, builder.length());
+			
+			List<UiElements> filtered = uiElements.stream().filter(
+					(element)->group.hasDataRowId(UIElementDataRow.genId(element))
+					).toList();
+			
+			ModelGroup modelGroup = new ModelGroup();
+			modelGroup.setId(id);
+			modelGroup.setRangeText(rangeTxt);
+			modelGroup.setUiElementList(filtered);
+			
+			modelGroupList.add(modelGroup);
+		}
+		
+		return modelGroupList;
 	}
 
 

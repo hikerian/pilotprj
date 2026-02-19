@@ -152,6 +152,17 @@ public class ExtController {
 		
 		return res;
 	}
+	
+	@GetMapping("/model-group/{pageId}")
+	public ResponseData loadModelGroups(@PathVariable String pageId) {
+		List<ModelGroup> modelGroupList = this.hdbscanService.getModelGroups(Long.parseLong(pageId));
+		
+		ResponseData res = new ResponseData();
+		res.setSuccess(true);
+		res.addPayload("groups", modelGroupList);
+		
+		return res;
+	}
 
 
 

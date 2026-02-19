@@ -21,7 +21,7 @@ public class UiElements {
 	@Column(name="element_id", columnDefinition="DECIMAL(5)", nullable=false)
 	private long elementId;
 
-	@Column(name="selector_text", columnDefinition="VARCHAR(1000)", nullable=false)
+	@Column(name="selector_text", columnDefinition="VARCHAR(2000)", nullable=false)
 	private String selectorText;
 	
 	@Column(name="class_names", columnDefinition="VARCHAR(1000)", nullable=false)
