@@ -11,8 +11,6 @@ import org.hddbscan.dbscan.DBSCANModel.DBSCANGroup;
 import org.hddbscan.dbscan.DataRow;
 import org.hddbscan.dbscan.DataSet;
 import org.hddbscan.dbscan.HDBSCAN;
-import org.hddbscan.dbscan.service.UIElementDataRow;
-import org.hddbscan.dbscan.service.UIElementDataSet;
 import org.hddbscan.entity.UiElements;
 import org.hddbscan.repository.DBAccessor;
 import org.slf4j.Logger;

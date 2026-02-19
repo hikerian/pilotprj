@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
-import org.hddbscan.dbscan.service.UIElementDataSet;
+import org.hddbscan.service.UIElementDataSet;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;

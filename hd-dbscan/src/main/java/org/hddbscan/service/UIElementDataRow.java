@@ -1,4 +1,4 @@
-package org.hddbscan.dbscan.service;
+package org.hddbscan.service;
 
 import java.io.IOException;
 import java.util.Arrays;
