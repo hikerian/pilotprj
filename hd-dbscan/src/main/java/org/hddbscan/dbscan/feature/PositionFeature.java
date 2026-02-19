@@ -14,16 +14,15 @@ public class PositionFeature implements ComputableFeature {
 	}
 
 	@Override
-	public boolean greaterThanOrEqualTo(ComputableFeature other) {
+	public boolean greaterThan(ComputableFeature other) {
 		PositionFeature the = (PositionFeature)other;
-		return this.left >= the.left
-				&& this.top >= the.top;
+		return this.left > the.left || this.top > the.top;
 	}
 
 	@Override
-	public boolean lessThanOrEqualTo(ComputableFeature other) {
+	public boolean lessThan(ComputableFeature other) {
 		PositionFeature the = (PositionFeature)other;
-		return this.left <= the.left && this.top <= the.top;
+		return this.left < the.left || this.top < the.top;
 	}
 
 	@Override
@@ -33,6 +32,11 @@ public class PositionFeature implements ComputableFeature {
 				+ Math.pow(this.top - the.top, 2));
 	}
 
+	@Override
+	public ComputableFeature clone() {
+		return new PositionFeature(this.left, this.top);
+	}
+	
 	@Override
 	public PositionFeature min(ComputableFeature other) {
 		PositionFeature the = (PositionFeature)other;
@@ -79,7 +83,7 @@ public class PositionFeature implements ComputableFeature {
 
 	@Override
 	public String toString() {
-		return "PositionFeature [left=" + this.left + ", top=" + this.top + "]";
+		return "Position [l=" + this.left + ", t=" + this.top + "]";
 	}
 
 

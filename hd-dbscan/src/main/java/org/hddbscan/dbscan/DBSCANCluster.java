@@ -3,6 +3,8 @@ package org.hddbscan.dbscan;
 import java.io.IOException;
 import java.util.List;
 
+import org.hddbscan.dbscan.feature.ComputableFeature;
+
 
 public class DBSCANCluster {
 	private final List<DataRow> dataList;
@@ -17,15 +19,19 @@ public class DBSCANCluster {
 	}
 	
 	public DBSCANRange getRange(int col) {
-		double min = -1D;
-		double max = -1D;
-		
+		ComputableFeature min = null;
+		ComputableFeature max = null;
 		for(DataRow row : this.dataList) {
-			Number value = row.getData(col);
-			double doubleValue = value.doubleValue();
+			ComputableFeature value = row.getData(col);
 			
-			min = (min == -1D ? doubleValue : (min > doubleValue ? doubleValue : min));
-			max = (max == -1D ? doubleValue : (max < doubleValue ? doubleValue : max));
+			if(min == null && max == null) {
+				min = value.clone();
+				max = value.clone();
+				continue;
+			} else {
+				min = value.min(min);
+				max = value.max(max);
+			}
 		}
 		
 		return new DBSCANRange(min, max);

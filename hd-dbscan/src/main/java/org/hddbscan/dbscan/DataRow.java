@@ -9,7 +9,7 @@ import org.hddbscan.dbscan.feature.ComputableFeature;
 
 public class DataRow {
 	private String id;
-	private Number[] datas;
+	private ComputableFeature[] datas;
 	
 	
 	public DataRow() {
@@ -23,11 +23,11 @@ public class DataRow {
 		return this.id;
 	}
 	
-	public void setData(Number...values) {
+	public void setData(ComputableFeature...values) {
 		this.datas = values;
 	}
 	
-	public Number getData(int index) {
+	public ComputableFeature getData(int index) {
 		return this.datas[index];
 	}
 
@@ -50,13 +50,15 @@ public class DataRow {
 
 	@Override
 	public String toString() {
-		return "DataRow [id=" + this.id + ", datas=" + this.datas + "]";
+		return "DataRow [id=" + this.id + ", datas=[" + String.join(",", Arrays.stream(this.datas).map((value)->value.toString()).toList()) + "]]";
 	}
 
 	public void print(Appendable out, String delimiter) throws IOException {
 		out.append(this.id).append(delimiter);
 		out.append(
-				String.join(delimiter, Arrays.stream(this.datas).map((value)->String.valueOf(value.doubleValue())).toList())
+				String.join(delimiter, Arrays.stream(this.datas).map(
+						(value)->value.toString()
+						).toList())
 			).append('\n');
 	}
 

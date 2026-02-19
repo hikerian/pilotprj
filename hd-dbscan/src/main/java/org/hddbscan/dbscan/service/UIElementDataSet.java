@@ -13,9 +13,9 @@ import org.hddbscan.entity.UiElements;
 import net.minidev.json.JSONObject;
 
 
-public class UIElementDataSet {	
+public class UIElementDataSet {
+	private final String[] labels = {"isButton", "isInput", "isOutput", "position"};
 	private final List<UIElementDataRow> dataRowList;
-	private final String[] labels = {"isButton", "isInput", "isOutput", "left", "top"};
 	
 	
 	public UIElementDataSet() {
@@ -60,14 +60,13 @@ public class UIElementDataSet {
 	public DBSCANMetadata getMetadata() {
 		DBSCANMetadata metadata = new DBSCANMetadata();
 		
-		// "isButton", "isInput", "isOutput", "left", "top"
+		// "isButton", "isInput", "isOutput", "position"
 		
 		metadata.setMinPts(1);
 		metadata.addEps(0.5D);   // isButton
 		metadata.addEps(0.5D);   // isInput
 		metadata.addEps(0.5D);   // isOutput
-		metadata.addEps(200D);   // left
-		metadata.addEps(50D);    // top
+		metadata.addEps(150D);   // position
 		
 		return metadata;
 	}
@@ -82,9 +81,8 @@ public class UIElementDataSet {
 	
 	@Override
 	public String toString() {
-		return "UIElementDataSet [dataRowList=" + dataRowList + ", labels=" + Arrays.toString(labels) + "]";
+		return "UIElementDataSet [labels=" + Arrays.toString(this.labels) + ",dataRowList=" + this.dataRowList + "]";
 	}
-
 
 
 

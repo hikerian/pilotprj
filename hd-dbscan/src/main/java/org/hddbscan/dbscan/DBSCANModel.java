@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hddbscan.dbscan.feature.ComputableFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,14 +46,14 @@ public class DBSCANModel {
 			System.out.println("RangeList:" + this.rangeList);
 			
 			for(int i = 0; i < this.rangeList.size(); i++) {
-				Number value = data.getData(i);
-				double dv = value.doubleValue();
-				
+				ComputableFeature value = data.getData(i);
+
 				DBSCANRange range = this.rangeList.get(i);
 				
 				System.out.println("value:" + value + ", range:" + range);
 				
-				if(dv < range.getMin() || dv > range.getMax()) {
+				if(value.lessThan(range.getMin())
+						|| value.greaterThan(range.getMax())) {
 					return false;
 				}
 			}
@@ -66,8 +67,8 @@ public class DBSCANModel {
 		}
 		
 		public void print(Appendable out, String delimiter) throws IOException {
-			out.append(this.id).append(delimiter).append(this.id).append(delimiter);
-			out.append(String.join(delimiter, this.rangeList.stream().map((value)-> "{min:" + value.getMin() + ",max:" + value.getMax() + "}").toList()))
+			out.append(this.id).append(delimiter)
+			   .append(String.join(delimiter, this.rangeList.stream().map((value)-> "{min:" + value.getMin() + ",max:" + value.getMax() + "}").toList()))
 			   .append("\n");
 			
 			for(DataRow dataRow : this.dataList) {

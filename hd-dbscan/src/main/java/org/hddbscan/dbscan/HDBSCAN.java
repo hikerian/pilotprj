@@ -56,7 +56,6 @@ public class HDBSCAN {
 		model.setLabels(inputValues.getLabels());
 		
 		clusterList.forEach((cluster)-> model.addGroup(cluster));
-		
 
 		return model;
 
@@ -90,17 +89,17 @@ public class HDBSCAN {
 			}
 		}
 		
-		
 		return resultList;
 	}
 	
 	private List<DataRow> getNeighbours(DataRow p, List<DataRow> inputValues, int colIdx, double eps) {
 		List<DataRow> neighbours = new ArrayList<>();
 		for(DataRow candidate : inputValues) {
-			if(this.distance(p.getData(colIdx), candidate.getData(colIdx)) <= eps) {
+			if(p.getData(colIdx).distance(candidate.getData(colIdx)) <= eps) {
 				neighbours.add(candidate);
 			}
 		}
+		
 		return neighbours;
 	}
 	
@@ -110,12 +109,10 @@ public class HDBSCAN {
 				neighbours1.add(p);
 			}
 		}
+		
 		return neighbours1;
 	}
-	
-	private Double distance(Number val1, Number val2) {
-		return Math.abs(val1.doubleValue() - val2.doubleValue());
-	}
+
 
 
 }

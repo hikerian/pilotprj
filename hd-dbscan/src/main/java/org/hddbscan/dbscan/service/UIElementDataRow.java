@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.hddbscan.dbscan.DataRow;
+import org.hddbscan.dbscan.feature.DoubleFeature;
+import org.hddbscan.dbscan.feature.PositionFeature;
 import org.hddbscan.entity.UiElements;
 
 import net.minidev.json.JSONArray;
@@ -117,11 +119,10 @@ public class UIElementDataRow {
 	public DataRow toDataRow() {
 		DataRow row = new DataRow();
 		row.setId(this.id);
-		row.setData(this.buttonEl ? 1 : 0
-				, this.inputEl ? 1 : 0
-				, this.outputEl ? 1 : 0
-				, this.left
-				, this.top);
+		row.setData(new DoubleFeature(this.buttonEl ? 1D : 0D)
+				, new DoubleFeature(this.inputEl ? 1D : 0D)
+				, new DoubleFeature(this.outputEl ? 1D : 0D)
+				, new PositionFeature(this.left, this.top));
 		
 		return row;
 	}

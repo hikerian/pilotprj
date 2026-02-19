@@ -1,22 +1,23 @@
 package org.hddbscan.dbscan.feature;
 
 
-public interface ComputableFeature {
+public interface ComputableFeature extends Cloneable {
 	/**
-	 * other 보다 크거나 같으면 true 아니면 false.
+	 * other 보다 크면 true 아니면 false.
 	 * @param other
 	 * @return
 	 */
-	public boolean greaterThanOrEqualTo(ComputableFeature other);
+	public boolean greaterThan(ComputableFeature other);
 	/**
-	 * other 보다 작거나 같으면 true 아니면 false.
+	 * other 보다 작으면 true 아니면 false.
 	 * @param other
 	 * @return
 	 */
-	public boolean lessThanOrEqualTo(ComputableFeature other);
+	public boolean lessThan(ComputableFeature other);
 	
 	public double distance(ComputableFeature other);
-	
+
+	public ComputableFeature clone();
 	public ComputableFeature min(ComputableFeature other);
 	public ComputableFeature max(ComputableFeature other);
 

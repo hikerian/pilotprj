@@ -12,21 +12,26 @@ public class DoubleFeature implements ComputableFeature {
 	}
 	
 	@Override
-	public boolean greaterThanOrEqualTo(ComputableFeature other) {
+	public boolean greaterThan(ComputableFeature other) {
 		DoubleFeature the = (DoubleFeature)other;
-		return this.value >= the.value;
+		return this.value > the.value;
 	}
 
 	@Override
-	public boolean lessThanOrEqualTo(ComputableFeature other) {
+	public boolean lessThan(ComputableFeature other) {
 		DoubleFeature the = (DoubleFeature)other;
-		return this.value <= the.value;
+		return this.value < the.value;
 	}
 
 	@Override
 	public double distance(ComputableFeature other) {
 		DoubleFeature the = (DoubleFeature)other;
 		return Math.abs(this.value - the.value);
+	}
+
+	@Override
+	public ComputableFeature clone() {
+		return new DoubleFeature(this.value);
 	}
 	
 	@Override
@@ -70,7 +75,7 @@ public class DoubleFeature implements ComputableFeature {
 
 	@Override
 	public String toString() {
-		return "DoubleFeature [value=" + this.value + "]";
+		return "Double [v=" + this.value + "]";
 	}
 
 

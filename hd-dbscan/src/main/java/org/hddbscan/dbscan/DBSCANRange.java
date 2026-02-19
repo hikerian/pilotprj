@@ -2,36 +2,38 @@ package org.hddbscan.dbscan;
 
 import java.util.Objects;
 
+import org.hddbscan.dbscan.feature.ComputableFeature;
+
 
 public class DBSCANRange {
-	private Double min;
-	private Double max;
+	private ComputableFeature min;
+	private ComputableFeature max;
 	
 	
 	public DBSCANRange() {
 		
 	}
 	
-	public DBSCANRange(Double min, Double max) {
+	public DBSCANRange(ComputableFeature min, ComputableFeature max) {
 		this.min = min;
 		this.max = max;
 	}
 
-	public Double getMin() {
+	public ComputableFeature getMin() {
 		return this.min;
 	}
 
-	public void setMin(Double min) {
-		this.min = min;
-	}
+//	public void setMin(ComputableFeature min) {
+//		this.min = min;
+//	}
 
-	public Double getMax() {
+	public ComputableFeature getMax() {
 		return this.max;
 	}
 
-	public void setMax(Double max) {
-		this.max = max;
-	}
+//	public void setMax(ComputableFeature max) {
+//		this.max = max;
+//	}
 
 	@Override
 	public int hashCode() {
