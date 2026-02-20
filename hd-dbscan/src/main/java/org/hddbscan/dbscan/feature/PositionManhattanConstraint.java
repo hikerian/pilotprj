@@ -1,27 +1,28 @@
 package org.hddbscan.dbscan.feature;
 
 
-public class PositionManhattanDistance implements Distance {
+public class PositionManhattanConstraint extends DimensionConstraint {
 	private final double leftEps;
 	private final double topEps;
 	
 	
-	public PositionManhattanDistance(double leftEps, double topEps) {
+	public PositionManhattanConstraint(int minPts, double leftEps, double topEps) {
+		super(minPts);
 		this.leftEps = leftEps;
 		this.topEps = topEps;
 	}
 
+	@Override
+	public double[] getEps() {
+		return new double[] {this.leftEps, this.topEps};
+	}
+	
 	@Override
 	public double distance(ComputableFeature a, ComputableFeature b) {
 		PositionFeature pa = (PositionFeature)a;
 		PositionFeature pb = (PositionFeature)b;
 		
 		return Math.abs(pa.getLeft() - pb.getLeft()) + Math.abs(pa.getTop() - pb.getTop());
-	}
-
-	@Override
-	public double[] getEps() {
-		return new double[] {this.leftEps, this.topEps};
 	}
 
 	@Override
@@ -36,5 +37,6 @@ public class PositionManhattanDistance implements Distance {
 
 		return true;
 	}
+
 
 }

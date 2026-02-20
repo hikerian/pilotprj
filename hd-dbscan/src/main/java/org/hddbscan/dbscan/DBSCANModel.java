@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.hddbscan.dbscan.feature.ComputableFeature;
-import org.hddbscan.dbscan.feature.Distance;
+import org.hddbscan.dbscan.feature.DimensionConstraint;
 
 
 public class DBSCANModel {
@@ -88,8 +88,8 @@ public class DBSCANModel {
 
 	
 	private List<String> labels = new ArrayList<>();
-	private int minPts;
-	private Distance[] epsList;
+//	private int minPts;
+	private DimensionConstraint[] epsList;
 	
 	private List<DBSCANGroup> groups = new ArrayList<>();
 	
@@ -104,15 +104,10 @@ public class DBSCANModel {
 	}
 	
 	public void setMetadata(DBSCANMetadata metadata) {
-		this.minPts = metadata.getMinPts();
-		this.epsList = new Distance[metadata.getEpsCount()];
+		this.epsList = new DimensionConstraint[metadata.getConstraintCount()];
 		for(int i = 0; i < this.epsList.length; i++) {
-			this.epsList[i] = metadata.getEps(i);
+			this.epsList[i] = metadata.getConstraint(i);
 		}
-	}
-	
-	public int getMinPts() {
-		return this.minPts;
 	}
 	
 	public void setLabels(List<String> labelList) {
@@ -153,9 +148,9 @@ public class DBSCANModel {
 	
 	public void print(Appendable out, String delimiter) throws IOException {
 		out.append("DBSCANModel:\n")
-			.append("minPts:").append(String.valueOf(this.minPts)).append(", epsList:").append(
-					String.join(delimiter, Arrays.stream(this.epsList).map((eps)->String.valueOf(eps)).toArray((size)->new String[size]))
-					).append('\n')
+			.append("epsList:").append(
+				String.join(delimiter, Arrays.stream(this.epsList).map((eps)->String.valueOf(eps)).toArray((size)->new String[size]))
+				).append('\n')
 			.append("groupId").append(delimiter).append("id").append(delimiter)
 			.append(String.join(delimiter, this.labels)).append('\n');
 		for(DBSCANGroup group : this.groups) {

@@ -8,8 +8,8 @@ import java.util.List;
 import org.hddbscan.dbscan.DBSCANMetadata;
 import org.hddbscan.dbscan.DataRow;
 import org.hddbscan.dbscan.DataSet;
-import org.hddbscan.dbscan.feature.DoubleDistance;
-import org.hddbscan.dbscan.feature.PositionManhattanDistance;
+import org.hddbscan.dbscan.feature.DoubleConstraint;
+import org.hddbscan.dbscan.feature.PositionManhattanConstraint;
 import org.hddbscan.entity.UiElements;
 
 import net.minidev.json.JSONObject;
@@ -64,12 +64,10 @@ public class UIElementDataSet {
 		
 		// "isButton", "isInput", "isOutput", "position"
 		
-		metadata.setMinPts(1);
-
-		metadata.addEps(new DoubleDistance(0.5D));   // isButton
-		metadata.addEps(new DoubleDistance(0.5D));   // isInput
-		metadata.addEps(new DoubleDistance(0.5D));   // isOutput
-		metadata.addEps(new PositionManhattanDistance(200D, 30D));   // position
+		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // isButton
+		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // isInput
+		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // isOutput
+		metadata.addConstraint(new PositionManhattanConstraint(1, 200D, 30D));   // position
 		
 		return metadata;
 	}

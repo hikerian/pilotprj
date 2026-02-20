@@ -4,46 +4,36 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.hddbscan.dbscan.feature.Distance;
+import org.hddbscan.dbscan.feature.DimensionConstraint;
 
 
 public class DBSCANMetadata {
-	private int minPts = 4;
-	private List<Distance> epsList = new ArrayList<>();
+	private List<DimensionConstraint> constraintList = new ArrayList<>();
 	
 	
 	public DBSCANMetadata() {
 	}
 	
-	public int getMinPts() {
-		return this.minPts;
+	public void setEpsList(DimensionConstraint...constraintList) {
+		this.constraintList.clear();
+		Collections.addAll(this.constraintList, constraintList);
 	}
 	
-	public void setMinPts(int minPts) {
-		this.minPts = minPts;
+	public void addConstraint(DimensionConstraint eps) {
+		this.constraintList.add(eps);
 	}
 	
-	public void setEpsList(Distance...epsList) {
-		this.epsList.clear();
-		Collections.addAll(this.epsList, epsList);
+	public void setConstraint(int index, DimensionConstraint eps) {
+		this.constraintList.set(index, eps);
 	}
 	
-	public void addEps(Distance eps) {
-		this.epsList.add(eps);
+	public int getConstraintCount() {
+		return this.constraintList.size();
 	}
 	
-	public void setEps(int index, Distance eps) {
-		this.epsList.set(index, eps);
+	public DimensionConstraint getConstraint(int index) {
+		return this.constraintList.get(index);
 	}
-	
-	public int getEpsCount() {
-		return this.epsList.size();
-	}
-	
-	public Distance getEps(int index) {
-		return this.epsList.get(index);
-	}
-
 
 
 }
