@@ -23,17 +23,9 @@ public class DBSCANRange {
 		return this.min;
 	}
 
-//	public void setMin(ComputableFeature min) {
-//		this.min = min;
-//	}
-
 	public ComputableFeature getMax() {
 		return this.max;
 	}
-
-//	public void setMax(ComputableFeature max) {
-//		this.max = max;
-//	}
 
 	@Override
 	public int hashCode() {

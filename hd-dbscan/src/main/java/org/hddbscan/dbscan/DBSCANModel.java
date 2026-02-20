@@ -8,13 +8,9 @@ import java.util.stream.Collectors;
 
 import org.hddbscan.dbscan.feature.ComputableFeature;
 import org.hddbscan.dbscan.feature.Distance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class DBSCANModel {
-	private final Logger log = LoggerFactory.getLogger(DBSCANModel.class);
-	
 	
 	public static class DBSCANGroup {
 		private String id;
@@ -50,14 +46,9 @@ public class DBSCANModel {
 		}
 		
 		public boolean isAcceptable(DataRow data) {
-			System.out.println("RangeList:" + this.rangeList);
-			
 			for(int i = 0; i < this.rangeList.size(); i++) {
 				ComputableFeature value = data.getData(i);
-
 				DBSCANRange range = this.rangeList.get(i);
-				
-				System.out.println("value:" + value + ", range:" + range);
 				
 				if(value.lessThan(range.getMin())
 						|| value.greaterThan(range.getMax())) {
@@ -98,7 +89,6 @@ public class DBSCANModel {
 	
 	private List<String> labels = new ArrayList<>();
 	private int minPts;
-//	private Double[] epsList;
 	private Distance[] epsList;
 	
 	private List<DBSCANGroup> groups = new ArrayList<>();
@@ -114,11 +104,6 @@ public class DBSCANModel {
 	}
 	
 	public void setMetadata(DBSCANMetadata metadata) {
-//		this.minPts = metadata.getMinPts();
-//		this.epsList = new Double[metadata.getEpsCount()];
-//		for(int i = 0; i < this.epsList.length; i++) {
-//			this.epsList[i] = metadata.getEps(i);
-//		}
 		this.minPts = metadata.getMinPts();
 		this.epsList = new Distance[metadata.getEpsCount()];
 		for(int i = 0; i < this.epsList.length; i++) {

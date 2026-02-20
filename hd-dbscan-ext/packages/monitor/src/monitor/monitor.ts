@@ -45,8 +45,9 @@ namespace hddbscan.monitor {
 
         port.onDisconnect.addListener(() => {
             console.log("monitor port disconnected, try connecting...");
-            port = chrome.runtime.connect({ name: portNm });
-            connect();
+            requestAnimationFrame(() => connect());
+            // port = chrome.runtime.connect({ name: portNm });
+            // connect();
         });
     }
     connect();
@@ -83,7 +84,6 @@ namespace hddbscan.monitor {
             return comps;
         }
 
-        // let nodeList: NodeListOf<HTMLElement> = document.querySelectorAll(".cl-control:not(.cl-container,.cl-notifier)");
         let nodeList: NodeListOf<HTMLElement> = el.querySelectorAll(".cl-control:not(.cl-container,.cl-notifier,.cl-embeddedapp,.cl-grid)");
         nodeList.forEach((element: HTMLElement) => {
             let targetInfo: any = {};
@@ -98,8 +98,6 @@ namespace hddbscan.monitor {
 
             let selector: string = generateCSSSelector(element);
             targetInfo["selector"] = selector;
-            // console.log(`selector: ${selector}`);
-
             targetInfo["major"] = false;
             targetInfo["classNames"] = getClassNames(element);
             targetInfo["text"] = getText(element);
@@ -221,22 +219,6 @@ namespace hddbscan.monitor {
                     classList.add(highlightCssClassName);
                 });
             });
-            // let element: HTMLElement | null = document.querySelector(selector);
-            // if (!element) {
-            //     console.error(`${selector} not found`);
-            //     return;
-            // }
-            // let classList: DOMTokenList = element.classList;
-            // // toggle
-            // if (classList.contains(highlightCssClassName)) {
-            //     console.debug("highlight off")
-
-            //     classList.remove(highlightCssClassName);
-            // } else {
-            //     console.debug("highlight on")
-
-            //     classList.add(highlightCssClassName);
-            // }
         } catch (e) {
             console.error(e);
             throw e;

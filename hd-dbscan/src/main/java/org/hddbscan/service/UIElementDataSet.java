@@ -65,10 +65,7 @@ public class UIElementDataSet {
 		// "isButton", "isInput", "isOutput", "position"
 		
 		metadata.setMinPts(1);
-//		metadata.addEps(0.5D);   // isButton
-//		metadata.addEps(0.5D);   // isInput
-//		metadata.addEps(0.5D);   // isOutput
-//		metadata.addEps(125D);   // position
+
 		metadata.addEps(new DoubleDistance(0.5D));   // isButton
 		metadata.addEps(new DoubleDistance(0.5D));   // isInput
 		metadata.addEps(new DoubleDistance(0.5D));   // isOutput

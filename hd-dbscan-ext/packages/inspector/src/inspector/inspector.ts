@@ -39,8 +39,9 @@
 
         port.onDisconnect.addListener(() => {
             console.log("inspector port disconnected, try connecting...");
-            port = chrome.runtime.connect({ name: portNm });
-            connect();
+            requestAnimationFrame(() => connect());
+            // port = chrome.runtime.connect({ name: portNm });
+            // connect();
         });
     }
     connect();
@@ -172,20 +173,6 @@
         return td;
     }
 
-    function createBtn(pageId: string, elementId: string) {
-        var td = document.createElement("td");
-        var inpBtn = document.createElement("input");
-        inpBtn.type = "button";
-        inpBtn.value = "Predict";
-        inpBtn.setAttribute("data-page-id", pageId);
-        inpBtn.setAttribute("data-element-id", elementId);
-        inpBtn.name = "btnElementSelect";
-        inpBtn.onclick = doPredict;
-
-        td.appendChild(inpBtn);
-        return td;
-    }
-
     function createTd(txt: string) {
         var td = document.createElement("td");
         td.title = txt;
@@ -196,34 +183,6 @@
         var textNode = document.createTextNode(txt);
         td.appendChild(textNode);
         return td;
-    }
-
-    function createBlank(id: string) {
-        var td = document.createElement("td");
-        var spanNode = document.createElement("span");
-        spanNode.id = id;
-
-        td.appendChild(spanNode);
-        return td;
-    }
-
-    function doPredict(this: any) {
-        var pageId = this.getAttribute("data-page-id");
-        var elementId = this.getAttribute("data-element-id");
-
-        $.ajax({
-            type: "GET",
-            contentType: "application/json",
-            headers: {},
-            url: "/rest/predict/" + pageId + "/" + elementId,
-            success: function (data) {
-                let blankNodeId: string = "blk-" + pageId + "." + elementId;
-                let blankNode: HTMLElement = document.getElementById(blankNodeId)!;
-                let txtNode: Text = document.createTextNode(data.payload.groups);
-
-                blankNode.appendChild(txtNode);
-            }
-        });
     }
 
     let groupSelectors: any = {};
