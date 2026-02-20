@@ -29,6 +29,8 @@ public class HDBSCAN {
 	}
 	
 	public DBSCANModel fit(final DataSet inputValues) {
+		long startTime = System.currentTimeMillis();
+		
 		int colCnt = inputValues.getColumnCount();
 		int minPts = this.metadata.getMinPts();
 
@@ -55,6 +57,9 @@ public class HDBSCAN {
 		model.setLabels(inputValues.getLabels());
 		
 		clusterList.forEach((cluster)-> model.addGroup(cluster));
+		
+		
+		this.log.info((System.currentTimeMillis() - startTime) + "ms spent!");
 
 		return model;
 
@@ -113,7 +118,6 @@ public class HDBSCAN {
 		
 		return neighbours1;
 	}
-
 
 
 }

@@ -142,7 +142,6 @@ public class DBSCANModel {
 	
 	public void addGroup(DBSCANCluster groupCluster) {
 		final int colSize = this.labels.size();
-		this.log.debug("ColSize: {}", colSize);
 		
 		DBSCANGroup group = new DBSCANGroup("group-" + (this.groups.size() + 1));
 		this.groups.add(group);
