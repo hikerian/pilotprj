@@ -33,8 +33,7 @@ public class DataRow {
 
 	@Override
 	public int hashCode() {
-//		return Objects.hash(this.id, this.datas);
-		return Objects.hash(this.id);
+		return Objects.hash(this.id, this.datas);
 	}
 
 	@Override
@@ -46,8 +45,7 @@ public class DataRow {
 		if (getClass() != obj.getClass())
 			return false;
 		DataRow other = (DataRow) obj;
-//		return Objects.equals(this.id, other.id) && Objects.equals(this.datas, other.datas);
-		return Objects.equals(this.id, other.id);
+		return Objects.equals(this.id, other.id) && Objects.equals(this.datas, other.datas);
 	}
 	
 	@Override

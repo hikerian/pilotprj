@@ -117,7 +117,7 @@ public class ExtController {
 		List<UiElements> uiElements = this.dao.selectUiElementsList(Long.parseLong(pageId));
 		
 		// 필터
-		uiElements = uiElements.stream().filter(element -> "Y".equals(element.getMajorYn())).toList();
+//		uiElements = uiElements.stream().filter(element -> "Y".equals(element.getMajorYn())).toList();
 		
 		
 		ResponseData res = new ResponseData();
