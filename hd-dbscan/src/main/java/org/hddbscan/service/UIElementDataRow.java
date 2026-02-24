@@ -14,6 +14,7 @@ import net.minidev.json.JSONObject;
 
 
 public class UIElementDataRow {
+	// FIXME: 규칙 기반으로 컴포넌트를 분류할 수 있는 기능이 필요함
 	private final static List<String> BUTTON_CLASSES = Arrays.asList("btn-header-minus", "cl-button", "btn-search", "btn-restore", "btn-save", "btn-excel"
 			, "btn-setting", "btn-pop", "btn-new", "btn-delete", "btn-pop-search");
 	private final static List<String> INPUT_CLASSES = Arrays.asList("cl-inputbox", "cl-combobox", "cl-numbereditor", "cl-checkbox", "cl-dateinput");

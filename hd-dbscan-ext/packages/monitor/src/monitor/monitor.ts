@@ -84,7 +84,7 @@ namespace hddbscan.monitor {
             return comps;
         }
 
-        let nodeList: NodeListOf<HTMLElement> = el.querySelectorAll(".cl-control:not(.cl-container,.cl-notifier,.cl-embeddedapp,.cl-grid)");
+        let nodeList: NodeListOf<HTMLElement> = el.querySelectorAll('.cl-control:not(.cl-container,.cl-notifier,.cl-embeddedapp,.cl-grid),.cl-text[role="tab"]');
         nodeList.forEach((element: HTMLElement) => {
             let targetInfo: any = {};
 
@@ -209,6 +209,11 @@ namespace hddbscan.monitor {
 
         try {
             selectors.forEach((selector: string) => {
+                // Chrome Extension에 의해 삽입되는 Root 노드에 의해 body의 직계 div는 순서가 달라질 수 있어 변경함.
+                if (selector.startsWith("body > div.cl-control.cl-container:nth-of-type(")) {
+                    selector = "body > div.cl-control.cl-container" + selector.substring(49);
+                }
+
                 let elementList: NodeListOf<HTMLElement> = document.querySelectorAll(selector);
                 if (elementList.length == 0) {
                     console.error(`${selector} not found`);
