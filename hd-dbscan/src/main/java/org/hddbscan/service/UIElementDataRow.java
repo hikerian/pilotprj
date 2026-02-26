@@ -64,13 +64,16 @@ public class UIElementDataRow {
 		dataRow.setFormBox(selector.contains("form-box"));
 		
 		dataRow.setGridHeader(selector.contains("cl-grid-header"));
+		dataRow.setGridDetail(selector.contains("cl-grid-detail"));
+		
 		dataRow.setTabfolderHeader(selector.contains("cl-tabfolder-header"));
 		
 		dataRow.setButtonEl(UIElementDataRow.isContains(UIElementDataRow.BUTTON_CLASSES, classNms));
 		dataRow.setInputEl(UIElementDataRow.isContains(UIElementDataRow.INPUT_CLASSES, classNms));
 		dataRow.setOutputEl(UIElementDataRow.isContains(UIElementDataRow.OUTPUT_CLASSES, classNms));
-		dataRow.setLeft(left);
-		dataRow.setTop(top);
+//		dataRow.setLeft(left);
+//		dataRow.setTop(top);
+		dataRow.setPosition(left, top, width, height);
 		
 		return dataRow;		
 	}
@@ -93,6 +96,8 @@ public class UIElementDataRow {
 	private boolean formBox; // form-box
 	
 	private boolean gridHeader; // cl-grid-header
+	private boolean gridDetail; // cl-grid-detail
+	
 	private boolean tabfolderHeader; // cl-tabfolder-header
 	
 	private boolean buttonEl;
@@ -100,6 +105,8 @@ public class UIElementDataRow {
 	private boolean outputEl;
 	private double left; // TODO left와 top은 좌표계 포지션으로 각각 계산하지 말고 거리로 계산하도록 변경
 	private double top;  // TODO left와 top은 좌표계 포지션으로 각각 계산하지 말고 거리로 계산하도록 변경
+	private double width;
+	private double height;
 	
 	
 	public UIElementDataRow() {
@@ -124,6 +131,10 @@ public class UIElementDataRow {
 	public void setGridHeader(boolean gridHeader) {
 		this.gridHeader = gridHeader;
 	}
+	
+	public void setGridDetail(boolean gridDetail) {
+		this.gridDetail = gridDetail;
+	}
 
 	public void setTabfolderHeader(boolean tabfolderHeader) {
 		this.tabfolderHeader = tabfolderHeader;
@@ -141,12 +152,19 @@ public class UIElementDataRow {
 		this.outputEl = outputEl;
 	}
 
-	public void setLeft(double left) {
+//	public void setLeft(double left) {
+//		this.left = left;
+//	}
+//
+//	public void setTop(double top) {
+//		this.top = top;
+//	}
+	
+	public void setPosition(double left, double top, double width, double height) {
 		this.left = left;
-	}
-
-	public void setTop(double top) {
 		this.top = top;
+		this.width = width;
+		this.height = height;
 	}
 
 	public DataRow toDataRow() {
@@ -158,12 +176,13 @@ public class UIElementDataRow {
 				, new DoubleFeature(this.formBox ? 1D : 0D)
 				
 				, new DoubleFeature(this.gridHeader ? 1D : 0D)
+				, new DoubleFeature(this.gridDetail ? 1D : 0D)
 				, new DoubleFeature(this.tabfolderHeader ? 1D : 0D)
 				
 				, new DoubleFeature(this.buttonEl ? 1D : 0D)
 				, new DoubleFeature(this.inputEl ? 1D : 0D)
 				, new DoubleFeature(this.outputEl ? 1D : 0D)
-				, new PositionFeature(this.left, this.top));
+				, new PositionFeature(this.left, this.top, this.width, this.height));
 		
 		return row;
 	}
@@ -176,6 +195,7 @@ public class UIElementDataRow {
 				, String.valueOf(this.formBox)
 				
 				, String.valueOf(this.gridHeader)
+				, String.valueOf(this.gridDetail)
 				, String.valueOf(this.tabfolderHeader)
 				
 				, String.valueOf(this.buttonEl)
@@ -183,19 +203,19 @@ public class UIElementDataRow {
 				, String.valueOf(this.outputEl)
 				, String.valueOf(this.left)
 				, String.valueOf(this.top)
+				, String.valueOf(this.width)
+				, String.valueOf(this.height)
 				)).append('\n');
 	}
 
 	@Override
 	public String toString() {
 		return "UIElementDataRow [id=" + id + ", searchBox=" + searchBox + ", dataBox=" + dataBox + ", formBox="
-				+ formBox + ", gridHeader=" + gridHeader + ", tabfolderHeader=" + tabfolderHeader + ", buttonEl="
-				+ buttonEl + ", inputEl=" + inputEl + ", outputEl=" + outputEl + ", left=" + left + ", top=" + top
-				+ "]";
+				+ formBox + ", gridHeader=" + gridHeader + ", gridDetail=" + gridDetail + ", tabfolderHeader="
+				+ tabfolderHeader + ", buttonEl=" + buttonEl + ", inputEl=" + inputEl + ", outputEl=" + outputEl
+				+ ", left=" + left + ", top=" + top + ", width=" + width + ", height=" + height + "]";
 	}
 
 
-
-	
 
 }

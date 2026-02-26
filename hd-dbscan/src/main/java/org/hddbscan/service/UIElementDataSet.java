@@ -67,6 +67,8 @@ public class UIElementDataSet {
 		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in FormBox
 		
 		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in GridHeader
+		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in GridDetail
+		
 		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in TabfolderHeader
 
 		// "isButton", "isInput", "isOutput", "position"

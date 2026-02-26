@@ -1,5 +1,5 @@
 ﻿﻿namespace hddbscan.inspector {
-    const urlBase: string = "http://192.168.0.9:8080";
+    const urlBase: string = "http://localhost:8080";
     let pageComps: any = {};
 
     // connect collector
