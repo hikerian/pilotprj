@@ -37,6 +37,10 @@ public class ModelGroup {
 	public void setUiElementList(List<UiElements> uiElementList) {
 		this.uiElementList = uiElementList;
 	}
+	
+	public int getUiElementListSize() {
+		return this.uiElementList.size();
+	}
 
 	@Override
 	public int hashCode() {

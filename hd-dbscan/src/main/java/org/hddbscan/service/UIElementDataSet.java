@@ -62,8 +62,14 @@ public class UIElementDataSet {
 	public DBSCANMetadata getMetadata() {
 		DBSCANMetadata metadata = new DBSCANMetadata();
 		
-		// "isButton", "isInput", "isOutput", "position"
+		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in SearchBox
+		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in DataBox
+		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in FormBox
 		
+		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in GridHeader
+		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in TabfolderHeader
+
+		// "isButton", "isInput", "isOutput", "position"
 		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // isButton
 		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // isInput
 		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // isOutput

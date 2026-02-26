@@ -110,12 +110,14 @@ public class HDBSCANService {
 					(element)->group.hasDataRowId(UIElementDataRow.genId(element))
 					).toList();
 			
-			ModelGroup modelGroup = new ModelGroup();
-			modelGroup.setId(id);
-			modelGroup.setRangeText(rangeTxt);
-			modelGroup.setUiElementList(filtered);
-			
-			modelGroupList.add(modelGroup);
+			if(filtered.size() > 0) {
+				ModelGroup modelGroup = new ModelGroup();
+				modelGroup.setId(id);
+				modelGroup.setRangeText(rangeTxt);
+				modelGroup.setUiElementList(filtered);
+				
+				modelGroupList.add(modelGroup);
+			}
 		}
 		
 		return modelGroupList;

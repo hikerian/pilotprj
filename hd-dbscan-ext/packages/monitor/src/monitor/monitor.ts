@@ -84,7 +84,7 @@ namespace hddbscan.monitor {
             return comps;
         }
 
-        let nodeList: NodeListOf<HTMLElement> = el.querySelectorAll('.cl-control:not(.cl-container,.cl-notifier,.cl-embeddedapp,.cl-grid),.cl-text[role="tab"]');
+        let nodeList: NodeListOf<HTMLElement> = el.querySelectorAll('.cl-control:not(.cl-container,.cl-notifier,.cl-embeddedapp,.cl-grid,.cl-tabfolder),.cl-text[role="tab"]');
         nodeList.forEach((element: HTMLElement) => {
             let targetInfo: any = {};
 

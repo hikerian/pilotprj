@@ -27,38 +27,30 @@ public class UIElementDataRow {
 	
 	public static UIElementDataRow convert(UiElements uiElements) {
 		String id = UIElementDataRow.genId(uiElements);
-		
+		String selector = uiElements.getSelectorText();
 		String[] classNames = uiElements.getClassNames().split(",");
 		double left = uiElements.getPosLeft();
 		double top = uiElements.getPosTop();
 		double width = uiElements.getUiWidth();
 		double height = uiElements.getUiHeight();
 		
-		if(width == 0D || height == 0D) {
-			// 크기가 0이면 skip!
-			return null;
-		}
-		
-		UIElementDataRow dataRow = new UIElementDataRow();
-		dataRow.setId(id);
-		dataRow.setButtonEl(UIElementDataRow.isContains(UIElementDataRow.BUTTON_CLASSES, classNames));
-		dataRow.setInputEl(UIElementDataRow.isContains(UIElementDataRow.INPUT_CLASSES, classNames));
-		dataRow.setOutputEl(UIElementDataRow.isContains(UIElementDataRow.OUTPUT_CLASSES, classNames));
-		dataRow.setLeft(left);
-		dataRow.setTop(top);
-		
-		return dataRow;
+		return UIElementDataRow.convert(id, selector, classNames, left, top, width, height);
 	}
 	
 	public static UIElementDataRow convert(String id, JSONObject target) {
 		JSONArray classNameArray = (JSONArray) target.get("classNames");
-		String[] classNms = classNameArray.toArray(new String[0]);
+		String selector = target.getAsString("selector");
+		String[] classNames = classNameArray.toArray(new String[0]);
 		JSONObject clientRect = (JSONObject)target.get("clientRect");
 		double left = clientRect.getAsNumber("left").doubleValue();
 		double top = clientRect.getAsNumber("top").doubleValue();
 		double width = clientRect.getAsNumber("width").doubleValue();
 		double height = clientRect.getAsNumber("height").doubleValue();
 		
+		return UIElementDataRow.convert(id, selector, classNames, left, top, width, height);
+	}
+	
+	private static UIElementDataRow convert(String id, String selector, String[] classNms, double left, double top, double width, double height) {
 		if(width == 0D || height == 0D) {
 			// 크기가 0이면 skip!
 			return null;
@@ -66,13 +58,21 @@ public class UIElementDataRow {
 		
 		UIElementDataRow dataRow = new UIElementDataRow();
 		dataRow.setId(id);
+		
+		dataRow.setSearchBox(selector.contains("search-box"));
+		dataRow.setDataBox(selector.contains("data-box"));
+		dataRow.setFormBox(selector.contains("form-box"));
+		
+		dataRow.setGridHeader(selector.contains("cl-grid-header"));
+		dataRow.setTabfolderHeader(selector.contains("cl-tabfolder-header"));
+		
 		dataRow.setButtonEl(UIElementDataRow.isContains(UIElementDataRow.BUTTON_CLASSES, classNms));
 		dataRow.setInputEl(UIElementDataRow.isContains(UIElementDataRow.INPUT_CLASSES, classNms));
 		dataRow.setOutputEl(UIElementDataRow.isContains(UIElementDataRow.OUTPUT_CLASSES, classNms));
 		dataRow.setLeft(left);
 		dataRow.setTop(top);
 		
-		return dataRow;
+		return dataRow;		
 	}
 	
 	private static boolean isContains(List<String> container, String[] items) {
@@ -87,6 +87,14 @@ public class UIElementDataRow {
 	
 	
 	private String id;
+	
+	private boolean searchBox; // search-box
+	private boolean dataBox; // data-box
+	private boolean formBox; // form-box
+	
+	private boolean gridHeader; // cl-grid-header
+	private boolean tabfolderHeader; // cl-tabfolder-header
+	
 	private boolean buttonEl;
 	private boolean inputEl;
 	private boolean outputEl;
@@ -99,6 +107,26 @@ public class UIElementDataRow {
 	
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public void setSearchBox(boolean searchBox) {
+		this.searchBox = searchBox;
+	}
+
+	public void setDataBox(boolean dataBox) {
+		this.dataBox = dataBox;
+	}
+
+	public void setFormBox(boolean formBox) {
+		this.formBox = formBox;
+	}
+
+	public void setGridHeader(boolean gridHeader) {
+		this.gridHeader = gridHeader;
+	}
+
+	public void setTabfolderHeader(boolean tabfolderHeader) {
+		this.tabfolderHeader = tabfolderHeader;
 	}
 
 	public void setButtonEl(boolean buttonEl) {
@@ -124,7 +152,15 @@ public class UIElementDataRow {
 	public DataRow toDataRow() {
 		DataRow row = new DataRow();
 		row.setId(this.id);
-		row.setData(new DoubleFeature(this.buttonEl ? 1D : 0D)
+		
+		row.setData(new DoubleFeature(this.searchBox ? 1D : 0D)
+				, new DoubleFeature(this.dataBox ? 1D : 0D)
+				, new DoubleFeature(this.formBox ? 1D : 0D)
+				
+				, new DoubleFeature(this.gridHeader ? 1D : 0D)
+				, new DoubleFeature(this.tabfolderHeader ? 1D : 0D)
+				
+				, new DoubleFeature(this.buttonEl ? 1D : 0D)
 				, new DoubleFeature(this.inputEl ? 1D : 0D)
 				, new DoubleFeature(this.outputEl ? 1D : 0D)
 				, new PositionFeature(this.left, this.top));
@@ -135,6 +171,13 @@ public class UIElementDataRow {
 	public void print(Appendable out, String delimiter) throws IOException {
 		out.append(String.join(delimiter
 				, this.id
+				, String.valueOf(this.searchBox)
+				, String.valueOf(this.dataBox)
+				, String.valueOf(this.formBox)
+				
+				, String.valueOf(this.gridHeader)
+				, String.valueOf(this.tabfolderHeader)
+				
 				, String.valueOf(this.buttonEl)
 				, String.valueOf(this.inputEl)
 				, String.valueOf(this.outputEl)
@@ -145,10 +188,14 @@ public class UIElementDataRow {
 
 	@Override
 	public String toString() {
-		return "UIElementDataRow [id=" + id + ", buttonEl=" + buttonEl + ", inputEl=" + inputEl + ", outputEl="
-				+ outputEl + ", left=" + left + ", top=" + top
+		return "UIElementDataRow [id=" + id + ", searchBox=" + searchBox + ", dataBox=" + dataBox + ", formBox="
+				+ formBox + ", gridHeader=" + gridHeader + ", tabfolderHeader=" + tabfolderHeader + ", buttonEl="
+				+ buttonEl + ", inputEl=" + inputEl + ", outputEl=" + outputEl + ", left=" + left + ", top=" + top
 				+ "]";
 	}
+
+
+
 	
 
 }
