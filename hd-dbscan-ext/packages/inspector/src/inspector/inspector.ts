@@ -1,4 +1,5 @@
 ﻿﻿namespace hddbscan.inspector {
+    const urlBase: string = "http://192.168.0.9:8080";
     let pageComps: any = {};
 
     // connect collector
@@ -209,7 +210,7 @@
 
                 }
             }
-            xhr.open("POST", "http://localhost:8080/rest/page-components");
+            xhr.open("POST", urlBase + "/rest/page-components");
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.setRequestHeader("Accept", "application/json");
             xhr.send(JSON.stringify({
@@ -222,7 +223,7 @@
                 type: "GET",
                 contentType: "application/json",
                 headers: {},
-                url: "http://localhost:8080/rest/ui-pages",
+                url: urlBase + "/rest/ui-pages",
                 success: (data: any) => {
                     let tbodyElement: HTMLElement = document.getElementById("pageListBody")!;
                     clearChild(tbodyElement);
@@ -255,7 +256,7 @@
                 type: "GET",
                 contentType: "application/json",
                 headers: {},
-                url: "http://localhost:8080/rest/model-group/" + checkedValues[0],
+                url: urlBase + "/rest/model-group/" + checkedValues[0],
                 success: (data: any) => {
                     let groupElement: HTMLElement = document.getElementById("modelGroups")!;
                     clearChild(groupElement);
