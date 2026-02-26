@@ -3661,21 +3661,6 @@
         "left" : 1101
       }
     }, {
-      "selector" : "body > div.cl-control.cl-container:nth-of-type(3) > div.cl-layout:nth-of-type(1) > div.cl-layout-content > div.body.cl-control.cl-container:nth-of-type(4) > div.cl-layout > div.cl-layout-content > div.cl-control.cl-tabfolder.cl-mdifolder.tab-content:nth-of-type(1) > div.content > div.cl-tabfolder-body:nth-of-type(2) > div:nth-of-type(2) > div.cl-control.cl-embeddedapp > div.cl-control.cl-container > div.cl-layout.cl-scrollbar:nth-of-type(1) > div.cl-layout-content > div.cl-last-row.cl-layout-wrap:nth-of-type(4) > div.cl-control.cl-container.cl-last-row > div.cl-layout.cl-scrollbar > div.cl-layout-content > div.cl-control.cl-container.cl-even-column.cl-first-row.cl-last-column.cl-last-row.cl-odd-row.data-box:nth-of-type(2) > div.cl-layout.cl-scrollbar > div.cl-layout-content > div.cl-control.cl-tabfolder.cl-even-row.cl-first-column.cl-last-column.cl-last-row.cl-odd-column:nth-of-type(2)",
-      "major" : false,
-      "classNames" : [ "cl-control", "cl-tabfolder", "cl-even-row", "cl-first-column", "cl-last-column", "cl-last-row", "cl-odd-column" ],
-      "text" : "데이터관리이력관리언어관리교과목 목록복사삭제신규취소저장시작일자교과목명종료일자교과목코드학과약칭교과목개요",
-      "clientRect" : {
-        "x" : 1101,
-        "y" : 220,
-        "width" : 797,
-        "height" : 703,
-        "top" : 220,
-        "right" : 1898,
-        "bottom" : 923,
-        "left" : 1101
-      }
-    }, {
       "selector" : "body > div.cl-control.cl-container:nth-of-type(3) > div.cl-layout:nth-of-type(1) > div.cl-layout-content > div.body.cl-control.cl-container:nth-of-type(4) > div.cl-layout > div.cl-layout-content > div.cl-control.cl-tabfolder.cl-mdifolder.tab-content:nth-of-type(1) > div.content > div.cl-tabfolder-body:nth-of-type(2) > div:nth-of-type(2) > div.cl-control.cl-embeddedapp > div.cl-control.cl-container > div.cl-layout.cl-scrollbar:nth-of-type(1) > div.cl-layout-content > div.cl-last-row.cl-layout-wrap:nth-of-type(4) > div.cl-control.cl-container.cl-last-row > div.cl-layout.cl-scrollbar > div.cl-layout-content > div.cl-control.cl-container.cl-even-column.cl-first-row.cl-last-column.cl-last-row.cl-odd-row.data-box:nth-of-type(2) > div.cl-layout.cl-scrollbar > div.cl-layout-content > div.cl-control.cl-tabfolder.cl-even-row.cl-first-column.cl-last-column.cl-last-row.cl-odd-column:nth-of-type(2) > div > div.cl-tabfolder-header.cl-top.cl-unselectable:nth-of-type(1) > div:nth-of-type(2) > div.cl-tabfolder-header-viewport > div.cl-first.cl-selected.cl-tabfolder-item.cl-unselectable:nth-of-type(1) > div > div.cl-text",
       "major" : false,
       "classNames" : [ "cl-text" ],
