@@ -104,10 +104,10 @@ public class HDBSCAN {
 		return resultList;
 	}
 	
-	private Neighbours getNeighbours(DataRow p, List<DataRow> inputValues, int colIdx, DimensionConstraint distance) {
+	private Neighbours getNeighbours(DataRow p, List<DataRow> inputValues, int colIdx, DimensionConstraint constraint) {
 		Neighbours neighbours = new Neighbours();
 		for(DataRow candidate : inputValues) {
-			if(distance.isNeighbours(p.getData(colIdx), candidate.getData(colIdx))) {
+			if(constraint.isNeighbours(p.getData(colIdx), candidate.getData(colIdx))) {
 				neighbours.add(candidate);
 			}
 		}

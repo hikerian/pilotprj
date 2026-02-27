@@ -17,8 +17,12 @@ public class UIElementDataRow {
 	// FIXME: 규칙 기반으로 컴포넌트를 분류할 수 있는 기능이 필요함
 	private final static List<String> BUTTON_CLASSES = Arrays.asList("btn-header-minus", "cl-button", "btn-search", "btn-restore", "btn-save", "btn-excel"
 			, "btn-setting", "btn-pop", "btn-new", "btn-delete", "btn-pop-search");
+
 	private final static List<String> INPUT_CLASSES = Arrays.asList("cl-inputbox", "cl-combobox", "cl-numbereditor", "cl-checkbox", "cl-dateinput");
-	private final static List<String> OUTPUT_CLASSES = Arrays.asList("cl-output", "data-title", "table-row-cnt");
+
+	private final static List<String> OUTPUT_CLASSES = Arrays.asList("cl-output", "cl-default-cell", "table-row-cnt");
+	
+	private final static List<String> GROUPTITLE_CLASSES = Arrays.asList("grp-title", "grd-title");
 	
 	
 	public static String genId(UiElements uiElements) {
@@ -63,24 +67,44 @@ public class UIElementDataRow {
 		dataRow.setDataBox(selector.contains("data-box"));
 		dataRow.setFormBox(selector.contains("form-box"));
 		
+		dataRow.setGrpTitle(UIElementDataRow.isContains(UIElementDataRow.GROUPTITLE_CLASSES, selector));
+		
 		dataRow.setGridHeader(selector.contains("cl-grid-header"));
 		dataRow.setGridDetail(selector.contains("cl-grid-detail"));
 		
 		dataRow.setTabfolderHeader(selector.contains("cl-tabfolder-header"));
 		
+		dataRow.setDataTitleEl(UIElementDataRow.isContains("data-title", classNms));
+		
 		dataRow.setButtonEl(UIElementDataRow.isContains(UIElementDataRow.BUTTON_CLASSES, classNms));
 		dataRow.setInputEl(UIElementDataRow.isContains(UIElementDataRow.INPUT_CLASSES, classNms));
 		dataRow.setOutputEl(UIElementDataRow.isContains(UIElementDataRow.OUTPUT_CLASSES, classNms));
-//		dataRow.setLeft(left);
-//		dataRow.setTop(top);
 		dataRow.setPosition(left, top, width, height);
 		
 		return dataRow;		
 	}
 	
+	private static boolean isContains(String cond, String[] items) {
+		for(String item : items) {
+			if(cond.equals(item)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private static boolean isContains(List<String> container, String[] items) {
 		for(String item : items) {
 			if(container.contains(item)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private static boolean isContains(List<String> container, String selector) {
+		for(String item : container) {
+			if(selector.contains(item)) {
 				return true;
 			}
 		}
@@ -95,16 +119,19 @@ public class UIElementDataRow {
 	private boolean dataBox; // data-box
 	private boolean formBox; // form-box
 	
+	private boolean grpTitle; // grd-title OR grp-title
+	
 	private boolean gridHeader; // cl-grid-header
 	private boolean gridDetail; // cl-grid-detail
 	
 	private boolean tabfolderHeader; // cl-tabfolder-header
 	
+	private boolean dataTitleEl; // data-title
 	private boolean buttonEl;
 	private boolean inputEl;
 	private boolean outputEl;
-	private double left; // TODO left와 top은 좌표계 포지션으로 각각 계산하지 말고 거리로 계산하도록 변경
-	private double top;  // TODO left와 top은 좌표계 포지션으로 각각 계산하지 말고 거리로 계산하도록 변경
+	private double left;
+	private double top;
 	private double width;
 	private double height;
 	
@@ -127,6 +154,10 @@ public class UIElementDataRow {
 	public void setFormBox(boolean formBox) {
 		this.formBox = formBox;
 	}
+	
+	public void setGrpTitle(boolean grpTitle) {
+		this.grpTitle = grpTitle;
+	}
 
 	public void setGridHeader(boolean gridHeader) {
 		this.gridHeader = gridHeader;
@@ -138,6 +169,10 @@ public class UIElementDataRow {
 
 	public void setTabfolderHeader(boolean tabfolderHeader) {
 		this.tabfolderHeader = tabfolderHeader;
+	}
+
+	public void setDataTitleEl(boolean dataTitleEl) {
+		this.dataTitleEl = dataTitleEl;
 	}
 
 	public void setButtonEl(boolean buttonEl) {
@@ -152,14 +187,6 @@ public class UIElementDataRow {
 		this.outputEl = outputEl;
 	}
 
-//	public void setLeft(double left) {
-//		this.left = left;
-//	}
-//
-//	public void setTop(double top) {
-//		this.top = top;
-//	}
-	
 	public void setPosition(double left, double top, double width, double height) {
 		this.left = left;
 		this.top = top;
@@ -175,9 +202,13 @@ public class UIElementDataRow {
 				, new DoubleFeature(this.dataBox ? 1D : 0D)
 				, new DoubleFeature(this.formBox ? 1D : 0D)
 				
+				, new DoubleFeature(this.grpTitle ? 1D : 0D)
+				
 				, new DoubleFeature(this.gridHeader ? 1D : 0D)
 				, new DoubleFeature(this.gridDetail ? 1D : 0D)
 				, new DoubleFeature(this.tabfolderHeader ? 1D : 0D)
+				
+				, new DoubleFeature(this.dataTitleEl ? 1D : 0D)
 				
 				, new DoubleFeature(this.buttonEl ? 1D : 0D)
 				, new DoubleFeature(this.inputEl ? 1D : 0D)
@@ -194,9 +225,13 @@ public class UIElementDataRow {
 				, String.valueOf(this.dataBox)
 				, String.valueOf(this.formBox)
 				
+				, String.valueOf(this.grpTitle)
+				
 				, String.valueOf(this.gridHeader)
 				, String.valueOf(this.gridDetail)
 				, String.valueOf(this.tabfolderHeader)
+				
+				, String.valueOf(this.dataTitleEl)
 				
 				, String.valueOf(this.buttonEl)
 				, String.valueOf(this.inputEl)
@@ -211,10 +246,13 @@ public class UIElementDataRow {
 	@Override
 	public String toString() {
 		return "UIElementDataRow [id=" + id + ", searchBox=" + searchBox + ", dataBox=" + dataBox + ", formBox="
-				+ formBox + ", gridHeader=" + gridHeader + ", gridDetail=" + gridDetail + ", tabfolderHeader="
-				+ tabfolderHeader + ", buttonEl=" + buttonEl + ", inputEl=" + inputEl + ", outputEl=" + outputEl
-				+ ", left=" + left + ", top=" + top + ", width=" + width + ", height=" + height + "]";
+				+ formBox + ", grpTitle=" + grpTitle + ", gridHeader=" + gridHeader + ", gridDetail=" + gridDetail
+				+ ", tabfolderHeader=" + tabfolderHeader + ", dataTitleEl=" + dataTitleEl + ", buttonEl=" + buttonEl
+				+ ", inputEl=" + inputEl + ", outputEl=" + outputEl + ", left=" + left + ", top=" + top + ", width="
+				+ width + ", height=" + height + "]";
 	}
+
+
 
 
 

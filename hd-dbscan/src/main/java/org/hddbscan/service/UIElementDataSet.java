@@ -16,7 +16,8 @@ import net.minidev.json.JSONObject;
 
 
 public class UIElementDataSet {
-	private final String[] labels = {"isButton", "isInput", "isOutput", "position"};
+	private final String[] labels = {"isInSearchBor", "isInDataBox", "isInFormBox", "isInGroupTitle", "isInGridHeader", "isInGridDetail", "isInTabFolderHeader"
+			, "isDataTitle", "isButton", "isInput", "isOutput", "position"};
 	private final List<UIElementDataRow> dataRowList;
 	
 	
@@ -66,16 +67,21 @@ public class UIElementDataSet {
 		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in DataBox
 		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in FormBox
 		
+		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in GroupTitle
+		
 		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in GridHeader
 		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in GridDetail
 		
 		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // is in TabfolderHeader
+		
+		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // isDataTitle
 
 		// "isButton", "isInput", "isOutput", "position"
 		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // isButton
 		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // isInput
 		metadata.addConstraint(new DoubleConstraint(1, 0.5D));   // isOutput
-		metadata.addConstraint(new PositionManhattanConstraint(1, 200D, 30D));   // position
+//		metadata.addConstraint(new PositionManhattanConstraint(1, 200D, 30D));   // position
+		metadata.addConstraint(new PositionManhattanConstraint(1, 200D, 10D));   // position
 		
 		return metadata;
 	}

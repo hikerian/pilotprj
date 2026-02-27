@@ -18,23 +18,35 @@ public class PositionManhattanConstraint extends DimensionConstraint {
 	}
 	
 	@Override
-	public double distance(ComputableFeature a, ComputableFeature b) {
-		PositionFeature pa = (PositionFeature)a;
-		PositionFeature pb = (PositionFeature)b;
-		
-		return Math.abs(pa.getLeft() - pb.getLeft()) + Math.abs(pa.getTop() - pb.getTop());
-	}
-
-	@Override
 	public boolean isNeighbours(ComputableFeature a, ComputableFeature b) {
 		PositionFeature pa = (PositionFeature)a;
 		PositionFeature pb = (PositionFeature)b;
 		
-		if(Math.abs(pa.getLeft() - pb.getLeft()) > this.leftEps
-				|| Math.abs(pa.getTop() - pb.getTop()) > this.topEps) {
+		double xd = 0D;
+		double yd = 0D;
+		
+		// 너비 포함 계산
+		if(pa.getLeft() == pb.getLeft()) {
+			xd = 0D;
+		} else if(pa.getLeft() < pb.getLeft()) {
+			xd = Math.abs(pa.getLeft() + pa.getWidth() - pb.getLeft());
+		} else {
+			xd = Math.abs(pa.getLeft() - (pb.getLeft() + pb.getWidth()));
+		}
+		
+		// 높이 포함 계산
+		if(pa.getTop() == pb.getTop()) {
+			yd = 0D;
+		} else if(pa.getTop() < pb.getTop()) {
+			yd = Math.abs(pa.getTop() + pa.getHeight() - pb.getTop());
+		} else {
+			yd = Math.abs(pa.getTop() - (pb.getTop() + pb.getHeight()));
+		}
+		
+		if(xd > this.leftEps || yd > this.topEps) {
 			return false;
 		}
-
+		
 		return true;
 	}
 

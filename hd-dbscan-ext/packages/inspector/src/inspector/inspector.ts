@@ -279,6 +279,7 @@
                             createUiElementList(div, uiElement);
                             selectors.push(uiElement['selectorText']);
                         });
+                        div.appendChild(document.createElement('br'));
 
                         groupElement.appendChild(div);
                     });
@@ -289,7 +290,7 @@
 
     function createGroupSummary(parentNode: HTMLElement, groupId: string, rangeTxt: string) {
         let groupIdSpan: HTMLSpanElement = document.createElement("span");
-        groupIdSpan.appendChild(document.createTextNode(groupId));
+        groupIdSpan.appendChild(document.createTextNode(`● ${groupId}`));
         parentNode.appendChild(groupIdSpan);
 
         let rangeSpan: HTMLSpanElement = document.createElement("span");
@@ -318,11 +319,14 @@
 
         let info: any = {
             classNames: uiElement['classNames']
-            , left: uiElement['posLeft']
-            , top: uiElement['posTop']
+            , text: uiElement['ctntText']
+            , l: uiElement['posLeft']
+            , t: uiElement['posTop']
+            , w: uiElement['uiWidth']
+            , h: uiElement['uiHeight']
         };
 
-        div.appendChild(document.createTextNode(JSON.stringify(info)));
+        div.appendChild(document.createTextNode('- ' + JSON.stringify(info)));
 
         parentNode.appendChild(div);
     }

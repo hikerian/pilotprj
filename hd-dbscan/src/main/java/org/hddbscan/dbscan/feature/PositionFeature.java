@@ -46,34 +46,6 @@ public class PositionFeature implements ComputableFeature {
 	}
 
 	@Override
-	public double distance(ComputableFeature other) {
-		PositionFeature the = (PositionFeature)other;
-		
-		double x = 0D;
-		double y = 0D;
-		
-		if(this.left == the.left) {
-			x = 0D;
-		} else if(this.left < the.left) {
-			x = Math.pow(this.left + this.width - the.left, 2);
-		} else {
-			x = Math.pow(this.left - the.left + the.width, 2);
-		}
-		
-		if(this.top == the.top) {
-			y = 0D;
-		} else if(this.top < the.top) {
-			y = Math.pow(this.top + this.height - the.top, 2);
-		} else {
-			y = Math.pow(this.top - the.top + the.height, 2);
-		}
-		
-		return Math.sqrt(x + y);
-//		return Math.sqrt(Math.pow(this.left - the.left, 2)
-//				+ Math.pow(this.top - the.top, 2));
-	}
-
-	@Override
 	public ComputableFeature clone() {
 		return new PositionFeature(this.left, this.top, this.width, this.height);
 	}
@@ -126,7 +98,7 @@ public class PositionFeature implements ComputableFeature {
 
 	@Override
 	public String toString() {
-		return "PositionFeature [l=" + left + ", t=" + top + ", w=" + width + ", h=" + height + "]";
+		return "{l=" + this.left + ", t=" + this.top + ", w=" + this.width + ", h=" + this.height + "}";
 	}
 
 

@@ -20,7 +20,6 @@ public abstract class DimensionConstraint {
 	}
 	
 	public abstract double[] getEps();
-	public abstract double distance(ComputableFeature a, ComputableFeature b);
 	public abstract boolean isNeighbours(ComputableFeature a, ComputableFeature b);
 
 

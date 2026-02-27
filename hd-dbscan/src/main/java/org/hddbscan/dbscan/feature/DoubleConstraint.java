@@ -16,16 +16,11 @@ public class DoubleConstraint extends DimensionConstraint {
 	}
 	
 	@Override
-	public double distance(ComputableFeature a, ComputableFeature b) {
+	public boolean isNeighbours(ComputableFeature a, ComputableFeature b) {
 		DoubleFeature da = (DoubleFeature)a;
 		DoubleFeature db = (DoubleFeature)b;
 		
-		return Math.abs(da.getValue() - db.getValue());
-	}
-
-	@Override
-	public boolean isNeighbours(ComputableFeature a, ComputableFeature b) {
-		double distance = this.distance(a, b);
+		double distance = Math.abs(da.getValue() - db.getValue());
 
 		return distance <= this.eps;
 	}

@@ -8,6 +8,7 @@ public interface ComputableFeature extends Cloneable {
 	 * @return
 	 */
 	public boolean greaterThan(ComputableFeature other);
+
 	/**
 	 * other 보다 작으면 true 아니면 false.
 	 * @param other
@@ -15,8 +16,6 @@ public interface ComputableFeature extends Cloneable {
 	 */
 	public boolean lessThan(ComputableFeature other);
 	
-	public double distance(ComputableFeature other);
-
 	public ComputableFeature clone();
 	public ComputableFeature min(ComputableFeature other);
 	public ComputableFeature max(ComputableFeature other);

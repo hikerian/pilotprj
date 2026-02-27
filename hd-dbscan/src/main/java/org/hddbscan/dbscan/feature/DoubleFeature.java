@@ -28,12 +28,6 @@ public class DoubleFeature implements ComputableFeature {
 	}
 
 	@Override
-	public double distance(ComputableFeature other) {
-		DoubleFeature the = (DoubleFeature)other;
-		return Math.abs(this.value - the.value);
-	}
-
-	@Override
 	public ComputableFeature clone() {
 		return new DoubleFeature(this.value);
 	}
@@ -79,7 +73,7 @@ public class DoubleFeature implements ComputableFeature {
 
 	@Override
 	public String toString() {
-		return "Double [v=" + this.value + "]";
+		return String.valueOf(this.value);
 	}
 
 
