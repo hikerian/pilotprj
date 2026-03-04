@@ -41,8 +41,6 @@
         port.onDisconnect.addListener(() => {
             console.log("inspector port disconnected, try connecting...");
             requestAnimationFrame(() => connect());
-            // port = chrome.runtime.connect({ name: portNm });
-            // connect();
         });
     }
     connect();
@@ -266,6 +264,7 @@
                     let groupList = data.payload.groups;
                     groupList.forEach((group: any) => {
                         let groupId: string = group["id"];
+                        let label: string = group["label"];
                         let rangeTxt: string = group["rangeText"];
                         let elementList: any[] = group["uiElementList"];
 
@@ -274,9 +273,9 @@
 
                         let div: HTMLDivElement = document.createElement("div");
 
-                        createGroupSummary(div, groupId, rangeTxt);
+                        createGroupSummary(div, groupId, (elementList.length > 0 ? "(○)" : "(×)"), label, rangeTxt);
                         elementList.forEach((uiElement) => {
-                            createUiElementList(div, uiElement);
+                            // createUiElementList(div, uiElement);
                             selectors.push(uiElement['selectorText']);
                         });
                         div.appendChild(document.createElement('br'));
@@ -288,20 +287,51 @@
         });
     }
 
-    function createGroupSummary(parentNode: HTMLElement, groupId: string, rangeTxt: string) {
+    function createGroupSummary(parentNode: HTMLElement, groupId: string, exist: string, label: string, rangeTxt: string) {
         let groupIdSpan: HTMLSpanElement = document.createElement("span");
-        groupIdSpan.appendChild(document.createTextNode(`● ${groupId}`));
+        groupIdSpan.appendChild(document.createTextNode(`● ${groupId} ${exist}`));
         parentNode.appendChild(groupIdSpan);
-
-        let rangeSpan: HTMLSpanElement = document.createElement("span");
-        rangeSpan.appendChild(document.createTextNode(rangeTxt));
-        parentNode.appendChild(rangeSpan);
 
         let btn: HTMLButtonElement = document.createElement("button");
         btn.appendChild(document.createTextNode("Select"));
         btn.setAttribute("data-group-id", groupId);
         btn.onclick = doHighlight;
         parentNode.appendChild(btn);
+
+        let labelInp: HTMLInputElement = document.createElement("input");
+        labelInp.type = "text";
+        labelInp.value = label;
+        labelInp.id = `label-${groupId}`;
+        parentNode.appendChild(labelInp);
+
+        let btnUpdate: HTMLButtonElement = document.createElement("button");
+        btnUpdate.appendChild(document.createTextNode("Update"));
+        btnUpdate.setAttribute("data-group-id", groupId);
+        btnUpdate.onclick = doUpdateGroupLabel;
+        parentNode.appendChild(btnUpdate);
+
+        let rangeSpan: HTMLSpanElement = document.createElement("span");
+        rangeSpan.appendChild(document.createTextNode(rangeTxt));
+        parentNode.appendChild(rangeSpan);
+    }
+
+    function doUpdateGroupLabel(this: any) {
+        let groupId: string = this.getAttribute("data-group-id");
+        let label: string = (<HTMLInputElement>document.getElementById(`label-${groupId}`)).value;
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            headers: {},
+            data: JSON.stringify({
+                groupId: groupId
+                , groupLabel: label
+            }),
+            url: urlBase + "/rest/group-label",
+            success: function (data) {
+                alert(JSON.stringify(data));
+            }
+        });
     }
 
     function doHighlight(this: any) {

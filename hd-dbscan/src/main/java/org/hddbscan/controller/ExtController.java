@@ -163,6 +163,19 @@ public class ExtController {
 		
 		return res;
 	}
+	
+	@PostMapping("/group-label")
+	public ResponseData updateGroupLabel(@RequestBody JSONObject data) {
+		String groupId = data.getAsString("groupId");
+		String groupLabel = data.getAsString("groupLabel");
+		
+		this.hdbscanService.setGroupLabel(groupId, groupLabel);
+		
+		ResponseData res = new ResponseData();
+		res.setSuccess(true);
+		
+		return res;
+	}
 
 
 

@@ -14,6 +14,7 @@ public class DBSCANModel {
 	
 	public static class DBSCANGroup {
 		private String id;
+		private String label;
 		private List<DBSCANRange> rangeList = new ArrayList<>();
 		private List<DataRow> dataList;
 		
@@ -24,6 +25,14 @@ public class DBSCANModel {
 		
 		public String getId() {
 			return id;
+		}
+		
+		public void setLabel(String label) {
+			this.label = label;
+		}
+		
+		public String getLabel() {
+			return this.label;
 		}
 		
 		void addRange(DBSCANRange range) {
@@ -61,11 +70,12 @@ public class DBSCANModel {
 
 		@Override
 		public String toString() {
-			return "DBSCANGroup [id=" + this.id + ", rangeList=" + this.rangeList + "\n, dataList=" + this.dataList + "]\n\n";
+			return "DBSCANGroup [id=" + this.id + ", label=" + this.label + ", rangeList=" + this.rangeList + "\n, dataList=" + this.dataList	+ "]\n\n";
 		}
-		
+
 		public void print(Appendable out, String delimiter) throws IOException {
 			out.append(this.id).append(delimiter)
+			   .append(this.label).append(delimiter)
 			   .append(String.join(delimiter, this.rangeList.stream().map((value)-> "{min:" + value.getMin() + ",max:" + value.getMax() + "}").toList()))
 			   .append("\n");
 			
@@ -88,7 +98,6 @@ public class DBSCANModel {
 
 	
 	private List<String> labels = new ArrayList<>();
-//	private int minPts;
 	private DimensionConstraint[] epsList;
 	
 	private List<DBSCANGroup> groups = new ArrayList<>();
@@ -133,6 +142,18 @@ public class DBSCANModel {
 		group.setDataRowList(new ArrayList<>(groupCluster.getDataList()));
 	}
 	
+	public void setGroupLabel(String groupId, String groupLabel) {
+		this.groups.stream().anyMatch((group) -> {
+			if(groupId.equals(group.getId())) {
+				group.setLabel(groupLabel);
+				
+				return true;
+			} else {
+				return false;
+			}
+		});
+	}
+	
 	public int getGroupCount() {
 		return this.groups.size();
 	}
@@ -143,7 +164,7 @@ public class DBSCANModel {
 
 	@Override
 	public String toString() {
-		return "DBSCANModel [labels=" + labels + ", groups=\n" + groups + "]";
+		return "DBSCANModel [labels=" + this.labels + ", groups=\n" + this.groups + "]";
 	}
 	
 	public void print(Appendable out, String delimiter) throws IOException {
@@ -151,7 +172,7 @@ public class DBSCANModel {
 			.append("epsList:").append(
 				String.join(delimiter, Arrays.stream(this.epsList).map((eps)->String.valueOf(eps)).toArray((size)->new String[size]))
 				).append('\n')
-			.append("groupId").append(delimiter).append("id").append(delimiter)
+			.append("groupId").append(delimiter).append("label").append(delimiter)
 			.append(String.join(delimiter, this.labels)).append('\n');
 		for(DBSCANGroup group : this.groups) {
 			group.print(out, delimiter);

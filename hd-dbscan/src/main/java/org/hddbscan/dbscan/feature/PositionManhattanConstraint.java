@@ -28,19 +28,27 @@ public class PositionManhattanConstraint extends DimensionConstraint {
 		// 너비 포함 계산
 		if(pa.getLeft() == pb.getLeft()) {
 			xd = 0D;
-		} else if(pa.getLeft() < pb.getLeft()) {
-			xd = Math.abs(pa.getLeft() + pa.getWidth() - pb.getLeft());
 		} else {
-			xd = Math.abs(pa.getLeft() - (pb.getLeft() + pb.getWidth()));
+			xd = Math.abs(pa.getLeft() - pb.getLeft());
+			
+			if(pa.getLeft() < pb.getLeft()) {
+				xd = Math.min(Math.abs(pa.getLeft() + pa.getWidth() - pb.getLeft()), xd) ;
+			} else {
+				xd = Math.min(Math.abs(pa.getLeft() - (pb.getLeft() + pb.getWidth())), xd);
+			}
 		}
 		
 		// 높이 포함 계산
 		if(pa.getTop() == pb.getTop()) {
 			yd = 0D;
-		} else if(pa.getTop() < pb.getTop()) {
-			yd = Math.abs(pa.getTop() + pa.getHeight() - pb.getTop());
 		} else {
-			yd = Math.abs(pa.getTop() - (pb.getTop() + pb.getHeight()));
+			yd = Math.abs(pa.getTop() - pb.getTop());
+			
+			if(pa.getTop() < pb.getTop()) {
+				yd = Math.min(Math.abs(pa.getTop() + pa.getHeight() - pb.getTop()), yd);
+			} else {
+				yd = Math.min(Math.abs(pa.getTop() - (pb.getTop() + pb.getHeight())), yd);
+			}
 		}
 		
 		if(xd > this.leftEps || yd > this.topEps) {

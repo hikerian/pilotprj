@@ -8,6 +8,7 @@ import org.hddbscan.entity.UiElements;
 
 public class ModelGroup {
 	private String id;
+	private String label;
 	private String rangeText;
 	private List<UiElements> uiElementList;
 	
@@ -20,6 +21,14 @@ public class ModelGroup {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	public String getLabel() {
+		return this.label;
+	}
+	
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 	public String getRangeText() {
@@ -44,7 +53,7 @@ public class ModelGroup {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, rangeText, uiElementList);
+		return Objects.hash(id, label, rangeText, uiElementList);
 	}
 
 	@Override
@@ -56,14 +65,16 @@ public class ModelGroup {
 		if (getClass() != obj.getClass())
 			return false;
 		ModelGroup other = (ModelGroup) obj;
-		return Objects.equals(id, other.id) && Objects.equals(rangeText, other.rangeText)
-				&& Objects.equals(uiElementList, other.uiElementList);
+		return Objects.equals(id, other.id) && Objects.equals(label, other.label)
+				&& Objects.equals(rangeText, other.rangeText) && Objects.equals(uiElementList, other.uiElementList);
 	}
 
 	@Override
 	public String toString() {
-		return "ModelGroup [id=" + id + ", rangeText=" + rangeText + ", uiElementList=" + uiElementList + "]";
+		return "ModelGroup [id=" + id + ", label=" + label + ", rangeText=" + rangeText + ", uiElementList="
+				+ uiElementList + "]";
 	}
+
 
 
 }

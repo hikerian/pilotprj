@@ -81,7 +81,7 @@ public class UIElementDataRow {
 		dataRow.setOutputEl(UIElementDataRow.isContains(UIElementDataRow.OUTPUT_CLASSES, classNms));
 		dataRow.setPosition(left, top, width, height);
 		
-		return dataRow;		
+		return dataRow;
 	}
 	
 	private static boolean isContains(String cond, String[] items) {

@@ -89,6 +89,10 @@ public class HDBSCANService {
 		return groupList;
 	}
 	
+	public void setGroupLabel(String groupId, String groupLabel) {
+		this.model.setGroupLabel(groupId, groupLabel);
+	}
+	
 	public List<ModelGroup> getModelGroups(long pageId) {
 		List<ModelGroup> modelGroupList = new ArrayList<>();
 		
@@ -110,14 +114,15 @@ public class HDBSCANService {
 					(element)->group.hasDataRowId(UIElementDataRow.genId(element))
 					).toList();
 			
-			if(filtered.size() > 0) {
+//			if(filtered.size() > 0) {
 				ModelGroup modelGroup = new ModelGroup();
 				modelGroup.setId(id);
+				modelGroup.setLabel(group.getLabel());
 				modelGroup.setRangeText(rangeTxt);
 				modelGroup.setUiElementList(filtered);
 				
 				modelGroupList.add(modelGroup);
-			}
+//			}
 		}
 		
 		return modelGroupList;
