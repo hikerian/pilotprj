@@ -25,6 +25,11 @@ import net.minidev.json.JSONObject;
 public class DBAccessor {
 	private final Logger log = LoggerFactory.getLogger(DBAccessor.class);
 	
+	private final String[] replace = {
+		"^body > div.cl-control.cl-container:nth-of-type\\([\\d+]\\)"
+		, "body > div.cl-control.cl-container"
+	};
+	
 	private final SQLMapper sql;
 	
 	private final NamedParameterJdbcOperations jdbcTemplate;
@@ -87,6 +92,9 @@ public class DBAccessor {
 		UiElements element = new UiElements();
 		
 		String selector = target.getAsString("selector");
+		// selector normalizing 
+		selector = selector.replaceFirst(this.replace[0], this.replace[1]);
+		
 		JSONArray classNameArray = (JSONArray) target.get("classNames");
 		String classNms = String.join(",", classNameArray.toArray(new String[0]));
 		String text = target.getAsString("text");

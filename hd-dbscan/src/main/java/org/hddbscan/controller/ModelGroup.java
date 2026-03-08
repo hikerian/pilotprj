@@ -1,5 +1,6 @@
 package org.hddbscan.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,6 +46,13 @@ public class ModelGroup {
 
 	public void setUiElementList(List<UiElements> uiElementList) {
 		this.uiElementList = uiElementList;
+	}
+	
+	public void addUiElement(UiElements element) {
+		if(this.uiElementList == null) {
+			this.uiElementList = new ArrayList<>();
+		}
+		this.uiElementList.add(element);
 	}
 	
 	public int getUiElementListSize() {

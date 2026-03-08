@@ -285,6 +285,47 @@
                 }
             });
         });
+
+        $("#btnPredict").on("click", () => {
+            var checkedValues = $('input[name="chkPageId"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            $.ajax({
+                type: "GET",
+                contentType: "application/json",
+                headers: {},
+                url: urlBase + "/rest/page-predict/" + checkedValues[0],
+                success: function (data) {
+                    let groupElement: HTMLElement = document.getElementById("modelGroups")!;
+                    clearChild(groupElement);
+
+                    groupSelectors = {};
+
+                    let groupList = data.payload.groups;
+                    groupList.forEach((group: any) => {
+                        let groupId: string = group["id"];
+                        let label: string = group["label"];
+                        let rangeTxt: string = group["rangeText"];
+                        let elementList: any[] = group["uiElementList"];
+
+                        let selectors: string[] = [];
+                        groupSelectors[groupId] = selectors;
+
+                        let div: HTMLDivElement = document.createElement("div");
+
+                        createGroupSummary(div, groupId, (elementList.length > 0 ? "(○)" : "(×)"), label, rangeTxt);
+                        elementList.forEach((uiElement) => {
+                            // createUiElementList(div, uiElement);
+                            selectors.push(uiElement['selectorText']);
+                        });
+                        div.appendChild(document.createElement('br'));
+
+                        groupElement.appendChild(div);
+                    });
+                }
+            });
+        });
     }
 
     function createGroupSummary(parentNode: HTMLElement, groupId: string, exist: string, label: string, rangeTxt: string) {

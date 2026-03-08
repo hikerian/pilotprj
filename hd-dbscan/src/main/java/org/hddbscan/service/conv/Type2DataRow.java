@@ -1,4 +1,4 @@
-package org.hddbscan.service;
+package org.hddbscan.service.conv;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 
-public class UIElementDataRow {
+public class Type2DataRow {
 	// FIXME: 규칙 기반으로 컴포넌트를 분류할 수 있는 기능이 필요함
 	private final static List<String> BUTTON_CLASSES = Arrays.asList("btn-header-minus", "cl-button", "btn-search", "btn-restore", "btn-save", "btn-excel"
 			, "btn-setting", "btn-pop", "btn-new", "btn-delete", "btn-pop-search");
@@ -29,8 +29,8 @@ public class UIElementDataRow {
 		return String.format("%1$d-%2$d", uiElements.getPageId(), uiElements.getElementId());
 	}
 	
-	public static UIElementDataRow convert(UiElements uiElements) {
-		String id = UIElementDataRow.genId(uiElements);
+	public static Type2DataRow convert(UiElements uiElements) {
+		String id = Type2DataRow.genId(uiElements);
 		String selector = uiElements.getSelectorText();
 		String[] classNames = uiElements.getClassNames().split(",");
 		double left = uiElements.getPosLeft();
@@ -38,10 +38,10 @@ public class UIElementDataRow {
 		double width = uiElements.getUiWidth();
 		double height = uiElements.getUiHeight();
 		
-		return UIElementDataRow.convert(id, selector, classNames, left, top, width, height);
+		return Type2DataRow.convert(id, selector, classNames, left, top, width, height);
 	}
 	
-	public static UIElementDataRow convert(String id, JSONObject target) {
+	public static Type2DataRow convert(String id, JSONObject target) {
 		JSONArray classNameArray = (JSONArray) target.get("classNames");
 		String selector = target.getAsString("selector");
 		String[] classNames = classNameArray.toArray(new String[0]);
@@ -51,34 +51,34 @@ public class UIElementDataRow {
 		double width = clientRect.getAsNumber("width").doubleValue();
 		double height = clientRect.getAsNumber("height").doubleValue();
 		
-		return UIElementDataRow.convert(id, selector, classNames, left, top, width, height);
+		return Type2DataRow.convert(id, selector, classNames, left, top, width, height);
 	}
 	
-	private static UIElementDataRow convert(String id, String selector, String[] classNms, double left, double top, double width, double height) {
+	private static Type2DataRow convert(String id, String selector, String[] classNms, double left, double top, double width, double height) {
 		if(width == 0D || height == 0D) {
 			// 크기가 0이면 skip!
 			return null;
 		}
 		
-		UIElementDataRow dataRow = new UIElementDataRow();
+		Type2DataRow dataRow = new Type2DataRow();
 		dataRow.setId(id);
 		
 		dataRow.setSearchBox(selector.contains("search-box"));
 		dataRow.setDataBox(selector.contains("data-box"));
 		dataRow.setFormBox(selector.contains("form-box"));
 		
-		dataRow.setGrpTitle(UIElementDataRow.isContains(UIElementDataRow.GROUPTITLE_CLASSES, selector));
+		dataRow.setGrpTitle(Type2DataRow.isContains(Type2DataRow.GROUPTITLE_CLASSES, selector));
 		
 		dataRow.setGridHeader(selector.contains("cl-grid-header"));
 		dataRow.setGridDetail(selector.contains("cl-grid-detail"));
 		
 		dataRow.setTabfolderHeader(selector.contains("cl-tabfolder-header"));
 		
-		dataRow.setDataTitleEl(UIElementDataRow.isContains("data-title", classNms));
+		dataRow.setDataTitleEl(Type2DataRow.isContains("data-title", classNms));
 		
-		dataRow.setButtonEl(UIElementDataRow.isContains(UIElementDataRow.BUTTON_CLASSES, classNms));
-		dataRow.setInputEl(UIElementDataRow.isContains(UIElementDataRow.INPUT_CLASSES, classNms));
-		dataRow.setOutputEl(UIElementDataRow.isContains(UIElementDataRow.OUTPUT_CLASSES, classNms));
+		dataRow.setButtonEl(Type2DataRow.isContains(Type2DataRow.BUTTON_CLASSES, classNms));
+		dataRow.setInputEl(Type2DataRow.isContains(Type2DataRow.INPUT_CLASSES, classNms));
+		dataRow.setOutputEl(Type2DataRow.isContains(Type2DataRow.OUTPUT_CLASSES, classNms));
 		dataRow.setPosition(left, top, width, height);
 		
 		return dataRow;
@@ -136,7 +136,7 @@ public class UIElementDataRow {
 	private double height;
 	
 	
-	public UIElementDataRow() {
+	public Type2DataRow() {
 	}
 	
 	public void setId(String id) {

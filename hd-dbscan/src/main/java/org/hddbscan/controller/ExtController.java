@@ -1,6 +1,9 @@
 package org.hddbscan.controller;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hddbscan.dbscan.DBSCANModel;
 import org.hddbscan.dbscan.DBSCANModel.DBSCANGroup;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 
@@ -160,6 +164,52 @@ public class ExtController {
 		ResponseData res = new ResponseData();
 		res.setSuccess(true);
 		res.addPayload("groups", modelGroupList);
+		
+		return res;
+	}
+	
+	/**
+	 * Inspect 화면에서 화면의 요소를 크롤링한 결과로 기존 모델에서 근접한 그룹을 식별한 후 
+	 * @param data
+	 * @return
+	 */
+	@GetMapping("/page-predict/{pageId}")
+	public ResponseData predictPage(@PathVariable String pageId) {
+		List<UiElements> elementList = this.dao.selectUiElementsList(Long.valueOf(pageId));
+		
+		Map<String, ModelGroup> modelGroupMap = new HashMap<>();
+		StringBuilder builder = new StringBuilder();
+		
+		for(UiElements element : elementList) {
+			List<DBSCANGroup> groupList = this.hdbscanService.predict(element);
+			
+			for(DBSCANGroup group : groupList) {
+				String id = group.getId();
+				
+				ModelGroup modelGroup = modelGroupMap.get(id);
+				if(modelGroup == null) {
+					try {
+						group.printRange(builder, ",");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					String rangeTxt = builder.toString();
+					builder.delete(0, builder.length());
+					
+					modelGroup = new ModelGroup();
+					modelGroup.setId(id);
+					modelGroup.setLabel(group.getLabel());
+					modelGroup.setRangeText(rangeTxt);
+					
+					modelGroupMap.put(id, modelGroup);
+				}
+				modelGroup.addUiElement(element);
+			}
+		}		
+		
+		ResponseData res = new ResponseData();
+		res.setSuccess(true);
+		res.addPayload("groups", modelGroupMap.values());
 		
 		return res;
 	}

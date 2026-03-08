@@ -1,4 +1,4 @@
-package org.hddbscan.service;
+package org.hddbscan.service.conv;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,22 +15,22 @@ import org.hddbscan.entity.UiElements;
 import net.minidev.json.JSONObject;
 
 
-public class UIElementDataSet {
+public class Type2DataSet {
 	private final String[] labels = {"isInSearchBor", "isInDataBox", "isInFormBox", "isInGroupTitle", "isInGridHeader", "isInGridDetail", "isInTabFolderHeader"
 			, "isDataTitle", "isButton", "isInput", "isOutput", "position"};
-	private final List<UIElementDataRow> dataRowList;
+	private final List<Type1DataRow> dataRowList;
 	
 	
-	public UIElementDataSet() {
+	public Type2DataSet() {
 		this.dataRowList = new ArrayList<>();
 	}
 	
-	public void addRow(UIElementDataRow dataRow) {
+	public void addRow(Type1DataRow dataRow) {
 		this.dataRowList.add(dataRow);
 	}
 	
 	public void addRow(UiElements uiElements) {
-		UIElementDataRow dataRow = UIElementDataRow.convert(uiElements);
+		Type1DataRow dataRow = Type1DataRow.convert(uiElements);
 		if(dataRow == null) {
 			return;
 		}
@@ -39,7 +39,7 @@ public class UIElementDataSet {
 	}
 	
 	public void addRow(String id, JSONObject target) {
-		UIElementDataRow dataRow = UIElementDataRow.convert(id, target);
+		Type1DataRow dataRow = Type1DataRow.convert(id, target);
 		if(dataRow == null) {
 			return;
 		}
@@ -52,9 +52,9 @@ public class UIElementDataSet {
 		
 		dataSet.setLabels(this.labels);
 		
-		for(UIElementDataRow uiDataRow : this.dataRowList) {
+		for(Type1DataRow uiDataRow : this.dataRowList) {
 			DataRow dataRow = uiDataRow.toDataRow();
-			dataSet.addRow(dataRow);
+//			dataSet.addRow(dataRow); // FIXME: preprocessing 지원
 		}
 		
 		return dataSet;
@@ -89,7 +89,7 @@ public class UIElementDataSet {
 	public void print(Appendable out, String delimiter) throws IOException {
 		out.append("UIElementDataSet:\n");
 		out.append("id").append(delimiter).append(String.join(delimiter, this.labels)).append('\n');
-		for(UIElementDataRow dataRow : this.dataRowList) {
+		for(Type1DataRow dataRow : this.dataRowList) {
 			dataRow.print(out, delimiter);
 		}
 	}

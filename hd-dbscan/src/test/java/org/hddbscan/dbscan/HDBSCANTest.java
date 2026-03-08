@@ -9,8 +9,11 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.hddbscan.service.UIElementDataSet;
+import org.hddbscan.service.conv.Type1DataRow;
+import org.hddbscan.service.conv.Type1DataSet;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -29,7 +32,7 @@ public class HDBSCANTest {
 		try (PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(logFile), StandardCharsets.UTF_8));) {
 			JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
 	
-			UIElementDataSet uiDataSet = new UIElementDataSet();
+			Type1DataSet uiDataSet = new Type1DataSet();
 	//		List<String> classNameList = new ArrayList<>();
 	//		List<String> textList = new ArrayList<>();
 			
@@ -41,6 +44,8 @@ public class HDBSCANTest {
 				}
 				
 			});
+			
+			List<Type1DataRow> rowList = new ArrayList<>();
 			for(File file : files) {
 	//		    File file = files[0];
 			    
@@ -51,14 +56,14 @@ public class HDBSCANTest {
 					jsonObj = (JSONObject)parser.parse(reader);
 				}
 				
-				String title = jsonObj.getAsString("titile");
+				String title = jsonObj.getAsString("title");
 				JSONObject payload = (JSONObject) jsonObj.get("payload");
 				JSONArray targetList = (JSONArray) payload.get("targetList");
 				
 				for(int i = 0; i < targetList.size(); i++) {
 					JSONObject target = (JSONObject)targetList.get(i);
 					
-					uiDataSet.addRow(title + (i + 1), target);
+					rowList.add(Type1DataRow.convert(title + (i + 1), target));
 					
 	//				JSONArray classNameArray = (JSONArray) target.get("classNames");
 	//				String[] classNms = classNameArray.toArray(new String[0]);
@@ -73,9 +78,10 @@ public class HDBSCANTest {
 	//				if(textList.contains(text) == false) {
 	//					textList.add(text);
 	//				}
-					
 				}
 			}
+			uiDataSet.addType1DataRowCluster("other", rowList);
+			
 			
 	//		System.out.println("==============================");
 	//		System.out.println(classNameList);

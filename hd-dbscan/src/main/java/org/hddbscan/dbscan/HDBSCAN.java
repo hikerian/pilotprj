@@ -37,7 +37,8 @@ public class HDBSCAN {
 		this.log.info("Constraints Count: {}", cstntCnt);
 
 		List<DBSCANCluster> clusterList = new ArrayList<>();
-		clusterList.add(new DBSCANCluster(inputValues.getAllRows()));
+//		clusterList.add(new DBSCANCluster(inputValues.getAllRows()));
+		clusterList.addAll(inputValues.getClusters());
 
 		for (int i = 0; i < cstntCnt; i++) {
 			List<DBSCANCluster> mergeList = new ArrayList<>();

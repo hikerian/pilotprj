@@ -7,11 +7,21 @@ import org.hddbscan.dbscan.feature.ComputableFeature;
 
 
 public class DBSCANCluster {
+	private String id;
 	private final List<DataRow> dataList;
 	
 	
+	public DBSCANCluster(String id, List<DataRow> neighbours) {
+		this.id = id;
+		this.dataList = neighbours;
+	}
+	
 	public DBSCANCluster(List<DataRow> neighbours) {
 		this.dataList = neighbours;
+	}
+	
+	public String getId() {
+		return this.id;
 	}
 	
 	public List<DataRow> getDataList() {
