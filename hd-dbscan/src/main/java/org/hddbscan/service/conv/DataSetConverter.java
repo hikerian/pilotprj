@@ -24,6 +24,84 @@ public class DataSetConverter {
 	private final List<RawCluster<UiElements>> rawClusterList;
 	
 	
+	public static String genId(UiElements uiElements) {
+		return String.format("%1$d-%2$d", uiElements.getPageId(), uiElements.getElementId());
+	}
+	
+	public static UiElements convert(long pageId, long elementId, JSONObject target) {
+		JSONArray classNameArray = (JSONArray) target.get("classNames");
+		String selector = target.getAsString("selector");
+		String[] classNames = classNameArray.toArray(new String[0]);
+		String text = target.getAsString("text");
+		JSONObject clientRect = (JSONObject)target.get("clientRect");
+		double left = clientRect.getAsNumber("left").doubleValue();
+		double top = clientRect.getAsNumber("top").doubleValue();
+		double width = clientRect.getAsNumber("width").doubleValue();
+		double height = clientRect.getAsNumber("height").doubleValue();
+		String majorYn = target.getAsString("majorYn");
+		
+		UiElements element = new UiElements();
+		element.setPageId(pageId);
+		element.setElementId(elementId);
+		element.setSelectorText(selector);
+		element.setClassNames(String.join(",", classNames));
+		element.setCtntText(text);
+		element.setPosLeft(left);
+		element.setPosTop(top);
+		element.setUiWidth(width);
+		element.setUiHeight(height);
+		element.setMajorYn(majorYn);
+		
+		return element;
+	}
+	
+	public static DataRow convert(UiElements element, DataSetConverterMetadata meta) {
+		List<FeatureOrganizer<? extends ComputableFeature>> orgList = meta.getFeatureOrganizerList();
+		
+		return DataSetConverter.convert(element, orgList);
+	}
+	
+	public static DataRow convert(UiElements element, List<FeatureOrganizer<? extends ComputableFeature>> orgList) {
+		ComputableFeature[] features = orgList.stream()
+				.map((org)-> org.genFeature(element))
+				.toArray(ComputableFeature[]::new);
+
+		DataRow dataRow = new DataRow();
+		dataRow.setId(DataSetConverter.genId(element));
+		dataRow.setData(features);
+		
+		return dataRow;
+	}
+
+	private static boolean isContains(List<String> container, String selector) {
+		for(String item : container) {
+			if(selector.contains(item)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private static boolean isContains(String cond, String[] items) {
+		for(String item : items) {
+			if(cond.equals(item)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private static boolean isContains(List<String> container, String[] items) {
+		for(String item : items) {
+			if(container.contains(item)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	
 	public DataSetConverter() {
 		this.rawClusterList = new ArrayList<>();
 	}
@@ -137,24 +215,6 @@ public class DataSetConverter {
 		return dataSet;
 	}
 	
-	public static DataRow convert(UiElements element, DataSetConverterMetadata meta) {
-		List<FeatureOrganizer<? extends ComputableFeature>> orgList = meta.getFeatureOrganizerList();
-		
-		return DataSetConverter.convert(element, orgList);
-	}
-	
-	public static DataRow convert(UiElements element, List<FeatureOrganizer<? extends ComputableFeature>> orgList) {
-		ComputableFeature[] features = orgList.stream()
-				.map((org)-> org.genFeature(element))
-				.toArray(ComputableFeature[]::new);
-
-		DataRow dataRow = new DataRow();
-		dataRow.setId(DataSetConverter.genId(element));
-		dataRow.setData(features);
-		
-		return dataRow;
-	}
-	
 	public DBSCANMetadata genDBSCANMetadata(DataSetConverterMetadata meta) {
 		final DBSCANMetadata metadata = new DBSCANMetadata();
 		
@@ -166,63 +226,7 @@ public class DataSetConverter {
 		return metadata;
 	}
 
-	public static String genId(UiElements uiElements) {
-		return String.format("%1$d-%2$d", uiElements.getPageId(), uiElements.getElementId());
-	}
-	
-	public static UiElements convert(long pageId, long elementId, JSONObject target) {
-		JSONArray classNameArray = (JSONArray) target.get("classNames");
-		String selector = target.getAsString("selector");
-		String[] classNames = classNameArray.toArray(new String[0]);
-		String text = target.getAsString("text");
-		JSONObject clientRect = (JSONObject)target.get("clientRect");
-		double left = clientRect.getAsNumber("left").doubleValue();
-		double top = clientRect.getAsNumber("top").doubleValue();
-		double width = clientRect.getAsNumber("width").doubleValue();
-		double height = clientRect.getAsNumber("height").doubleValue();
-		String majorYn = target.getAsString("majorYn");
-		
-		UiElements element = new UiElements();
-		element.setPageId(pageId);
-		element.setElementId(elementId);
-		element.setSelectorText(selector);
-		element.setClassNames(String.join(",", classNames));
-		element.setCtntText(text);
-		element.setPosLeft(left);
-		element.setPosTop(top);
-		element.setUiWidth(width);
-		element.setUiHeight(height);
-		element.setMajorYn(majorYn);
-		
-		return element;
-	}
 
-	private static boolean isContains(List<String> container, String selector) {
-		for(String item : container) {
-			if(selector.contains(item)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private static boolean isContains(String cond, String[] items) {
-		for(String item : items) {
-			if(cond.equals(item)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private static boolean isContains(List<String> container, String[] items) {
-		for(String item : items) {
-			if(container.contains(item)) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 
 }
