@@ -19,8 +19,8 @@ import org.hddbscan.entity.UiElements;
 import org.hddbscan.preprocessing.RawCluster;
 import org.hddbscan.repository.DBAccessor;
 import org.hddbscan.repository.UiPageRepository;
-import org.hddbscan.service.conv.Type1DataRow;
-import org.hddbscan.service.conv.Type1DataSet;
+import org.hddbscan.service.conv.DataSetConverter;
+import org.hddbscan.service.conv.DataSetConverterMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class HDBSCANService {
 
-    private final UiPageRepository uiPageRepository;
 	private final Logger log = LoggerFactory.getLogger(HDBSCANService.class);
 	
 //	private final String[] groupClasses = {
@@ -44,9 +43,8 @@ public class HDBSCANService {
 	private DBSCANModel model;
 	
 	
-	public HDBSCANService(DBAccessor dbAccessor, UiPageRepository uiPageRepository) {
+	public HDBSCANService(DBAccessor dbAccessor) {
 		this.dao = dbAccessor;
-		this.uiPageRepository = uiPageRepository;
 	}
 	
 //	public DBSCANModel learn(List<String> pageIds) {
@@ -156,6 +154,88 @@ public class HDBSCANService {
 //		return model;
 //	}
 	
+//	public DBSCANModel learn(List<String> pageIds) {
+//		long start = System.currentTimeMillis();
+//		
+//		List<UiElements> elementList = new ArrayList<>();
+//		
+//		for(String pageId : pageIds) {
+//			List<UiElements> uiElements = this.dao.selectUiElementsList(Long.parseLong(pageId));
+//			this.log.debug("pageId:{} element {} cnt loaded", pageId, uiElements.size());
+//			
+//			elementList.addAll(uiElements);
+//		}
+//		
+//		// sort
+//		elementList.sort((UiElements el1, UiElements el2)-> {
+//			return el1.getSelectorText().compareTo(el2.getSelectorText());
+//		});
+//		
+//		// tree의 그룹요소를 1차원 cluster로 펼치기
+//		final String OTHER = "OTHER";
+//		Map<String, RawCluster<UiElements>> clusterMap = new HashMap<>();
+//		RawCluster<UiElements> other = new RawCluster<>(OTHER);
+//		clusterMap.put(OTHER, other);
+//		
+//		final String groupClassNames = "search-box|data-box|form-box";
+//		Pattern pattern = Pattern.compile(groupClassNames);
+//		List<String> clusterIdClass = new ArrayList<>();
+//		
+//		int maxCnt = 0;
+//		elementLoop: for(UiElements raw : elementList) {
+//			maxCnt++;
+//			clusterIdClass.clear();
+//			String selector = raw.getSelectorText();
+//			
+//			Matcher matcher = pattern.matcher(selector);
+//			while(matcher.find()) {
+//				clusterIdClass.add(matcher.group());
+//			}
+//			if(clusterIdClass.size() > 0) {
+//				String clusterId = String.join(" > ", clusterIdClass.toArray(new String[0]));				
+//				RawCluster<UiElements> cluster = clusterMap.get(clusterId);
+//				if(cluster == null) {
+//					cluster = new RawCluster<>(clusterId);
+//					clusterMap.put(clusterId, cluster);
+//					
+//					this.log.debug("New Preprocessing ClusterID: {}", clusterId);
+//				}
+//				cluster.add(raw);
+//				
+//				continue elementLoop;
+//			} else {
+//				other.add(raw);
+//			}
+//		}
+//		
+//		this.log.info("Preprocessing Cluster count: {}, Raw count: {}, time: {} ms spent"
+//				, clusterMap.size(), maxCnt, System.currentTimeMillis() - start);
+//		
+//		
+//		Type1DataSet uiDataSet = new Type1DataSet();
+//		clusterMap.values().forEach((cluster) -> {
+////			this.log.debug("ClusterId: {}, Element Count: {}", cluster.getId(), cluster.elementCount());
+//			try {
+//				cluster.print(System.out, ",");
+//			} catch (IOException e) { }
+//			
+//			String clusterId = cluster.getId();
+//			List<UiElements> list = cluster.getList();
+//			
+//			uiDataSet.addCluster(clusterId, list);
+//		});
+//		
+//		DataSet dataSet = uiDataSet.toDataSet();
+//		DBSCANMetadata metadata = uiDataSet.getMetadata();
+//		
+//		HDBSCAN hdbscan = new HDBSCAN();
+//		hdbscan.setMetadata(metadata);
+//		DBSCANModel model = hdbscan.fit(dataSet);
+//		
+//		this.model = model;
+//		
+//		return model;
+//	}
 	public DBSCANModel learn(List<String> pageIds) {
 		long start = System.currentTimeMillis();
 		
@@ -213,22 +293,18 @@ public class HDBSCANService {
 		this.log.info("Preprocessing Cluster count: {}, Raw count: {}, time: {} ms spent"
 				, clusterMap.size(), maxCnt, System.currentTimeMillis() - start);
 		
-		
-		Type1DataSet uiDataSet = new Type1DataSet();
+		DataSetConverter converter = new DataSetConverter();
 		clusterMap.values().forEach((cluster) -> {
-//			this.log.debug("ClusterId: {}, Element Count: {}", cluster.getId(), cluster.elementCount());
 			try {
 				cluster.print(System.out, ",");
 			} catch (IOException e) { }
 			
-			String clusterId = cluster.getId();
-			List<UiElements> list = cluster.getList();
-			
-			uiDataSet.addCluster(clusterId, list);
+			converter.addCluster(cluster);
 		});
 		
-		DataSet dataSet = uiDataSet.toDataSet();
-		DBSCANMetadata metadata = uiDataSet.getMetadata();
+		DataSetConverterMetadata meta = this.getConverterMeta();
+		DataSet dataSet = converter.genDataSet(meta);
+		DBSCANMetadata metadata = converter.genDBSCANMetadata(meta);
 		
 		HDBSCAN hdbscan = new HDBSCAN();
 		hdbscan.setMetadata(metadata);
@@ -299,11 +375,8 @@ public class HDBSCANService {
 		return this.predict(uiElement);
 	}
 	public List<DBSCANGroup> predict(UiElements uiElement) {
-		Type1DataRow uiDataRow = Type1DataRow.convert(uiElement);
-		return this.predict(uiDataRow);
-	}
-	public List<DBSCANGroup> predict(Type1DataRow uiDataRow) {		
-		DataRow dataRow = uiDataRow.toDataRow();
+		DataSetConverterMetadata meta = this.getConverterMeta();
+		DataRow dataRow = DataSetConverter.convert(uiElement, meta);
 		return this.predict(dataRow);
 	}
 	public List<DBSCANGroup> predict(DataRow dataRow) {		
@@ -333,23 +406,27 @@ public class HDBSCANService {
 			builder.delete(0, builder.length());
 			
 			List<UiElements> filtered = uiElements.stream().filter(
-					(element)->group.hasDataRowId(Type1DataRow.genId(element))
+					(element)->group.hasDataRowId(DataSetConverter.genId(element))
 					).toList();
 			
-//			if(filtered.size() > 0) {
-				ModelGroup modelGroup = new ModelGroup();
-				modelGroup.setId(id);
-				modelGroup.setLabel(group.getLabel());
-				modelGroup.setRangeText(rangeTxt);
-				modelGroup.setUiElementList(filtered);
-				
-				modelGroupList.add(modelGroup);
-//			}
+			ModelGroup modelGroup = new ModelGroup();
+			modelGroup.setId(id);
+			modelGroup.setLabel(group.getLabel());
+			modelGroup.setRangeText(rangeTxt);
+			modelGroup.setUiElementList(filtered);
+			
+			modelGroupList.add(modelGroup);
 		}
 		
 		return modelGroupList;
 	}
 
+	private DataSetConverterMetadata getConverterMeta() {
+		DataSetConverterMetadata meta = DataSetConverter.genType1Meta();
+		return meta;
+	}
+	
+	
 
 
 }

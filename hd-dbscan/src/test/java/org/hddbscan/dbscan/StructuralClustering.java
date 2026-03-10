@@ -98,8 +98,8 @@ public class StructuralClustering {
 		});
 		
 		// tree의 그룹요소를 1차원 cluster로 펼치기..
-		Map<String, RawCluster> clusterMap = new HashMap<>();
-		RawCluster other = new RawCluster("other");
+		Map<String, RawCluster<UIElementRaw>> clusterMap = new HashMap<>();
+		RawCluster<UIElementRaw> other = new RawCluster<>("other");
 		clusterMap.put("other", other);
 		
 		int maxCnt = 0;
@@ -117,9 +117,9 @@ public class StructuralClustering {
 					if(sel.contains(className)) {
 						String clusterId = this.genClusterId(selectors, i);
 						
-						RawCluster cluster = clusterMap.get(clusterId);
+						RawCluster<UIElementRaw> cluster = clusterMap.get(clusterId);
 						if(cluster == null) {
-							cluster = new RawCluster(clusterId);
+							cluster = new RawCluster<>(clusterId);
 							clusterMap.put(clusterId, cluster);
 						}
 						cluster.add(raw);

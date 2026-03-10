@@ -21,6 +21,10 @@ public class DataSet {
 		Collections.addAll(this.labels, labels);
 	}
 	
+	public void addLabel(String label) {
+		this.labels.add(label);
+	}
+	
 	public List<String> getLabels() {
 		return this.labels;
 	}

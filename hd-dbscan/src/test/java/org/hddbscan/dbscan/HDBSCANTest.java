@@ -9,11 +9,11 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.hddbscan.service.conv.Type1DataRow;
-import org.hddbscan.service.conv.Type1DataSet;
+import org.hddbscan.entity.UiElements;
+import org.hddbscan.preprocessing.RawCluster;
+import org.hddbscan.service.conv.DataSetConverter;
+import org.hddbscan.service.conv.DataSetConverterMetadata;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -32,9 +32,7 @@ public class HDBSCANTest {
 		try (PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(logFile), StandardCharsets.UTF_8));) {
 			JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
 	
-			Type1DataSet uiDataSet = new Type1DataSet();
-	//		List<String> classNameList = new ArrayList<>();
-	//		List<String> textList = new ArrayList<>();
+			DataSetConverter converter = new DataSetConverter();
 			
 			File[] files = new File(dir).listFiles(new FilenameFilter() {
 	
@@ -45,9 +43,10 @@ public class HDBSCANTest {
 				
 			});
 			
-			List<Type1DataRow> rowList = new ArrayList<>();
+			RawCluster<UiElements> cluster = new RawCluster<>("other");
+			long pageId = 0;
 			for(File file : files) {
-	//		    File file = files[0];
+				pageId++;
 			    
 			    System.out.println("FileName: " + file.getAbsolutePath());
 			    
@@ -56,49 +55,24 @@ public class HDBSCANTest {
 					jsonObj = (JSONObject)parser.parse(reader);
 				}
 				
-				String title = jsonObj.getAsString("title");
 				JSONObject payload = (JSONObject) jsonObj.get("payload");
 				JSONArray targetList = (JSONArray) payload.get("targetList");
 				
 				for(int i = 0; i < targetList.size(); i++) {
 					JSONObject target = (JSONObject)targetList.get(i);
 					
-					rowList.add(Type1DataRow.convert(title + (i + 1), target));
+					cluster.add(DataSetConverter.convert(pageId, (i + 1), target));
 					
-	//				JSONArray classNameArray = (JSONArray) target.get("classNames");
-	//				String[] classNms = classNameArray.toArray(new String[0]);
-	//				
-	//				for(String classNm : classNms) {
-	//					if(classNameList.contains(classNm) == false) {
-	//						classNameList.add(classNm);
-	//					}
-	//				}
-	//				
-	//				String text = target.getAsString("text");
-	//				if(textList.contains(text) == false) {
-	//					textList.add(text);
-	//				}
 				}
 			}
-			uiDataSet.addType1DataRowCluster("other", rowList);
-			
-			
-	//		System.out.println("==============================");
-	//		System.out.println(classNameList);
-	//		System.out.println("==============================");
-	//		System.out.println(textList);
-	//		System.out.println("==============================");
-			
+			converter.addCluster(cluster);
+		
 			final String delimiter = "\t";
 				
-	//		out.println("==============================");
-	//		uiDataSet.print(out, delimiter);
+			DataSetConverterMetadata meta = DataSetConverter.genType1Meta();
 	
-			DataSet dataSet = uiDataSet.toDataSet();
-			DBSCANMetadata metadata = uiDataSet.getMetadata();
-			
-	//		out.println("==============================");
-	//		dataSet.print(out, delimiter);
+			DataSet dataSet = converter.genDataSet(meta);
+			DBSCANMetadata metadata = converter.genDBSCANMetadata(meta);
 			
 			HDBSCAN hbscan = new HDBSCAN();
 			hbscan.setMetadata(metadata);
