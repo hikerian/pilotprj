@@ -22,6 +22,7 @@ public class AiControllerMultiMessages {
 
     @PostMapping(value = "/multi-message", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public String multiMessages(@RequestParam("question") String question, HttpSession session) {
+        @SuppressWarnings("unchecked")
         List<Message> chatMemory = (List<Message>) session.getAttribute("chatMemory");
         if (chatMemory == null) {
             chatMemory = new ArrayList<Message>();
