@@ -31,6 +31,14 @@
 
                     break;
                 }
+                case "accessTree": {
+                    let axTree: any = message['axTree'];
+
+                    let axDiv: HTMLDivElement = <HTMLDivElement>document.getElementById("accessTree");
+                    axDiv.innerText = JSON.stringify(axTree);
+
+                    break;
+                }
                 default: {
 
                 }
@@ -324,6 +332,12 @@
                         groupElement.appendChild(div);
                     });
                 }
+            });
+        });
+
+        $("#btnAccessTree").on("click", () => {
+            port!.postMessage({
+                action: "accessTree"
             });
         });
     }
