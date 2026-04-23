@@ -1,5 +1,7 @@
 package org.hddbscan.dbscan.feature;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -101,5 +103,33 @@ public class PositionFeature implements ComputableFeature {
 		return "{l=" + this.left + ", t=" + this.top + ", w=" + this.width + ", h=" + this.height + "}";
 	}
 
+	@Override
+	public Map<String, Object> toMap() {
+		Map<String, Object> map = new HashMap<>();
+		
+		map.put("l", this.left);
+		map.put("t", this.top);
+		map.put("w", this.width);
+		map.put("h", this.height);
+		
+		return map;
+	}
 
+	public static PositionFeature fromMap(Map<String, Object> rawData) {
+		if(rawData.get("l") instanceof Double
+				&& rawData.get("t") instanceof Double
+				&& rawData.get("w") instanceof Double
+				&& rawData.get("h") instanceof Double) {
+			return new PositionFeature(
+					(Double)rawData.get("l"),
+					(Double)rawData.get("t"),
+					(Double)rawData.get("w"),
+					(Double)rawData.get("h")
+					);
+		}
+		
+		return null;
+	}
+
+	
 }

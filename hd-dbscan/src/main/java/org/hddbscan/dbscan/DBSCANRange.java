@@ -3,6 +3,7 @@ package org.hddbscan.dbscan;
 import java.util.Objects;
 
 import org.hddbscan.dbscan.feature.ComputableFeature;
+import org.hddbscan.dbscan.model.RangeModel;
 
 
 public class DBSCANRange {
@@ -17,6 +18,11 @@ public class DBSCANRange {
 	public DBSCANRange(ComputableFeature min, ComputableFeature max) {
 		this.min = min;
 		this.max = max;
+	}
+	
+	public DBSCANRange(RangeModel model) {
+		this.min = ComputableFeature.fromMap(model.getMin());
+		this.max = ComputableFeature.fromMap(model.getMax());
 	}
 
 	public ComputableFeature getMin() {

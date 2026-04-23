@@ -1,5 +1,7 @@
 package org.hddbscan.dbscan.feature;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -75,6 +77,24 @@ public class DoubleFeature implements ComputableFeature {
 	public String toString() {
 		return String.valueOf(this.value);
 	}
+	
+	@Override
+	public Map<String, Object> toMap() {
+		Map<String, Object> map = new HashMap<>();
+		
+		map.put("value", this.value);
+
+		return map;
+	}
+
+	public static DoubleFeature fromMap(Map<String, Object> rawData) {
+		if(rawData.containsKey("value") && rawData.get("value") instanceof Double) {
+			return new DoubleFeature((Double)rawData.get("value"));
+		}
+		
+		return null;
+	}
+
 
 
 }

@@ -2,9 +2,11 @@ package org.hddbscan.dbscan;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
 
 import org.hddbscan.dbscan.feature.ComputableFeature;
+import org.hddbscan.dbscan.model.DataRowModel;
 
 
 public class DataRow {
@@ -13,6 +15,16 @@ public class DataRow {
 	
 	
 	public DataRow() {
+	}
+	
+	public DataRow(DataRowModel rowModel) {
+		this.id = rowModel.getId();
+		Map<String, Object>[] datas = rowModel.getDatas();
+		this.datas = new ComputableFeature[datas.length];
+		
+		for(int i = 0; i < datas.length; i++) {
+			this.datas[i] = ComputableFeature.fromMap(datas[i]);
+		}
 	}
 	
 	public void setId(String id) {
@@ -25,6 +37,10 @@ public class DataRow {
 	
 	public void setData(ComputableFeature...values) {
 		this.datas = values;
+	}
+	
+	public ComputableFeature[] getDatas() {
+		return this.datas;
 	}
 	
 	public ComputableFeature getData(int index) {

@@ -1,5 +1,6 @@
 package org.hddbscan.dbscan.feature;
 
+import java.util.Map;
 
 public class DoubleConstraint extends DimensionConstraint {
 	private final double eps;
@@ -23,6 +24,19 @@ public class DoubleConstraint extends DimensionConstraint {
 		double distance = Math.abs(da.getValue() - db.getValue());
 
 		return distance <= this.eps;
+	}
+
+	@Override
+	protected void toMap(Map<String, Object> map) {
+		map.put("eps", this.eps);
+	}
+	
+	public static DimensionConstraint fromMap(int minPts, Map<String, Object> map) {
+		if(map.get("eps") instanceof Double) {
+			double eps = (Double)map.get("eps");
+			return new DoubleConstraint(minPts, eps);
+		}
+		return null;
 	}
 
 

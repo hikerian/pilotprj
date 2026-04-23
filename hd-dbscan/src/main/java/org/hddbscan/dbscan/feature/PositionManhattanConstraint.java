@@ -1,5 +1,6 @@
 package org.hddbscan.dbscan.feature;
 
+import java.util.Map;
 
 public class PositionManhattanConstraint extends DimensionConstraint {
 	private final double leftEps;
@@ -56,6 +57,23 @@ public class PositionManhattanConstraint extends DimensionConstraint {
 		}
 		
 		return true;
+	}
+
+	@Override
+	protected void toMap(Map<String, Object> map) {
+		map.put("leftEps", this.leftEps);
+		map.put("topEps", this.topEps);
+	}
+	
+	protected static DimensionConstraint fromMap(int minPts, Map<String, Object> map) {
+		if(map.get("leftEps") instanceof Double
+				&& map.get("topEps") instanceof Double) {
+			double leftEps = (Double)map.get("leftEps");
+			double topEps = (Double)map.get("topEps");
+			
+			return new PositionManhattanConstraint(minPts, leftEps, topEps);
+		}
+		return null;
 	}
 
 

@@ -1,6 +1,7 @@
 package org.hddbscan.service;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.hddbscan.dbscan.DBSCANModel.DBSCANGroup;
 import org.hddbscan.dbscan.DataRow;
 import org.hddbscan.dbscan.DataSet;
 import org.hddbscan.dbscan.HDBSCAN;
+import org.hddbscan.dbscan.model.DBSCANGroupModel;
 import org.hddbscan.entity.UiElements;
 import org.hddbscan.preprocessing.RawCluster;
 import org.hddbscan.repository.DBAccessor;
@@ -23,6 +25,8 @@ import org.hddbscan.service.conv.DataSetConverterMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.json.JsonMapper.Builder;
+import tools.jackson.databind.json.JsonMapper;
 
 
 @Service
@@ -116,6 +120,28 @@ public class HDBSCANService {
 		DBSCANModel model = hdbscan.fit(dataSet);
 		
 		this.model = model;
+		
+		// serialize & deserialize
+		{
+			DBSCANGroupModel serializableModel = new DBSCANGroupModel(model);
+			JsonMapper.Builder builder = JsonMapper.builder();
+			JsonMapper mapper = builder.build();
+			
+			StringWriter out = new StringWriter();
+			mapper.writer().writeValue(out, serializableModel);
+			
+			String json = out.toString();
+			
+			System.out.println("====================================================");
+			System.out.println(json);
+			System.out.println("====================================================");
+			
+			DBSCANGroupModel deserializedModel = mapper.readValue(json, DBSCANGroupModel.class);
+			
+			System.out.println(deserializedModel);
+			System.out.println("====================================================");
+			
+		}
 		
 		return model;
 	}

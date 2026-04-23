@@ -4,10 +4,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.hddbscan.dbscan.feature.ComputableFeature;
 import org.hddbscan.dbscan.feature.DimensionConstraint;
+import org.hddbscan.dbscan.model.DBSCANGroupModel;
+import org.hddbscan.dbscan.model.DataRowModel;
+import org.hddbscan.dbscan.model.GroupModel;
+import org.hddbscan.dbscan.model.RangeModel;
 
 
 public class DBSCANModel {
@@ -21,6 +26,24 @@ public class DBSCANModel {
 		
 		public DBSCANGroup(String id) {
 			this.id = id;
+		}
+		
+		public DBSCANGroup(GroupModel groupModel) {
+			this.id = groupModel.getId();
+			this.label = groupModel.getLabel();
+			
+			this.rangeList = new ArrayList<>();
+			List<RangeModel> rangeList = groupModel.getRangeList();
+			for(RangeModel range : rangeList) {
+				this.rangeList.add(new DBSCANRange(range));
+			}
+			
+			this.dataList = new ArrayList<>();
+			List<DataRowModel> dataList = groupModel.getDataList();
+			for(DataRowModel rowModel : dataList) {
+				this.dataList.add(new DataRow(rowModel));
+			}
+			
 		}
 		
 		public String getId() {
@@ -39,8 +62,16 @@ public class DBSCANModel {
 			this.rangeList.add(range);
 		}
 		
+		public List<DBSCANRange> getRangeList() {
+			return this.rangeList;
+		}
+		
 		void setDataRowList(List<DataRow> dataList) {
 			this.dataList = dataList;
+		}
+		
+		public List<DataRow> getDataList() {
+			return this.dataList;
 		}
 		
 		public boolean hasDataRowId(String id) {
@@ -104,6 +135,29 @@ public class DBSCANModel {
 	
 	
 	public DBSCANModel() {
+	}
+	
+	public DBSCANModel(DBSCANGroupModel model) {
+		this.labels.addAll(model.getLabels());
+		
+		Map<String, Object>[] epsList = model.getEpsList();
+		this.epsList = new DimensionConstraint[epsList.length];
+		for(int i = 0; i < this.epsList.length; i++) {
+			this.epsList[i] = DimensionConstraint.fromMap(epsList[i]);
+		}
+		
+		List<GroupModel> groups = model.getGroups();
+		for(GroupModel group : groups) {
+			this.groups.add(new DBSCANGroup(group));
+		}
+	}
+	
+	public List<String> getLabels() {
+		return this.labels;
+	}
+	
+	public DimensionConstraint[] getEpsList() {
+		return this.epsList;
 	}
 	
 	public List<DBSCANGroup> predict(DataRow data) {
