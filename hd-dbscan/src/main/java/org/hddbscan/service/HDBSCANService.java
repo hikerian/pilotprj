@@ -17,6 +17,7 @@ import org.hddbscan.dbscan.DataRow;
 import org.hddbscan.dbscan.DataSet;
 import org.hddbscan.dbscan.HDBSCAN;
 import org.hddbscan.dbscan.model.DBSCANGroupModel;
+import org.hddbscan.entity.ClusterModel;
 import org.hddbscan.entity.UiElements;
 import org.hddbscan.preprocessing.RawCluster;
 import org.hddbscan.repository.DBAccessor;
@@ -25,7 +26,7 @@ import org.hddbscan.service.conv.DataSetConverterMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.json.JsonMapper.Builder;
+
 import tools.jackson.databind.json.JsonMapper;
 
 
@@ -122,28 +123,73 @@ public class HDBSCANService {
 		this.model = model;
 		
 		// serialize & deserialize
-		{
-			DBSCANGroupModel serializableModel = new DBSCANGroupModel(model);
-			JsonMapper.Builder builder = JsonMapper.builder();
-			JsonMapper mapper = builder.build();
-			
-			StringWriter out = new StringWriter();
-			mapper.writer().writeValue(out, serializableModel);
-			
-			String json = out.toString();
-			
-			System.out.println("====================================================");
-			System.out.println(json);
-			System.out.println("====================================================");
-			
-			DBSCANGroupModel deserializedModel = mapper.readValue(json, DBSCANGroupModel.class);
-			
-			System.out.println(deserializedModel);
-			System.out.println("====================================================");
-			
-		}
+//		{
+//			DBSCANGroupModel serializableModel = new DBSCANGroupModel(model);
+//			JsonMapper.Builder builder = JsonMapper.builder();
+//			JsonMapper mapper = builder.build();
+//			
+//			StringWriter out = new StringWriter();
+//			mapper.writer().writeValue(out, serializableModel);
+//			
+//			String json = out.toString();
+//			
+//			System.out.println("====================================================");
+//			System.out.println(json);
+//			System.out.println("====================================================");
+//			
+//			DBSCANGroupModel deserializedModel = mapper.readValue(json, DBSCANGroupModel.class);
+//			
+//			System.out.println(deserializedModel);
+//			System.out.println("====================================================");
+//		}
 		
 		return model;
+	}
+	
+	public boolean saveModel(String modelDesc) {
+		if(this.model == null) {
+			return false;
+		}
+		
+		DBSCANGroupModel serializableModel = new DBSCANGroupModel(this.model);
+		JsonMapper.Builder builder = JsonMapper.builder();
+		JsonMapper mapper = builder.build();
+		
+		StringWriter out = new StringWriter();
+		mapper.writer().writeValue(out, serializableModel);
+		
+		String json = out.toString();
+		
+		ClusterModel clusterModel = new ClusterModel(System.currentTimeMillis()
+				, modelDesc, json);
+		
+		this.dao.insertClusterModel(clusterModel);
+		
+		return true;
+	}
+	
+	public boolean loadModel(long modelId) {
+		ClusterModel clusterModel = this.dao.selectClusterModel(modelId);
+		if(clusterModel == null) {
+			return false;
+		}
+		
+		String json = clusterModel.getModelJson();
+		
+		JsonMapper.Builder builder = JsonMapper.builder();
+		JsonMapper mapper = builder.build();
+		
+		DBSCANGroupModel deserializedModel = mapper.readValue(json, DBSCANGroupModel.class);
+		
+		DBSCANModel model = new DBSCANModel(deserializedModel);
+		
+		this.model = model;
+		
+		return true;
+	}
+	
+	public List<ClusterModel> selectClusterModelList() {
+		return this.dao.selectClusterModelList();
 	}
 	
 //	private String genClusterId(String[] splitedSelector, int maxIdx) {

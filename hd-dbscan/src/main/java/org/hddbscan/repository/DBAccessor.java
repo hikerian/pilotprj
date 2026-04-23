@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hddbscan.entity.ClusterModel;
 import org.hddbscan.entity.UiElements;
 import org.hddbscan.entity.UiPage;
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ public class DBAccessor {
 	
 	private final BeanPropertyRowMapper<UiPage> uiPageRowMapper = BeanPropertyRowMapper.newInstance(UiPage.class);
 	private final BeanPropertyRowMapper<UiElements> uiElementsRowMapper = BeanPropertyRowMapper.newInstance(UiElements.class);
+	private final BeanPropertyRowMapper<ClusterModel> clusterModelRowMapper = BeanPropertyRowMapper.newInstance(ClusterModel.class);
 
 
 	public DBAccessor(NamedParameterJdbcTemplate jdbcTemplate) throws IOException {
@@ -62,6 +64,26 @@ public class DBAccessor {
 
 		return this.jdbcTemplate.update(this.sql.getSQL("uiPageInsert"), uiPageParam);
 	}
+	
+	public int insertClusterModel(ClusterModel clusterModel) {
+		this.log.debug("insertClusterModel");
+		
+		SqlParameterSource clusterModelParam = this.getParameterSource(clusterModel);
+		
+		return this.jdbcTemplate.update(this.sql.getSQL("clusterModelInsert"), clusterModelParam);
+	}
+	
+	public ClusterModel selectClusterModel(long modelId) {
+		Map<String, Object> param = new HashMap<>();
+		param.put("modelId", modelId);
+		
+		return this.jdbcTemplate.queryForObject(this.sql.getSQL("clusterModelQuery"), param, this.clusterModelRowMapper);
+	}
+	
+	public List<ClusterModel> selectClusterModelList() {
+		return this.jdbcTemplate.query(this.sql.getSQL("clusterModelListQuery"), Collections.emptyMap(), this.clusterModelRowMapper);
+	}
+	
 
 	public int insertUiElements(UiElements uiElements) {
 		SqlParameterSource uiElementsParam = this.getParameterSource(uiElements);
