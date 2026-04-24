@@ -1,12 +1,15 @@
 package org.hddbscan.controller;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.hddbscan.dbscan.DBSCANModel;
 import org.hddbscan.dbscan.DBSCANModel.DBSCANGroup;
+import org.hddbscan.entity.ClusterModel;
 import org.hddbscan.entity.UiElements;
 import org.hddbscan.entity.UiPage;
 import org.hddbscan.repository.DBAccessor;
@@ -15,6 +18,7 @@ import org.hddbscan.service.HDBSCANService;
 import org.hddbscan.service.StoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -225,8 +229,57 @@ public class ExtController {
 		
 		return res;
 	}
+	
+	@PostMapping("/save-model")
+	public ResponseData saveModel(@RequestBody JSONObject data) {
+		String modelDesc = data.getAsString("modelDesc");
+		
+		boolean success = this.hdbscanService.saveModel(modelDesc);
+		
+		ResponseData res = new ResponseData();
+		res.setSuccess(success);
+		
+		return res;
+	}
 
-
+	@GetMapping("/model/list")
+	public ResponseData listModel() {
+		List<ClusterModel> modelList = this.hdbscanService.selectClusterModelList();
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		
+		List<ModelInfo> list = modelList.stream().map((clusterModel) -> new ModelInfo(clusterModel.getModelId(),
+				format.format(new Date(clusterModel.getModelId())),
+						clusterModel.getModelDesc()
+						)).toList();
+		
+		ResponseData res = new ResponseData();
+		res.addPayload("modelList", list);
+		res.setSuccess(true);
+		
+		return res;
+	}
+	
+	@GetMapping("/model/load/{modelId}")
+	public ResponseData loadModel(@PathVariable("modelId") long modelId) {
+		boolean success = this.hdbscanService.loadModel(modelId);
+		
+		ResponseData res = new ResponseData();
+		res.setSuccess(success);
+		
+		return res;
+	}
+	
+	@DeleteMapping("model/delete/{modelId}")
+	public ResponseData deleteModel(@PathVariable("modelId") long modelId) {
+		boolean success = this.hdbscanService.deleteModel(modelId) == 1;
+		
+		ResponseData res = new ResponseData();
+		res.setSuccess(success);
+		
+		return res;		
+	}
+	
 
 
 

@@ -84,6 +84,12 @@ public class DBAccessor {
 		return this.jdbcTemplate.query(this.sql.getSQL("clusterModelListQuery"), Collections.emptyMap(), this.clusterModelRowMapper);
 	}
 	
+	public int deleteClusterModel(long modelId) {
+		Map<String, Object> param = new HashMap<>();
+		param.put("modelId", modelId);
+		
+		return this.jdbcTemplate.update(this.sql.getSQL("clusterModelDelete"), param);
+	}
 
 	public int insertUiElements(UiElements uiElements) {
 		SqlParameterSource uiElementsParam = this.getParameterSource(uiElements);

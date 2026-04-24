@@ -80,5 +80,11 @@
 		from cluster_model
 		order by model_id desc
 	</entry>
+	
+	<entry key="clusterModelDelete">
+		delete from cluster_model
+		where model_id = :modelId
+	</entry>
+
 
 </properties>

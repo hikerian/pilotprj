@@ -192,6 +192,10 @@ public class HDBSCANService {
 		return this.dao.selectClusterModelList();
 	}
 	
+	public int deleteModel(long modelId) {
+		return this.dao.deleteClusterModel(modelId);
+	}
+	
 //	private String genClusterId(String[] splitedSelector, int maxIdx) {
 //		String[] newSelector = new String[maxIdx + 1];
 //		System.arraycopy(splitedSelector, 0, newSelector, 0, maxIdx + 1);

@@ -11,12 +11,13 @@ function clearChild(tbodyElement) {
 	});
 }	
 
-function createChk(pageId) {
+function createChk(pageId, name) {
 	var td = document.createElement("td");
 	var inpChk = document.createElement("input");
 	inpChk.type = "checkbox";
 	inpChk.value = pageId;
-	inpChk.name = "chkPageId";
+//	inpChk.name = "chkPageId";
+	inpChk.name = name;
 	inpChk.checked = false;
 
 	td.appendChild(inpChk);
@@ -113,7 +114,7 @@ $(document).ready(function() {
 					var pageNm = uiPage["pageNm"];
 					var pageDesc = uiPage["pageDesc"];
 					
-					tr.appendChild(createChk(pageId));
+					tr.appendChild(createChk(pageId, "chkPageId"));
 					tr.appendChild(createTd(pageId));
 					tr.appendChild(createTd(pageNm));
 					tr.appendChild(createTd(pageDesc));
@@ -177,6 +178,79 @@ $(document).ready(function() {
 		});
 	});
 	
+	$("#btnSaveModel").on("click", function() {
+		var modelDesc = $("#modelDesc").val();
+
+		$.ajax({
+			type: "POST",
+			contentType: "application/json",
+			headers: {},
+			data: JSON.stringify({
+				modelDesc: modelDesc
+			}),
+			url: "/rest/save-model",
+			success: function(data) {
+				alert(JSON.stringify(data));
+			}
+		});
+	});
+	
+	$("#btnListModel").on("click", function() {
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			headers: {},
+			url: "/rest/model/list",
+			success: function(data) {
+				var modelListBody = document.getElementById("modelListBody");
+				clearChild(modelListBody);
+				
+				var modelList = data.payload.modelList;
+				modelList.forEach((model) => {
+					var tr = document.createElement("tr");
+					
+					tr.appendChild(createChk(model["modelId"], "chkModelId"));
+					tr.appendChild(createTd(model["modelId"]));
+					tr.appendChild(createTd(model["createDate"]));
+					tr.appendChild(createTd(model["modelDesc"]));
+					
+					modelListBody.appendChild(tr);
+				});
+			}
+		});
+	});
+	
+	$("#btnLoadModel").on("click", function() {
+		var checkedValues = $('input[name="chkModelId"]:checked').map(function() {
+		    return $(this).val();
+		}).get();
+		
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			headers: {},
+			url: "/rest/model/load/" + checkedValues[0],
+			success: function(data) {
+				alert(JSON.stringify(data));
+			}
+		});
+	});
+
+	$("#btnDeleteModel").on("click", function() {
+		var checkedValues = $('input[name="chkModelId"]:checked').map(function() {
+		    return $(this).val();
+		}).get();
+		
+		$.ajax({
+			type: "DELETE",
+			contentType: "application/json",
+			headers: {},
+			url: "/rest/model/delete/" + checkedValues[0],
+			success: function(data) {
+				alert(JSON.stringify(data));
+			}
+		});
+	});	
 
 });
 </script>
@@ -211,6 +285,27 @@ $(document).ready(function() {
 		</div>
 		<div>
 			<button id="btnLearn">Learn</button>
+		</div>
+		<div>
+			<input type="text" name="modelDesc" id="modelDesc" value="" style="width:500px">
+			<button id="btnSaveModel">Save Model</button>
+		</div>
+		<div>
+			<button id="btnListModel">List Model</button>
+			<table>
+				<thead>
+					<tr>
+						<th>Check</th>
+						<th>Model Id</th>
+						<th>Created</th>
+						<th>Model Desc</th>
+					</tr>
+				</thead>
+				<tbody id="modelListBody"></tbody>
+			</table>
+			<button id="btnLoadModel">Load Model</button> <button id="btnDeleteModel">Delete Model</button>
+		</div>
+		<div>
 			<button id="btnElementLoad">PageElement Load</button>
 		</div>
 		<div>
