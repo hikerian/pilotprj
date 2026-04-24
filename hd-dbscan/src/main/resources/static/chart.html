@@ -1,0 +1,229 @@
+<!doctype html>
+<html="ko" xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8">
+		<title>HDDBSCAN Model Scatter Chart</title>
+		<script src="https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js"></script>
+		<script src="asset/jquery.js"></script>
+		<script>
+
+function clearChild(tbodyElement) {
+	Array.from(tbodyElement.childNodes).forEach((node) => {
+	    tbodyElement.removeChild(node);
+	});
+}
+
+function createChk(pageId, name) {
+	var td = document.createElement("td");
+	var inpChk = document.createElement("input");
+	inpChk.type = "radio";
+	inpChk.value = pageId;
+//	inpChk.name = "chkPageId";
+	inpChk.name = name;
+	inpChk.checked = false;
+
+	td.appendChild(inpChk);
+	return td;
+}
+
+function createTd(txt) {
+	var td = document.createElement("td");
+	td.title = txt;
+	
+	if(txt.length > 100) {
+		txt = "..." + txt.substring(txt.length - 90, txt.length);
+	}
+	var textNode = document.createTextNode(txt);
+	td.appendChild(textNode);
+	return td;
+}
+
+function renderChart(legend, series) {
+	// Initialize the echarts instance based on the prepared dom
+	var myChart = echarts.init(document.getElementById('main'));
+
+	// Specify the configuration items and data for the chart
+	var option = {
+		title: {
+			text: 'HD-DBSCAN Model Group',
+			subtext: 'By Dongil Cho',
+//			sublink: 'https://github.com/ecomfe/echarts-stat',
+			left: 'center',
+			top: 16
+		},
+		color: 		[
+		  "#E6194B", "#3CB44B", "#FFE119", "#4363D8", "#F58231", 
+		  "#911EB4", "#42D4F4", "#F032E6", "#BFEF45", "#FABED4", 
+		  "#469990", "#DCBEFF", "#9A6324", "#FFFAC8", "#800000", 
+		  "#AAFFC3", "#808000", "#FFD8B1", "#000075", "#A9A9A9", 
+		  "#ED2100", "#FFBF00", "#7FFF00", "#BF00FF", "#DAA520", 
+		  "#FF69B4", "#0047AB", "#FF00FF", "#FFA343", "#00FF7F", 
+		  "#808000", "#B87333", "#4B0082", "#A0522D", "#008080", 
+		  "#CCCCFF", "#65000B", "#003153", "#CCFF00", "#007FFF"
+		],
+		legend: {
+			orient: 'vertical',
+		    right: 0,
+		    top: 'center',
+			data: legend
+		},
+		tooltip: {
+			trigger: 'axis',
+			axisPointer: {
+				type: 'cross'
+			}
+		},
+		xAxis: {
+			type: 'value' // or 'category' depending on your data
+		},
+		yAxis: {
+			type: 'value',
+		    inverse: true, // This flips the axis: 0 at top, higher values at bottom
+		    name: 'Top-Down Axis'
+		},
+		series: series
+	};
+
+	// Display the chart using the configuration items and data just specified.
+	myChart.setOption(option);
+}
+
+$(document).ready(function() {
+	$("#btnListModel").on("click", function() {
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			headers: {},
+			url: "/rest/model/list",
+			success: function(data) {
+				var modelListBody = document.getElementById("modelListBody");
+				clearChild(modelListBody);
+				
+				var modelList = data.payload.modelList;
+				modelList.forEach((model) => {
+					var tr = document.createElement("tr");
+					
+					tr.appendChild(createChk(model["modelId"], "chkModelId"));
+					tr.appendChild(createTd(model["modelId"]));
+					tr.appendChild(createTd(model["createDate"]));
+					tr.appendChild(createTd(model["modelDesc"]));
+					
+					modelListBody.appendChild(tr);
+				});
+			}
+		});
+	});
+	
+	
+	$("#btnLoadModel").on("click", function() {
+		var checkedValues = $('input[name="chkModelId"]:checked').map(function() {
+		    return $(this).val();
+		}).get();
+		
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			headers: {},
+			url: "/rest/model/load/" + checkedValues[0],
+			success: function(data) {
+				alert(JSON.stringify(data));
+			}
+		});
+	});
+	
+	$("#btnRenderModel").on("click", function() {
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			headers: {},
+			url: "/rest/model/series",
+			success: function(data) {
+				renderChart(data.payload.legend, data.payload.series);
+			}
+		});
+	});
+	
+	
+});
+
+		</script>
+	</head>
+	<body>
+		<div>
+			<button id="btnListModel">List Model</button>
+			<table>
+				<thead>
+					<tr>
+						<th>Check</th>
+						<th>Model Id</th>
+						<th>Created</th>
+						<th>Model Desc</th>
+					</tr>
+				</thead>
+				<tbody id="modelListBody"></tbody>
+			</table>
+			<button id="btnLoadModel">Load Model</button>
+		</div>
+		<div>
+			<button id="btnRenderModel">Render Model Chart</button>
+		</div>
+		<div id="main" style="width: 900px;height:600px;"></div>
+<!--
+		<script type="text/javascript">
+			// Initialize the echarts instance based on the prepared dom
+			var myChart = echarts.init(document.getElementById('main'));
+
+			// Specify the configuration items and data for the chart
+			var option = {
+				title: {
+					text: '18 companies net profit and main business income (million)',
+					subtext: 'By ecStat.regression',
+					sublink: 'https://github.com/ecomfe/echarts-stat',
+					left: 'center',
+					top: 16
+				},
+				tooltip: {
+					trigger: 'axis',
+					axisPointer: {
+						type: 'cross'
+					}
+				},
+				xAxis: {
+					type: 'value' // or 'category' depending on your data
+				},
+				yAxis: {
+					type: 'value',
+				    inverse: true, // This flips the axis: 0 at top, higher values at bottom
+				    name: 'Top-Down Axis'
+				},
+				series: [
+					{
+						symbolSize: 5,
+						data: [
+							[10.0, 8.04],
+							[8.07, 6.95],
+							[13.0, 7.58],
+							[9.05, 8.81]
+						],
+						type: 'scatter'
+					},
+					{
+						symbolSize: 5,
+						data: [
+							[10.0, 18.04],
+							[8.07, 16.95],
+							[13.0, 17.58],
+							[9.05, 5.81]
+						],
+						type: 'scatter'
+					}
+				]
+			};
+
+			// Display the chart using the configuration items and data just specified.
+			myChart.setOption(option);
+		</script>
+		-->
+	</body>
+
+</html>

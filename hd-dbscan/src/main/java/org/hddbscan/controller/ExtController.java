@@ -2,6 +2,9 @@ package org.hddbscan.controller;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -278,6 +281,24 @@ public class ExtController {
 		res.setSuccess(success);
 		
 		return res;		
+	}
+	
+	@GetMapping("/model/series")
+	public ResponseData getModelGroupSeries() {
+		Map<String, Object>[] series = this.hdbscanService.modelToScatterChartSeries();
+		
+		List<String> legend = new ArrayList<>();
+		Arrays.stream(series).forEach((field) -> {
+			legend.add((String)field.get("name"));
+		});
+		Collections.sort(legend);
+		
+		ResponseData res = new ResponseData();
+		res.addPayload("series", series);
+		res.addPayload("legend", legend);
+		res.setSuccess(series != null && series.length > 0);
+		
+		return res;
 	}
 	
 
