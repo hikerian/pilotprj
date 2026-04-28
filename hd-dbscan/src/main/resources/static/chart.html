@@ -65,7 +65,14 @@ function renderChart(legend, series) {
 			orient: 'vertical',
 		    right: 0,
 		    top: 'center',
+			width: '300px',
+			height: '500px',
+			icon: 'rect',
 			data: legend
+		},
+		grid: {
+			left: '0px',
+		    right: '300px'
 		},
 		tooltip: {
 			trigger: 'axis',
@@ -204,7 +211,7 @@ $(document).ready(function() {
 			<legend>Chart</legend>
 			<button id="btnRenderModel">Render Model Chart</button>
 			<section>
-				<div id="main" style="width: 900px;height:600px;"></div>				
+				<div id="main" style="width: 1000px;height:600px;"></div>				
 			</section>
 		</fieldset>
 	</body>
