@@ -1,0 +1,6 @@
+mysqldump -u hddbscan -p --complete-insert --no-create-info hddbscan cluster_model > C:\tmp\hd-dbscan\cluster_model.sql
+
+
+brew services start mariadb
+
+source cluster_model.sql;
