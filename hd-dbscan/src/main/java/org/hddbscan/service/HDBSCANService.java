@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.hddbscan.controller.ModelDesc;
 import org.hddbscan.controller.ModelGroup;
 import org.hddbscan.dbscan.DBSCANMetadata;
 import org.hddbscan.dbscan.DBSCANModel;
@@ -335,6 +336,48 @@ public class HDBSCANService {
 		}
 		
 		return modelGroupList;
+	}
+	
+	public List<ModelDesc> getModelDesc() {
+		List<ModelDesc> modelDescList = new ArrayList<>();
+		
+		StringBuilder builder = new StringBuilder();
+		List<DBSCANGroup> groupList = this.model.getGroups();
+		for(DBSCANGroup group : groupList) {
+			String id = group.getId();
+			try {
+				group.printRange(builder, ",");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			String rangeTxt = builder.toString();
+			builder.delete(0, builder.length());
+			
+			ModelDesc modelDesc = new ModelDesc();
+			modelDesc.setId(id);
+			modelDesc.setLabel(group.getLabel());
+			modelDesc.setRangeText(rangeTxt);
+			modelDesc.setElementCnt(group.getDataList().size());
+			
+			modelDescList.add(modelDesc);
+		}
+		
+		modelDescList.sort((a, b) -> {
+			String aLabel = a.getLabel();
+			String bLabel = b.getLabel();
+			if(aLabel == null) {
+				aLabel = "";
+				a.setLabel(aLabel);
+			}
+			if(bLabel == null) {
+				bLabel = "";
+				b.setLabel(bLabel);
+			}
+			
+			return aLabel.compareTo(bLabel);
+		});
+		
+		return modelDescList;
 	}
 
 	private DataSetConverterMetadata getConverterMeta() {

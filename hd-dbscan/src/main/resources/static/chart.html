@@ -143,13 +143,37 @@ $(document).ready(function() {
 		});
 	});
 	
-	
+	$("#btnGetModelDesc").on("click", function() {
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			headers: {},
+			url: "/rest/model/desc",
+			success: function(data) {
+				var modelDescBody = document.getElementById("modelDescBody");
+				clearChild(modelDescBody);
+				
+				var modelList = data.payload.modelDescList;
+				modelList.forEach((model) => {
+					var tr = document.createElement("tr");
+					
+					tr.appendChild(createTd(model["label"]));
+					tr.appendChild(createTd(model["id"]));
+					tr.appendChild(createTd(model["rangeText"]));
+					tr.appendChild(createTd(model["elementCnt"]));
+					
+					modelDescBody.appendChild(tr);
+				});
+			}
+		});
+	});
 });
 
 		</script>
 	</head>
 	<body>
-		<div>
+		<fieldset>
+			<legend>Model</legend>
 			<button id="btnListModel">List Model</button>
 			<table>
 				<thead>
@@ -163,67 +187,24 @@ $(document).ready(function() {
 				<tbody id="modelListBody"></tbody>
 			</table>
 			<button id="btnLoadModel">Load Model</button>
-		</div>
-		<div>
+			<button id="btnGetModelDesc">Get Model Description</button>
+			<table>
+				<thead>
+					<tr>
+						<th>Group Label</th>
+						<th>Group Id</th>
+						<th>RangeText</th>
+						<th>Element Count</th>
+					</tr>
+				</thead>
+				<tbody id="modelDescBody"></tbody>
+			</table>
+		</fieldset>
+		<fieldset>
+			<legend>Chart</legend>
 			<button id="btnRenderModel">Render Model Chart</button>
-		</div>
+		</fieldset>
 		<div id="main" style="width: 900px;height:600px;"></div>
-<!--
-		<script type="text/javascript">
-			// Initialize the echarts instance based on the prepared dom
-			var myChart = echarts.init(document.getElementById('main'));
-
-			// Specify the configuration items and data for the chart
-			var option = {
-				title: {
-					text: '18 companies net profit and main business income (million)',
-					subtext: 'By ecStat.regression',
-					sublink: 'https://github.com/ecomfe/echarts-stat',
-					left: 'center',
-					top: 16
-				},
-				tooltip: {
-					trigger: 'axis',
-					axisPointer: {
-						type: 'cross'
-					}
-				},
-				xAxis: {
-					type: 'value' // or 'category' depending on your data
-				},
-				yAxis: {
-					type: 'value',
-				    inverse: true, // This flips the axis: 0 at top, higher values at bottom
-				    name: 'Top-Down Axis'
-				},
-				series: [
-					{
-						symbolSize: 5,
-						data: [
-							[10.0, 8.04],
-							[8.07, 6.95],
-							[13.0, 7.58],
-							[9.05, 8.81]
-						],
-						type: 'scatter'
-					},
-					{
-						symbolSize: 5,
-						data: [
-							[10.0, 18.04],
-							[8.07, 16.95],
-							[13.0, 17.58],
-							[9.05, 5.81]
-						],
-						type: 'scatter'
-					}
-				]
-			};
-
-			// Display the chart using the configuration items and data just specified.
-			myChart.setOption(option);
-		</script>
-		-->
 	</body>
 
 </html>

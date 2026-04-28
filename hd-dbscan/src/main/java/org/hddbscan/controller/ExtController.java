@@ -301,12 +301,16 @@ public class ExtController {
 		return res;
 	}
 	
-
-
-
-
-
-
+	@GetMapping("/model/desc")
+	public ResponseData getModelDesc() {
+		List<ModelDesc> modelDescList = this.hdbscanService.getModelDesc();
+		
+		ResponseData res = new ResponseData();
+		res.addPayload("modelDescList", modelDescList);
+		res.setSuccess(true);
+		
+		return res;
+	}
 
 
 
