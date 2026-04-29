@@ -2,7 +2,7 @@ package utilityprj.selfhealing;
 
 
 /**
- * 웹 UI Self-healing에서 LCS(최장 공통 부분 수열) 알고리즘은 주로 두 요소의 XPath 경로나 DOM 트리 구조의 유사성을 비교하여, 구조가 얼마나 유지되었는지를 측정하는 데 사용됩니다.
+ * 웹 UI Self-healing에서 LCS(The Longest Common Subsequence: 최장 공통 부분 수열) 알고리즘은 주로 두 요소의 XPath 경로나 DOM 트리 구조의 유사성을 비교하여, 구조가 얼마나 유지되었는지를 측정하는 데 사용됩니다.
  * Java를 이용한 동적 계획법(Dynamic Programming) 방식의 구현 예제입니다.
  * 
  * 1. LCS 길이 및 문자열 추출 구현

@@ -15,18 +15,18 @@ public class FinalHealingScorer {
 
     public double getFinalScore(SavedElement saved, SavedElement candidate) {
         
-        // 1. LCS - 구조 비교 (XPath)
+        // 1. LCS(The Longest Common Subsequence) - 구조 비교 (XPath)
         double xpathScore = LCSImplementation.calculateSimilarity(saved.getXpath(), candidate.getXpath());
 
-        // 2. Levenshtein - 정밀 문자열 비교 (ID & Text 평균)
+        // 2. Levenshtein(Levenshtein distance) - 정밀 문자열 비교 (ID & Text 평균)
         double idScore = LevenshteinExample.calculateSimilarity(saved.getId(), candidate.getId());
         double textScore = LevenshteinExample.calculateSimilarity(saved.getText(), candidate.getText());
         double stringScore = (idScore + textScore) / 2.0;
 
-        // 3. Jaccard - 클래스 집합 비교
+        // 3. Jaccard Similarity - 클래스 집합 비교
         double jaccardScore = JaccardSimilarity.calculateJaccardSimilarity(saved.getClassSet(), candidate.getClassSet());
 
-        // 4. Cosine - 전체 맥락 비교 (모든 속성 결합 문자열)
+        // 4. Cosine Similarity - 전체 맥락 비교 (모든 속성 결합 문자열)
         double cosineScore = CosineSimilarity.calculateCosineSimilarity(saved.getAttrBundle(), candidate.getAttrBundle());
 
         // 최종 가중치 합산
