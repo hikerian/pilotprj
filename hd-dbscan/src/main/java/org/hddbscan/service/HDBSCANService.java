@@ -198,39 +198,6 @@ public class HDBSCANService {
 		return this.dao.deleteClusterModel(modelId);
 	}
 	
-//	@SuppressWarnings("unchecked")
-//	public Map<String, Object>[] modelToScatterChartSeries() {
-//		Map<String, Object>[] series = null;
-//		
-//		List<DBSCANGroup> groupList = this.model.getGroups();
-//		series = new Map[groupList.size()];
-//		
-//		for(int i = 0; i < groupList.size(); i++) {
-//			Map<String, Object> field = new HashMap<>();
-//			series[i] = field;
-//			
-//			field.put("symbolSize", 5);
-//			field.put("type", "scatter");
-//			
-//			DBSCANGroup group = groupList.get(i);
-//			String label = group.getLabel();
-//			field.put("name", label == null || "".equals(label) ? group.getId() : label);
-//			
-//			List<DataRow> dataList = group.getDataList();
-//			double[][] data = new double[dataList.size()][2];
-//			field.put("data", data);
-//			
-//			for(int j = 0; j < dataList.size(); j++) {
-//				DataRow row = dataList.get(j);
-//				PositionFeature position = (PositionFeature)row.getData(9 - 1);
-//				
-//				data[j] = new double[] {position.getLeft(), position.getTop()};
-//			}
-//
-//		}
-//		
-//		return series;
-//	}
 	public Map<String, Object>[] modelToScatterChartSeries() {
 		Map<String, Map<String, Object>> groupSeries = new HashMap<>();
 		List<DBSCANGroup> groupList = this.model.getGroups();
