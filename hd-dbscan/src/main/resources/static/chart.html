@@ -39,11 +39,14 @@ function createTd(txt) {
 }
 
 function renderChart(legend, series) {
+	console.log(legend.length);
+	
 	// Initialize the echarts instance based on the prepared dom
 	var myChart = echarts.init(document.getElementById('main'));
 
 	// Specify the configuration items and data for the chart
 	var option = {
+		animation: false,
 		title: {
 			text: 'HD-DBSCAN Model Group',
 			subtext: 'By Dongil Cho',
@@ -65,14 +68,14 @@ function renderChart(legend, series) {
 			orient: 'vertical',
 		    right: 0,
 		    top: 'center',
-			width: '300px',
+			width: '350px',
 			height: '500px',
 			icon: 'rect',
 			data: legend
 		},
 		grid: {
 			left: '0px',
-		    right: '300px'
+		    right: '350px'
 		},
 		tooltip: {
 			trigger: 'axis',
@@ -211,7 +214,7 @@ $(document).ready(function() {
 			<legend>Chart</legend>
 			<button id="btnRenderModel">Render Model Chart</button>
 			<section>
-				<div id="main" style="width: 1000px;height:600px;"></div>				
+				<div id="main" style="width: 1200px;height:600px;"></div>				
 			</section>
 		</fieldset>
 	</body>

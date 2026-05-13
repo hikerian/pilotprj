@@ -198,26 +198,78 @@ public class HDBSCANService {
 		return this.dao.deleteClusterModel(modelId);
 	}
 	
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
+//	public Map<String, Object>[] modelToScatterChartSeries() {
+//		Map<String, Object>[] series = null;
+//		
+//		List<DBSCANGroup> groupList = this.model.getGroups();
+//		series = new Map[groupList.size()];
+//		
+//		for(int i = 0; i < groupList.size(); i++) {
+//			Map<String, Object> field = new HashMap<>();
+//			series[i] = field;
+//			
+//			field.put("symbolSize", 5);
+//			field.put("type", "scatter");
+//			
+//			DBSCANGroup group = groupList.get(i);
+//			String label = group.getLabel();
+//			field.put("name", label == null || "".equals(label) ? group.getId() : label);
+//			
+//			List<DataRow> dataList = group.getDataList();
+//			double[][] data = new double[dataList.size()][2];
+//			field.put("data", data);
+//			
+//			for(int j = 0; j < dataList.size(); j++) {
+//				DataRow row = dataList.get(j);
+//				PositionFeature position = (PositionFeature)row.getData(9 - 1);
+//				
+//				data[j] = new double[] {position.getLeft(), position.getTop()};
+//			}
+//
+//		}
+//		
+//		return series;
+//	}
 	public Map<String, Object>[] modelToScatterChartSeries() {
-		Map<String, Object>[] series = null;
-		
+		Map<String, Map<String, Object>> groupSeries = new HashMap<>();
 		List<DBSCANGroup> groupList = this.model.getGroups();
-		series = new Map[groupList.size()];
+		
+		Map<String, Integer> groupNameMap = new HashMap<>();
 		
 		for(int i = 0; i < groupList.size(); i++) {
 			Map<String, Object> field = new HashMap<>();
-			series[i] = field;
 			
 			field.put("symbolSize", 5);
 			field.put("type", "scatter");
 			
 			DBSCANGroup group = groupList.get(i);
 			String label = group.getLabel();
-			field.put("name", label == null ? group.getId() : label);
+			String groupName = (label == null || "".equals(label) ? group.getId() : label);
+			
+			// chart 생성시 중복된 이름이 제거되는 문제 처리를 위해 중복되는 이름은 # + seq 추가
+			if(groupNameMap.containsKey(groupName)) {
+				int size = groupNameMap.get(groupName);
+				if(size == 1) {
+					Map<String, Object> preField = groupSeries.remove(groupName);
+					preField.put("name", groupName + "#1");
+					groupSeries.put(groupName + "#1", preField);
+				}
+				size++;
+				groupNameMap.put(groupName, size);
+				groupName = groupName + "#" + size;
+			} else {
+				groupNameMap.put(groupName, 1);
+			}
+			
+			field.put("name", groupName);
 			
 			List<DataRow> dataList = group.getDataList();
-			double[][] data = new double[dataList.size()][2];
+			int dataSize = dataList.size();
+			
+			field.put("size", dataSize);
+			
+			double[][] data = new double[dataSize][2];
 			field.put("data", data);
 			
 			for(int j = 0; j < dataList.size(); j++) {
@@ -226,11 +278,26 @@ public class HDBSCANService {
 				
 				data[j] = new double[] {position.getLeft(), position.getTop()};
 			}
-
+			
+			groupSeries.put(groupName, field);
+		}
+		
+		@SuppressWarnings("unchecked")
+		Map<String, Object>[] series = groupSeries.values().toArray(size -> new Map[size]);
+		
+		for(Map<String, Object> ser : series) {
+			int size = (int)ser.remove("size");
+			String name = (String)ser.remove("name");
+			
+			ser.put("name", name + "(" + size + ")");
 		}
 		
 		return series;
-	}
+	}	
+	
+	
+	
+	
 	
 //	private String genClusterId(String[] splitedSelector, int maxIdx) {
 //		String[] newSelector = new String[maxIdx + 1];
