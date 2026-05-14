@@ -275,13 +275,14 @@
                         let label: string = group["label"];
                         let rangeTxt: string = group["rangeText"];
                         let elementList: any[] = group["uiElementList"];
+                        let elementCount: number = group["elementCount"];
 
                         let selectors: string[] = [];
                         groupSelectors[groupId] = selectors;
 
                         let div: HTMLDivElement = document.createElement("div");
 
-                        createGroupSummary(div, groupId, (elementList.length > 0 ? "(○)" : "(×)"), label, rangeTxt);
+                        createGroupSummary(div, groupId, (elementList.length > 0 ? "(○)" : "(×)"), label, rangeTxt, elementCount);
                         elementList.forEach((uiElement) => {
                             // createUiElementList(div, uiElement);
                             selectors.push(uiElement['selectorText']);
@@ -316,13 +317,14 @@
                         let label: string = group["label"];
                         let rangeTxt: string = group["rangeText"];
                         let elementList: any[] = group["uiElementList"];
+                        let elementCount: number = group["elementCount"];
 
                         let selectors: string[] = [];
                         groupSelectors[groupId] = selectors;
 
                         let div: HTMLDivElement = document.createElement("div");
 
-                        createGroupSummary(div, groupId, (elementList.length > 0 ? "(○)" : "(×)"), label, rangeTxt);
+                        createGroupSummary(div, groupId, (elementList.length > 0 ? "(○)" : "(×)"), label, rangeTxt, elementCount);
                         elementList.forEach((uiElement) => {
                             // createUiElementList(div, uiElement);
                             selectors.push(uiElement['selectorText']);
@@ -342,9 +344,9 @@
         });
     }
 
-    function createGroupSummary(parentNode: HTMLElement, groupId: string, exist: string, label: string, rangeTxt: string) {
+    function createGroupSummary(parentNode: HTMLElement, groupId: string, exist: string, label: string, rangeTxt: string, elementCount: number) {
         let groupIdSpan: HTMLSpanElement = document.createElement("span");
-        groupIdSpan.appendChild(document.createTextNode(`● ${groupId} ${exist}`));
+        groupIdSpan.appendChild(document.createTextNode(`● ${groupId} ${exist} TotElCnt: ${elementCount}`));
         parentNode.appendChild(groupIdSpan);
 
         let btn: HTMLButtonElement = document.createElement("button");
