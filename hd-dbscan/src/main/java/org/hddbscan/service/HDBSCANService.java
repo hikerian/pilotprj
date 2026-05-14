@@ -365,6 +365,7 @@ public class HDBSCANService {
 			modelGroup.setLabel(group.getLabel());
 			modelGroup.setRangeText(rangeTxt);
 			modelGroup.setUiElementList(filtered);
+			modelGroup.setElementCount(group.getDataList().size());
 			
 			modelGroupList.add(modelGroup);
 		}

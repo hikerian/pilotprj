@@ -12,6 +12,8 @@ public class ModelGroup {
 	private String label;
 	private String rangeText;
 	private List<UiElements> uiElementList;
+	private int elementCount;
+	
 	
 	public ModelGroup() {
 	}
@@ -59,9 +61,17 @@ public class ModelGroup {
 		return this.uiElementList.size();
 	}
 
+	public int getElementCount() {
+		return elementCount;
+	}
+
+	public void setElementCount(int elementCount) {
+		this.elementCount = elementCount;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, label, rangeText, uiElementList);
+		return Objects.hash(elementCount, id, label, rangeText, uiElementList);
 	}
 
 	@Override
@@ -73,14 +83,14 @@ public class ModelGroup {
 		if (getClass() != obj.getClass())
 			return false;
 		ModelGroup other = (ModelGroup) obj;
-		return Objects.equals(id, other.id) && Objects.equals(label, other.label)
+		return elementCount == other.elementCount && Objects.equals(id, other.id) && Objects.equals(label, other.label)
 				&& Objects.equals(rangeText, other.rangeText) && Objects.equals(uiElementList, other.uiElementList);
 	}
 
 	@Override
 	public String toString() {
 		return "ModelGroup [id=" + id + ", label=" + label + ", rangeText=" + rangeText + ", uiElementList="
-				+ uiElementList + "]";
+				+ uiElementList + ", elementCount=" + elementCount + "]";
 	}
 
 

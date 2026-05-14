@@ -298,6 +298,8 @@ public class ExtController {
 		res.addPayload("legend", legend);
 		res.setSuccess(series != null && series.length > 0);
 		
+		this.log.debug("Clusters ({}): {}", legend.size(), legend);
+		
 		return res;
 	}
 	
