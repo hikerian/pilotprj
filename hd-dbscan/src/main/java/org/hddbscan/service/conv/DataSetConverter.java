@@ -160,7 +160,7 @@ public class DataSetConverter {
 					return new DoubleFeature(DataSetConverter.isContains(BUTTON_CLASSES, classNames) ? 1D : 0D);
 				}));
 		
-		final List<String> INPUT_CLASSES = Arrays.asList("cl-inputbox", "cl-combobox", "cl-numbereditor", "cl-checkbox", "cl-dateinput");
+		final List<String> INPUT_CLASSES = Arrays.asList("cl-inputbox", "cl-textarea", "cl-combobox", "cl-numbereditor", "cl-checkbox", "cl-dateinput");
 		meta.addFeatureOrganizer(new FeatureOrganizer<DoubleFeature>("isInput"
 				, new DoubleConstraint(1, 0.5D)
 				, (UiElements element)-> {

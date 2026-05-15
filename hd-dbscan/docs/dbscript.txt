@@ -1,6 +1,6 @@
-mysqldump -u hddbscan -p --complete-insert --no-create-info hddbscan ui_page > C:\tmp\hd-dbscan\ui_page.sql
-mysqldump -u hddbscan -p --complete-insert --no-create-info hddbscan ui_elements > C:\tmp\hd-dbscan\ui_elements.sql
-mysqldump -u hddbscan -p --complete-insert --no-create-info hddbscan cluster_model > C:\tmp\hd-dbscan\cluster_model.sql
+mysqldump -uhddbscan -p --complete-insert --no-create-info hddbscan ui_page > C:\tmp\hd-dbscan\ui_page.sql
+mysqldump -uhddbscan -p --complete-insert --no-create-info hddbscan ui_elements > C:\tmp\hd-dbscan\ui_elements.sql
+mysqldump -uhddbscan -p --complete-insert --no-create-info hddbscan cluster_model > C:\tmp\hd-dbscan\cluster_model.sql
 
 
 brew services start mariadb

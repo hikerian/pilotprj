@@ -104,8 +104,15 @@ public class DBAccessor {
 	public List<UiElements> selectUiElementsList(long pageId) {
 		Map<String, Object> param = new HashMap<>();
 		param.put("pageId", pageId);
-
-		return this.jdbcTemplate.query(this.sql.getSQL("uiElementsQuery"), param, this.uiElementsRowMapper);
+		
+		List<UiElements> uiElementList = this.jdbcTemplate.query(this.sql.getSQL("uiElementsQuery"), param, this.uiElementsRowMapper);
+		uiElementList.forEach((element) -> { // .cl-focus는 상태 클래스로 제거함. 20260515
+			String selector = element.getSelectorText();
+			selector = selector.replace(".cl-focus", "");
+			element.setSelectorText(selector);
+		});
+		
+		return uiElementList;
 	}
 	
 	public UiElements selectUiElements(long pageId, long elementId) {
