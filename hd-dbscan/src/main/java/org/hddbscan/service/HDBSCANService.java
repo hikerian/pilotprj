@@ -49,8 +49,6 @@ public class HDBSCANService {
 	}
 	
 	public DBSCANModel learn(List<String> pageIds) {
-		long start = System.currentTimeMillis();
-		
 		List<UiElements> elementList = new ArrayList<>();
 		
 		for(String pageId : pageIds) {
@@ -64,6 +62,9 @@ public class HDBSCANService {
 		elementList.sort((UiElements el1, UiElements el2)-> {
 			return el1.getSelectorText().compareTo(el2.getSelectorText());
 		});
+		int elementCnt = elementList.size();
+		
+		long start = System.currentTimeMillis();
 		
 		// tree의 그룹요소를 1차원 cluster로 펼치기
 		final String OTHER = "OTHER";
@@ -75,9 +76,7 @@ public class HDBSCANService {
 		Pattern pattern = Pattern.compile(groupClassNames);
 		List<String> clusterIdClass = new ArrayList<>();
 		
-		int maxCnt = 0;
 		elementLoop: for(UiElements raw : elementList) {
-			maxCnt++;
 			clusterIdClass.clear();
 			String selector = raw.getSelectorText();
 			
@@ -102,8 +101,7 @@ public class HDBSCANService {
 			}
 		}
 		
-		this.log.info("Preprocessing Cluster count: {}, Raw count: {}, time: {} ms spent"
-				, clusterMap.size(), maxCnt, System.currentTimeMillis() - start);
+		long preprocessingEnd = System.currentTimeMillis();
 		
 		DataSetConverter converter = new DataSetConverter();
 		clusterMap.values().forEach((cluster) -> {
@@ -121,6 +119,10 @@ public class HDBSCANService {
 		HDBSCAN hdbscan = new HDBSCAN();
 		hdbscan.setMetadata(metadata);
 		DBSCANModel model = hdbscan.fit(dataSet);
+		
+		long learnEnd = System.currentTimeMillis();
+		this.log.info("Preprocessing Cluster count: {}, Component count: {}, time: {} ms spent", clusterMap.size(), elementCnt, preprocessingEnd - start);
+		this.log.info("Total Learning Time {} ms spent, Group Count {}", learnEnd - start, model.getGroupCount());
 		
 		this.model = model;
 		
