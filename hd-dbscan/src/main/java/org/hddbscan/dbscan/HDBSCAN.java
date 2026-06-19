@@ -72,16 +72,16 @@ public class HDBSCAN {
 
 	}
 	
-	private List<DBSCANCluster> fit(List<DataRow> inputValues, int cstntCnt) {
+	private List<DBSCANCluster> fit(List<DataRow> inputValues, int cstntIdx) {
 		List<DBSCANCluster> resultList = new ArrayList<>();
 		Set<DataRow> visited = new HashSet<>();
 		
-		DimensionConstraint constraint = this.metadata.getConstraint(cstntCnt);
+		DimensionConstraint constraint = this.metadata.getConstraint(cstntIdx);
 		
 		for(DataRow p : inputValues) {
 			if(visited.contains(p) == false) {
 				visited.add(p);
-				Neighbours neighbours = this.getNeighbours(p, inputValues, cstntCnt, constraint);
+				Neighbours neighbours = this.getNeighbours(p, inputValues, cstntIdx, constraint);
 				
 				if(constraint.isAcceptableNeighbours(neighbours)) {
 					int idx = 0;
@@ -89,7 +89,7 @@ public class HDBSCAN {
 						DataRow r = neighbours.get(idx);
 						if(visited.contains(r) == false) {
 							visited.add(r);
-							Neighbours individualNeighbours = this.getNeighbours(r, inputValues, cstntCnt, constraint);
+							Neighbours individualNeighbours = this.getNeighbours(r, inputValues, cstntIdx, constraint);
 							if(constraint.isAcceptableNeighbours(individualNeighbours)) {
 								neighbours.addAll(individualNeighbours);
 							}
