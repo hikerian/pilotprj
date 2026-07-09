@@ -206,6 +206,8 @@ public class HDBSCANService {
 		
 		Map<String, Integer> groupNameMap = new HashMap<>();
 		
+		int elementCnt = 0;
+		
 		for(int i = 0; i < groupList.size(); i++) {
 			Map<String, Object> field = new HashMap<>();
 			
@@ -236,6 +238,8 @@ public class HDBSCANService {
 			List<DataRow> dataList = group.getDataList();
 			int dataSize = dataList.size();
 			
+			elementCnt += dataSize;
+			
 			field.put("size", dataSize);
 			
 			double[][] data = new double[dataSize][2];
@@ -260,6 +264,8 @@ public class HDBSCANService {
 			
 			ser.put("name", name + "(" + size + ")");
 		}
+		
+		this.log.debug("# Total Element Count: {}", elementCnt);
 		
 		return series;
 	}	

@@ -48,11 +48,12 @@ function renderChart(legend, series) {
 	var option = {
 		animation: false,
 		title: {
-			text: 'HD-DBSCAN Web UI Component Cluster',
-			subtext: 'By Dongil Cho',
+//			text: 'HD-DBSCAN Web UI Elements Cluster',
+//			subtext: 'By Dongil Cho',
 //			sublink: 'https://github.com/ecomfe/echarts-stat',
 			left: 'center',
-			top: 16
+//			top: 16
+            top: 0
 		},
 		color: 		[
 		  "#E6194B", "#3CB44B", "#FFE119", "#4363D8", "#F58231", 
@@ -64,6 +65,7 @@ function renderChart(legend, series) {
 		  "#808000", "#B87333", "#4B0082", "#A0522D", "#008080", 
 		  "#CCCCFF", "#65000B", "#003153", "#CCFF00", "#007FFF"
 		],
+/*
 		legend: {
 			orient: 'vertical',
 		    right: 0,
@@ -76,6 +78,11 @@ function renderChart(legend, series) {
 		grid: {
 			left: '0px',
 		    right: '350px'
+		},
+		*/
+		grid: {
+			left: '0px',
+		    right: '0px'
 		},
 		tooltip: {
 			trigger: 'axis',
@@ -214,7 +221,10 @@ $(document).ready(function() {
 			<legend>Chart</legend>
 			<button id="btnRenderModel">Render Model Chart</button>
 			<section>
-				<div id="main" style="width: 1200px;height:600px;"></div>				
+				<div id="main" style="width: 800px;height:400px;"></div>
+<!--
+				<div id="main" style="width: 1200px;height:600px;"></div>
+-->
 			</section>
 		</fieldset>
 	</body>
