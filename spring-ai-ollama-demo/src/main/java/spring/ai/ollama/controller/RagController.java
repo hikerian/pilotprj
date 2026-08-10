@@ -30,7 +30,8 @@ public class RagController {
 	public String txtPdfDocxEtl() throws Exception {
 		String title = "대한민국헌법";
 		String author = "법제처";
-		File file = new File("E:\\work\\workspaces\\pilotprj\\.git\\pilotprj\\spring-ai-ollama-demo\\data\\대한민국헌법.docx");
+//		File file = new File("E:\\work\\workspaces\\pilotprj\\.git\\pilotprj\\spring-ai-ollama-demo\\data\\대한민국헌법.docx");
+		File file = new File("C:\\work\\dev\\workspaces\\pilotprj\\git\\spring-ai-ollama-demo\\data\\대한민국헌법.docx");
 		
 		this.log.debug("File {}", file.getName());
 		

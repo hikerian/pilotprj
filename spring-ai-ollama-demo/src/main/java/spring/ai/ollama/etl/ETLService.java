@@ -184,8 +184,8 @@ public class ETLService {
 		
 		// 메타데이터에 키워드 추가하기(이 부분은 LLM을 사용하므로 비용과 시간이 증가합니다.)
 		// 오래 걸림 한 chunk당 1분 30초 이상
-//		KeywordMetadataEnricher keywordMetadataEnricher = new KeywordMetadataEnricher(this.chatModel, 5);
-//		transformedDocuments = keywordMetadataEnricher.apply(transformedDocuments);
+		KeywordMetadataEnricher keywordMetadataEnricher = new KeywordMetadataEnricher(this.chatModel, 5);
+		transformedDocuments = keywordMetadataEnricher.apply(transformedDocuments);
 		
 		return transformedDocuments;
 	}
