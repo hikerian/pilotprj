@@ -48,7 +48,7 @@ public class ETLService {
 	 * @return
 	 * @throws IOException
 	 */
-	public String etlFromFile(String title, String author, MultipartFile attach) throws IOException {
+	public String etlFromFile(String title, String author, MultipartFile attach, int chunkSize, int minChunkSizeChars) throws IOException {
 		// E: 추출하기
 		List<Document> documents = this.extractFromFile(attach);
 		if(documents == null) {
@@ -67,7 +67,7 @@ public class ETLService {
 		}
 		
 		// T: 작은 사이즈로 분할하기
-		documents = this.transform(documents);
+		documents = this.transform(documents, chunkSize, minChunkSizeChars);
 		this.log.info("변환된 Documents 수: {} 개", documents.size());
 		
 		// L: 적재하기
@@ -76,7 +76,7 @@ public class ETLService {
 		
 		return "올린 문서를 추출-변환-적재 완료했습니다.";
 	}
-	public String etlFromFile(String title, String author, File attach) throws IOException {
+	public String etlFromFile(String title, String author, File attach, int chunkSize, int minChunkSizeChars) throws IOException {
 		// E: 추출하기
 		List<Document> documents = this.extractFromFile(attach);
 		if(documents == null) {
@@ -95,7 +95,7 @@ public class ETLService {
 		}
 		
 		// T: 작은 사이즈로 분할하기
-		documents = this.transform(documents);
+		documents = this.transform(documents, chunkSize, minChunkSizeChars);
 		this.log.info("변환된 Documents 수: {} 개", documents.size());
 		
 		// L: 적재하기
@@ -173,13 +173,19 @@ public class ETLService {
 	 * @param documents
 	 * @return
 	 */
-	private List<Document> transform(List<Document> documents) {
+	private List<Document> transform(List<Document> documents, int chunkSize, int minChunkSizeChars) {
 		this.log.debug("transform");
 		
 		List<Document> transformedDocuments = null;
 		
 		// 작게 분할하기
-		TokenTextSplitter tokenTextSplitter = TokenTextSplitter.builder().build();
+		TokenTextSplitter tokenTextSplitter = TokenTextSplitter.builder()
+				.withChunkSize(chunkSize) // 임시 청크로 나눌 때 기준이 되는 토큰 수 default: 800
+				.withMinChunkSizeChars(minChunkSizeChars) // 확정 청크의 문자수 default: 350
+				.withMinChunkLengthToEmbed(5) // 자투리 텍스트가 확정 청크가 되기 위한 최소 문자 수, 너무 짧은 텍스트는 임베딩 효율을 떨어뜨리므로 제외 default: 5
+				.withMaxNumChunks(10000) // 확정 청크 최대수, 확정 청크 수가 이 수를 초과하면 나머지는 무시됨 default: 10000
+				.withKeepSeparator(true) // 출바꿈(\n) 문자를 청크에 포함할 지 여부, 문장 경계를 명확히 할 때 유리할 수 있음 default: true
+				.build();
 		transformedDocuments = tokenTextSplitter.apply(documents);
 		
 		// 메타데이터에 키워드 추가하기(이 부분은 LLM을 사용하므로 비용과 시간이 증가합니다.)
