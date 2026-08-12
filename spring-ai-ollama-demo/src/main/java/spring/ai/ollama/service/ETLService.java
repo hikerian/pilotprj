@@ -1,4 +1,4 @@
-package spring.ai.ollama.etl;
+package spring.ai.ollama.service;
 
 import java.io.File;
 import java.io.IOException;

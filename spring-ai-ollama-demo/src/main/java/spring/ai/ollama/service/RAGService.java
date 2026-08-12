@@ -1,4 +1,4 @@
-package spring.ai.ollama.rag;
+package spring.ai.ollama.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,10 @@ import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvi
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
+import org.springframework.ai.rag.preretrieval.query.expansion.MultiQueryExpander;
 import org.springframework.ai.rag.preretrieval.query.transformation.CompressionQueryTransformer;
+import org.springframework.ai.rag.preretrieval.query.transformation.RewriteQueryTransformer;
+import org.springframework.ai.rag.preretrieval.query.transformation.TranslationQueryTransformer;
 import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -160,6 +163,144 @@ public class RAGService {
 				.advisors(MessageChatMemoryAdvisor.builder(this.chatMemory).build(),
 						retrievalAugmentationAdvisor)
 				.advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, conversationId))
+				.call()
+				.content();
+		
+		return answer;
+	}
+	
+	
+	/*
+	 * RewriteQueryTransformer
+	 */
+	/**
+	 * RewriteQueryTransformer를 생성하고 반환하는 메소드.
+	 * @return
+	 */
+	private RewriteQueryTransformer createRewriteQueryTransformer() {
+		// 새로운 ChatClient를 생성하는 빌더 생성
+		ChatClient.Builder chatClientBuilder = ChatClient.builder(this.chatModel)
+				.defaultAdvisors(new SimpleLoggerAdvisor(Ordered.LOWEST_PRECEDENCE - 1));
+		
+		// 질문 재작성기 생성
+		RewriteQueryTransformer rewriteQueryTransformer = RewriteQueryTransformer.builder()
+				.chatClientBuilder(chatClientBuilder)
+				.build();
+		
+		return rewriteQueryTransformer;
+	}
+	
+	/**
+	 * LLM과대화하는 메소드
+	 * @param question
+	 * @param score
+	 * @param source
+	 * @return
+	 */
+	public String chatWithRewriteQuery(String question, double score, String source) {
+		// RetrievalAugmentationAdvisor 생성
+		RetrievalAugmentationAdvisor retrievalAugmentationAdvisor = RetrievalAugmentationAdvisor.builder()
+				.queryTransformers(this.createRewriteQueryTransformer())
+				.documentRetriever(this.createVectorStoreDocumentRetriever(score, source))
+				.build();
+		
+		// 프롬프트를 LLM으로 전송하고 응답을 받는 코드
+		String answer = this.chatClient.prompt()
+				.user(question)
+				.advisors(retrievalAugmentationAdvisor)
+				.call()
+				.content();
+		
+		return answer;
+	}
+	
+	
+	/*
+	 * TranslationQueryTransformer
+	 */
+	/**
+	 * TranslationQueryTransformer를 생성하고 변환하는 메소드
+	 * @return
+	 */
+	private TranslationQueryTransformer createTranslationQueryTransformer() {
+		// 새로운 ChatClient를 생성하는 빌더 생성
+		ChatClient.Builder chatClientBuilder = ChatClient.builder(this.chatModel)
+				.defaultAdvisors(new SimpleLoggerAdvisor(Ordered.LOWEST_PRECEDENCE - 1));
+		
+		// 질문 번역시 생성
+		TranslationQueryTransformer translationQueryTransformer = TranslationQueryTransformer.builder()
+				.chatClientBuilder(chatClientBuilder)
+				.targetLanguage("korean")
+				.build();
+		
+		return translationQueryTransformer;
+	}
+	
+	/**
+	 * LLM과 대화하는 메소드
+	 * @param question
+	 * @param score
+	 * @param source
+	 * @return
+	 */
+	public String chatWithTranslation(String question, double score, String source) {
+		// RetrievalAugmentationAdvisor 생성
+		RetrievalAugmentationAdvisor retrievalAugmentationAdvisor = RetrievalAugmentationAdvisor.builder()
+				.queryTransformers(this.createTranslationQueryTransformer())
+				.documentRetriever(this.createVectorStoreDocumentRetriever(score, source))
+				.build();
+		
+		// 프롬프트를 LLM으로 전공하고 응답을 받는 코드
+		String answer = this.chatClient.prompt()
+				.user(question)
+				.advisors(retrievalAugmentationAdvisor)
+				.call()
+				.content();
+		
+		return answer;
+	}
+	
+	
+	/*
+	 * MultiQueryExpander
+	 */
+	/**
+	 * MultiQueryExpander를 생성하고 반환하는 메소드.
+	 * @return
+	 */
+	private MultiQueryExpander createMultiQueryExpander() {
+		// 새로운 ChatClient 빌더 생성
+		ChatClient.Builder chatClientBuilder = ChatClient.builder(this.chatModel)
+				.defaultAdvisors(new SimpleLoggerAdvisor(Ordered.LOWEST_PRECEDENCE - 1));
+		
+		// 질문 확장기 생성
+		MultiQueryExpander multiQueryExpander = MultiQueryExpander.builder()
+				.chatClientBuilder(chatClientBuilder)
+				.includeOriginal(true)
+				.numberOfQueries(4)
+				.build();
+		
+		return multiQueryExpander;
+	}
+	
+	/**
+	 * LLM과 대화하는 메소드
+	 * @param question
+	 * @param score
+	 * @param source
+	 * @return
+	 */
+	public String chatWithMultiQuery(String question, double score, String source) {
+		// RetrievalAugmentationAdvisor 생성
+		RetrievalAugmentationAdvisor retrievalAugmentationAdvisor = RetrievalAugmentationAdvisor.builder()
+				.queryExpander(this.createMultiQueryExpander())
+				.documentRetriever(this.createVectorStoreDocumentRetriever(score, source))
+				.build();
+		
+		// 프롬프트를 LLLM으로 전송하고 응답을 받는 코드
+		String answer = this.chatClient.prompt()
+				.user(question)
+				.advisors(retrievalAugmentationAdvisor)
 				.call()
 				.content();
 		

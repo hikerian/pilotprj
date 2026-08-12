@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpSession;
-import spring.ai.ollama.etl.ETLService;
-import spring.ai.ollama.rag.RAGService;
+import spring.ai.ollama.service.ETLService;
+import spring.ai.ollama.service.RAGService;
 
 
 @RestController
@@ -73,6 +73,49 @@ public class RagController {
 		String source = "대한민국헌법.docx";
 		
 		String answer = this.ragService.chatWithCompression(question, score, source, session.getId());
+		
+		return answer;
+	}
+	
+	/**
+	 * RewriteQueryTransformer
+	 * @return
+	 */
+	@GetMapping("/rewrite-q-trans")
+	public String rewriteQueryTransformer() {
+		String question = "국회의원은 하는일 없이 당파 싸움만 하고 있어. 이래가지고 나라가 발전할 수 있겠어? 정말 국회의원은 뭐하는 사람들이야?";
+		double score = 0.0;
+		String source = "대한민국헌법.docx";
+		
+		String answer = this.ragService.chatWithRewriteQuery(question, score, source);
+		
+		return answer;
+	}
+	
+	/**
+	 * TranslationQueryTransformer
+	 */
+	@GetMapping("/transl-q-transf")
+	public String translationQueryTransformer() {
+		String question = "大統領の任期はどのくらいですか？";
+		double score = 0.0;
+		String source = "대한민국헌법.docx";
+		
+		String answer = this.ragService.chatWithTranslation(question, score, source);
+		
+		return answer;
+	}
+	
+	/**
+	 * MultiQueryExpander
+	 */
+	@GetMapping("/multi-q-exp")
+	public String multiQueryExpander() {
+		String question = "대법관의 임기는 몇 년입니까?";
+		double score = 0.0;
+		String source = "대한민국헌법.docx";
+		
+		String answer = this.ragService.chatWithMultiQuery(question, score, source);
 		
 		return answer;
 	}
