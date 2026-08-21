@@ -47,12 +47,17 @@ function renderChart(legend, series) {
 	// Specify the configuration items and data for the chart
 	var option = {
 		animation: false,
+/*
 		title: {
-//			text: 'HD-DBSCAN Web UI Elements Cluster',
-//			subtext: 'By Dongil Cho',
-//			sublink: 'https://github.com/ecomfe/echarts-stat',
+			text: 'HD-DBSCAN Web UI Elements Cluster',
+			subtext: 'By Dongil Cho',
+			sublink: 'https://github.com/ecomfe/echarts-stat',
 			left: 'center',
-//			top: 16
+			top: 16
+		},
+*/
+		title: {
+			left: 'center',
             top: 0
 		},
 		color: 		[
@@ -75,11 +80,20 @@ function renderChart(legend, series) {
 			icon: 'rect',
 			data: legend
 		},
+		legend: {
+			orient: 'vertical',
+		    right: 0,
+		    top: 'center',
+			width: '400px',
+			height: '800px',
+			icon: 'rect',
+			data: legend
+		},
 		grid: {
 			left: '0px',
-		    right: '350px'
+		    right: '400px'
 		},
-		*/
+*/
 		grid: {
 			left: '0px',
 		    right: '0px'
@@ -221,9 +235,14 @@ $(document).ready(function() {
 			<legend>Chart</legend>
 			<button id="btnRenderModel">Render Model Chart</button>
 			<section>
+
+	            <label>논문삽입용</label>
 				<div id="main" style="width: 800px;height:400px;"></div>
 <!--
+				<label>Type1, Type2</label>
 				<div id="main" style="width: 1200px;height:600px;"></div>
+                <label>Type3</label>
+                <div id="main" style="width: 1200px;height:800px;"></div>
 -->
 			</section>
 		</fieldset>
