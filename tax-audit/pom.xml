@@ -9,6 +9,8 @@
 	<description>2026년 9월 세무조사 엑셀 분석툴</description>
 	<properties>
 		<java.version>25</java.version>
+		<maven.compiler.source>25</maven.compiler.source>
+		<maven.compiler.target>25</maven.compiler.target>
 	</properties>
 	<dependencies>
 		<dependency>
