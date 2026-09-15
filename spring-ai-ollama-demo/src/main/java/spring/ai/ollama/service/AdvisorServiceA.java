@@ -25,6 +25,8 @@ public class AdvisorServiceA {
 	}
 	
 	public String advisorChain1(String question) {
+		this.log.debug("advisorChain1");
+		
 		String response = this.chatClient.prompt()
 				.advisors(new AdvisorC())
 				.user(question)
@@ -34,6 +36,8 @@ public class AdvisorServiceA {
 	}
 	
 	public Flux<String> advisorChain2(String question) {
+		this.log.debug("advisorChain2");
+		
 		Flux<String> response = this.chatClient.prompt()
 				.advisors(new AdvisorC())
 				.user(question)
