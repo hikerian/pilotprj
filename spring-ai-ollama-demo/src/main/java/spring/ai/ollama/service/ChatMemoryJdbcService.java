@@ -37,6 +37,8 @@ public class ChatMemoryJdbcService {
 	}
 	
 	public String chat(String userText, String conversationId) {
+		this.log.debug("UserText: {}, ConversationId: {}", userText, conversationId);
+		
 		String answer = this.chatClient.prompt()
 				.user(userText)
 				.advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, conversationId))
