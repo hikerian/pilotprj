@@ -30,6 +30,7 @@ public class FileSystemTool {
 		try {
 			Files.createDirectories(this.rootDirectory);
 		} catch (IOException e) {
+			e.printStackTrace();
 			throw new RuntimeException("루트 디렉토리 생성 실패:" + this.rootDirectory, e);
 		}
 	}
@@ -54,6 +55,8 @@ public class FileSystemTool {
 
 	@Tool(description = "디렉토리 항목 조회")
 	public List<Item> listFiles(String relativePath) {
+		this.log.info("listFiles: {}", relativePath);
+		
 		Path path = this.resolve(relativePath);
 		try {
 			Stream<Path> stream = Files.list(path);
@@ -70,6 +73,8 @@ public class FileSystemTool {
 
 	@Tool(description = "디렉토리 생성")
 	public String createDir(String relativePath) {
+		this.log.info("createDir: {}", relativePath);
+		
 		Path path = this.resolve(relativePath);
 		try {
 			Files.createDirectories(path);
@@ -86,6 +91,10 @@ public class FileSystemTool {
 			@ToolParam(description = "파일 이름") String fileName,
 			@ToolParam(description = "확장 이름") String extName,
 			@ToolParam(description = "파일 내용") String content) {
+		
+		this.log.info("createFile: {}, {}, {}, {}", parentPath, fileName, extName, content);
+		
+		
 		if (!StringUtils.hasText(fileName) || !StringUtils.hasText(extName)) {
 			return "디렉토리 또는 파일명이 없습니다.";
 		}
@@ -109,6 +118,9 @@ public class FileSystemTool {
 
 	@Tool(description = "파일 내용 읽기")
 	public String readFile(String relativePath) {
+		
+		this.log.info("readFile: {}", relativePath);
+		
 		Path path = resolve(relativePath);
 		if (Files.notExists(path)) {
 			this.log.info(path.toString());
@@ -125,6 +137,9 @@ public class FileSystemTool {
 
 	@Tool(description = "파일 및 디렉토리 삭제")
 	public String deletePath(String relativePath) {
+		
+		this.log.info("deletePath: {}", relativePath);
+		
 		Path path = resolve(relativePath);
 		if (Files.notExists(path))
 			return "파일 또는 디렉토리가 존재하지 않습니다.";
@@ -147,13 +162,16 @@ public class FileSystemTool {
 
 	@Tool(description = "파일 이동 또는 이름 변경")
 	public String moveFile(String sourceRelativePath, String targetRelativePath) {
+		
+		this.log.info("moveFile: {}, {}", sourceRelativePath, targetRelativePath);
+		
 		Path source = resolve(sourceRelativePath);
 		Path target = resolve(targetRelativePath);
 		try {
 			Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
 			return "파일 이동 또는 이름 변경을 했습니다.";
 		} catch (Exception e) {
-			log.info(e.toString());
+			this.log.info(e.toString());
 			return "파일 이동 또는 이름 변경을 못했습니다.";
 		}
 	}

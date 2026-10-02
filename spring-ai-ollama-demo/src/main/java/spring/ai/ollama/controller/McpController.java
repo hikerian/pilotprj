@@ -38,6 +38,10 @@ public class McpController {
 		String answer = this.mcpService.chat(question);
 		res.append(answer).append("\n");
 		
+		question = "도구를 사용해서 차량 번호가 '533나4567'인 차량이 등록되어 있는지 확인하고 등록되었을 경우 도구를 사용해서 차단봉을 올려주고 등록되지 않았을 경우 차량봉을 내려주세요. 그리고 결과를 알려주세요.";
+		answer = this.mcpService.chat(question);
+		res.append(answer).append("\n");
+		
 		question = "지금부터 2시간 뒤에 알람이 울리도록 설정해줘.";
 		answer = this.mcpService.chat(question);
 		res.append(answer).append("\n");
@@ -68,22 +72,32 @@ public class McpController {
 	
 	@GetMapping("/barrier")
 	public String boomBarrier() {
+		final boolean requiredWebp = false;
+		
+		final String filePath = "E:/work/workspaces/pilotprj/.git/pilotprj/spring-ai-ollama-demo/data/img/car3.jpg";
+		
 		try {
-			byte[] image = Files.readAllBytes(Paths.get("E:/work/workspaces/pilotprj/.git/pilotprj/spring-ai-ollama-demo/data/img/car2.jpg"));
+			byte[] image = Files.readAllBytes(Paths.get(filePath));
 			
-			BufferedImage img = ImageIO.read(new ByteArrayInputStream(image));
+			if(requiredWebp) {
+				BufferedImage img = ImageIO.read(new ByteArrayInputStream(image));
+				
+				final String webpFilePath = "E:/work/workspaces/pilotprj/.git/pilotprj/spring-ai-ollama-demo/data/img/car2.webp";
+				
+				File webp = new File(webpFilePath);
+				if(webp.exists()) {
+					webp.delete();
+				}
+				ImageIO.write(img, "JPG", webp);
+				
+				image = Files.readAllBytes(Paths.get(webpFilePath));
+				
+				return this.mcpService.boomBarrier("image/webp", image);
+			} else {
+				// ollama의 버그 - https://github.com/ollama/ollama/issues/16532
+				return this.mcpService.boomBarrier("image/jpeg", image);
+			}
 			
-			File webp = new File("E:/work/workspaces/pilotprj/.git/pilotprj/spring-ai-ollama-demo/data/img/car2.webp");
-			ImageIO.write(img, "JPG", webp);
-			
-			image = Files.readAllBytes(Paths.get("E:/work/workspaces/pilotprj/.git/pilotprj/spring-ai-ollama-demo/data/img/car2.webp"));
-			
-//			String answer = this.mcpService.boomBarrier("image/jpeg", image);
-			String answer = this.mcpService.boomBarrier("image/webp", image);
-			
-			// ollama의 버그 - https://github.com/ollama/ollama/issues/16532
-			
-			return answer;
 		} catch (IOException e) {
 			this.log.error("File IO Exception", e);
 			throw new RuntimeException(e);

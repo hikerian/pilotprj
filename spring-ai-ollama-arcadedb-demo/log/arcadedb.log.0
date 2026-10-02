@@ -1,0 +1,5 @@
+
+2026-10-02 18:28:20.453 INFO  [Http11NioProtocol] Starting ProtocolHandler ["http-nio-8080"]
+2026-10-02 18:28:29.636 INFO  [Http11NioProtocol] Pausing ProtocolHandler ["http-nio-8080"]
+2026-10-02 18:28:29.640 INFO  [Http11NioProtocol] Stopping ProtocolHandler ["http-nio-8080"]
+2026-10-02 18:28:29.676 INFO  [StandardService] Stopping service [Tomcat]

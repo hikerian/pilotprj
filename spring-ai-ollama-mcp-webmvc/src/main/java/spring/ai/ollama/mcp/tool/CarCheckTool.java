@@ -22,6 +22,8 @@ public class CarCheckTool {
 	
 	@Tool(description="차량 번호 등록 여부를 확인합니다.")
 	public boolean checkCarNumber(@ToolParam(description="차량 번호") String carNumber) {
+		this.log.info("checkCarNumber: {}", carNumber);
+		
 		// 차량 번호에 포함된 모든 공백 제거
 		carNumber = carNumber.replaceAll("\\s+", "");
 		this.log.info("LLM이 인식한 차량 번호: {}", carNumber);

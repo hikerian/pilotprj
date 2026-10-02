@@ -14,14 +14,14 @@ public class BoomBarrierTool {
 	public BoomBarrierTool() {
 	}
 	
-	@Tool(description="차단 봉을 올립니다.")
+	@Tool(description="차단봉을 올립니다.")
 	public void boomBarrierUp() {
-		this.log.info("차단 봉을 올립니다.");
+		this.log.info("차단봉을 올립니다.");
 	}
 	
-	@Tool(description="차단 봉을 내립니다.")
+	@Tool(description="차단봉을 내립니다.")
 	public void boomBarrierDown() {
-		this.log.info("차단 봉을 내립니다.");
+		this.log.info("차단봉을 내립니다.");
 	}
 
 }

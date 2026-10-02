@@ -22,6 +22,8 @@ public class DateTimeTool {
 	
 	@Tool(description="현재 날짜와 시간 정보를 제공합니다.")
 	public String getCurrentDateTime() {
+		this.log.info("getCurrentDateTime");
+		
 		String nowTime = LocalDateTime.now().atZone(LocaleContextHolder.getTimeZone().toZoneId())
 				.toString();
 		
@@ -32,6 +34,8 @@ public class DateTimeTool {
 	
 	@Tool(description="지정된 시간에 알람을 설정합니다.")
 	public void setAlarm(@ToolParam(description="ISO-8601 형식의 시간", required=true) String time) {
+		this.log.info("setAlarm: {}", time);
+		
 		/*
 		 * LLM은 다음과 같은 값을 제공할 수 있습니다.
 		 * 2025-07-03T24:12:29+09:00
