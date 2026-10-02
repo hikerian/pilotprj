@@ -1,6 +1,5 @@
 package spring.ai.demo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,11 +9,15 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import spring.ai.demo.service.AiServicePromptTemplate;
 
+
 @RestController
 @RequestMapping("/ai")
 public class AiControllerPromptTemplate {
-    @Autowired
-    private AiServicePromptTemplate aiService;
+    private final AiServicePromptTemplate aiService;
+
+    public AiControllerPromptTemplate(AiServicePromptTemplate aiService) {
+        this.aiService = aiService;
+    }
 
     @PostMapping(value = "/prompt-template", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_NDJSON_VALUE)
     public Flux<String> promptTemplate(

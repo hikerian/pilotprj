@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,14 +16,27 @@ import reactor.core.publisher.Flux;
 import spring.ai.demo.service.AiService;
 import spring.ai.demo.service.AiServiceByChatClient;
 
+
+/**
+ * https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html
+ */
 @RestController
 @RequestMapping("/ai")
 public class AiController {
 	// @Autowired
 	// private AiService aiService;
 
-	@Autowired
-	private AiServiceByChatClient aiService;
+	private final AiServiceByChatClient aiService;
+
+	/* Chapter 05 */
+	private final AiService aiService2;
+	
+	
+	public AiController(AiServiceByChatClient aiService, AiService aiService2) {
+		this.aiService = aiService;
+		this.aiService2 = aiService2;
+		
+	}
 
 	// ##### 요청 매핑 메소드 #####
 	@PostMapping(value = "/chat", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
@@ -45,9 +57,6 @@ public class AiController {
 	}
 
 	/* Chapter 05 */
-	@Autowired
-	private AiService aiService2;
-
 	@PostMapping(value = "/stt", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
 	public String stt(@RequestParam("speech") MultipartFile speech) throws IOException {
 		String originalFileName = speech.getOriginalFilename();
