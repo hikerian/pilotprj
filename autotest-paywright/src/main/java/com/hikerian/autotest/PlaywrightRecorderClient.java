@@ -1,16 +1,18 @@
 package com.hikerian.autotest;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -20,13 +22,23 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Page.GetByRoleOptions;
+import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.impl.driver.Driver;
+import com.microsoft.playwright.options.AriaRole;
 
 
 /**
  * vscode extension과 유사한 방식으로 playwright server와 연동하여 시나리오를 레코딩 하는 예시.
  */
 public class PlaywrightRecorderClient {
+	private final Logger log = LoggerFactory.getLogger(PlaywrightRecorderClient.class);
+	
+	
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final AtomicLong requestId = new AtomicLong();
@@ -36,16 +48,21 @@ public class PlaywrightRecorderClient {
     private WebSocketSession session;
 
     private Process playwrightProcess;
+    
+    /*
+     * Browser 접근을 위한 Playwright 연결
+     */
+    private Playwright playwright;
+    private Browser browser;
 
     
     public void installChromium() throws Exception {
     	Driver driver = Driver.ensureDriverInstalled(Collections.emptyMap(), false);
     	ProcessBuilder builder = driver.createProcessBuilder();
     	
-    	System.out.println(builder.command());
+    	this.log.info("ProcessBuilder Command: {}", builder.command());
 
-    	String[] args = new String[]{"install",
-    			"chromium"};
+    	String[] args = new String[]{"install", "chromium"};
     	
     	builder.command().addAll(Arrays.asList(args));
     	
@@ -58,9 +75,7 @@ public class PlaywrightRecorderClient {
         int exitCode = process.waitFor();
 
         if (exitCode != 0) {
-            throw new IllegalStateException(
-                "Chromium installation failed: " + exitCode
-            );
+            throw new IllegalStateException("Chromium installation failed: " + exitCode);
         }
     }
 
@@ -75,12 +90,9 @@ public class PlaywrightRecorderClient {
     	ProcessBuilder builder = driver.createProcessBuilder();
     	
     	String[] args = new String[]{"run-server",
-    			"--host",
-                "127.0.0.1",
-                "--mode",
-                "extension",
-                "--path",
-                "/java-recorder"};
+    			"--host", "127.0.0.1",
+                "--mode", "extension",
+                "--path", "/java-recorder"};
     	
     	builder.command().addAll(Arrays.asList(args));
 
@@ -101,21 +113,21 @@ public class PlaywrightRecorderClient {
         this.playwrightProcess = builder.start();
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(this.playwrightProcess.getInputStream()));
-
         String line;
 
         while ((line = reader.readLine()) != null) {
 
-            System.out.println("[Playwright] " + line);
+        	this.log.info("[Playwright] {}", line);
 
             /*
              * Playwright run-server 출력 예:
-             *
              * Listening on ws://127.0.0.1:53219/java-recorder
              */
             if (line.startsWith("Listening on ")) {
-
-                return line.substring("Listening on ".length()).trim();
+            	String wsEndpoint = line.substring("Listening on ".length()).trim();
+                this.log.info("WebSocket EndPoint: {}", wsEndpoint);
+                
+                return wsEndpoint;
             }
         }
 
@@ -126,21 +138,17 @@ public class PlaywrightRecorderClient {
     /**
      * Playwright DebugController WebSocket 연결
      */
-    public void connect(String wsEndpoint)
-            throws Exception {
+    public void connect(String wsEndpoint) throws Exception {
 
         /*
          * VS Code extension의 핵심:
-         *
          * ws://.../java-recorder
-         *
          *                  ↓
-         *
          * ws://.../java-recorder?debug-controller
          */
         String debugEndpoint = wsEndpoint + "?debug-controller";
 
-        System.out.println("Connecting: " + debugEndpoint);
+        this.log.info("Connecting: {}", debugEndpoint);
 
         StandardWebSocketClient client = new StandardWebSocketClient();
 
@@ -148,7 +156,51 @@ public class PlaywrightRecorderClient {
 
         this.session = future.get();
 
-        System.out.println("WebSocket connected.");
+        this.log.info("WebSocket connected.");
+    }
+    
+    /**
+     * Browser 접근을 위한 Playwright 연결
+     * @param wsEndpoint
+     * @throws Exception
+     */
+    public void connectBrowser(String wsEndpoint) throws Exception {
+        this.playwright = Playwright.create();
+//        this.browser = this.playwright.chromium().connect(wsEndpoint + "?connect=first&browser=chromium");
+        this.browser = this.playwright.chromium().connect(wsEndpoint + "?connect=first");
+//        this.browser = this.playwright.chromium().connect(wsEndpoint);
+
+        List<BrowserContext> contextList = this.browser.contexts();
+        
+        // Context 및 Page 단위 이벤트를 감지하기 위해 Handler 등록
+        System.out.println("@@@@@@ BrowserContextList: " + contextList);
+        for(BrowserContext context : contextList) {
+        	context.onPage(page -> {
+        		System.out.println("###### Init New Page: " + page.url());
+        	});
+        	context.onPageLoad(page -> {
+        		System.out.println("###### Init Page Load: " + page.url());
+        	});
+        	context.onPageClose(page -> {
+        		System.out.println("###### Init Page Closed: " + page.url());
+        	});
+        	context.onClose(ctx -> {
+        		System.out.println("###### Init Context Closed: " + ctx);
+        	});
+        	context.onDialog(dialog -> {
+        		System.out.println("###### Init Dialog Load: " + dialog.message());
+        		dialog.accept();
+        	});
+        	context.onRequest(req -> {
+        		System.out.println("###### Init Request: " + req.url() + ":" + req + ":" + req.frame().page());
+        	});
+        	context.onResponse(res -> {
+        		System.out.println("###### Init Response: " + res.url() + ":" + res + ":" + res.frame().page());
+        		
+        	});
+        }
+        
+        this.log.info("Browser connected");
     }
 
 
@@ -163,7 +215,7 @@ public class PlaywrightRecorderClient {
 
         JsonNode result = this.sendCommand("initialize", params).get();
 
-        System.out.println("initialize completed: " + result);
+        this.log.info("initialize completed: {}", result);
 
         /*
          * VS Code extension 역시 initialize 이후
@@ -187,16 +239,11 @@ public class PlaywrightRecorderClient {
 
         /*
          * 필요하다면:
-         *
-         * params.put(
-         *     "testIdAttributeName",
-         *     "data-testid"
-         * );
+         * params.put("testIdAttributeName", "data-testid");
          */
-
         this.sendCommand("setRecorderMode", params).get();
 
-        System.out.println("Recorder started.");
+        this.log.info("Recorder started.");
     }
 
 
@@ -210,7 +257,7 @@ public class PlaywrightRecorderClient {
 
         this.sendCommand("setRecorderMode", params).get();
 
-        System.out.println("Recorder stopped.");
+        this.log.info("Recorder stopped.");
     }
 
 
@@ -246,7 +293,7 @@ public class PlaywrightRecorderClient {
 
         String json = this.objectMapper.writeValueAsString(command);
 
-        System.out.println(">> " + json);
+        this.log.info(">> {}", json);
 
         this.session.sendMessage(new TextMessage(json));
 
@@ -261,7 +308,7 @@ public class PlaywrightRecorderClient {
 
         @Override
         public void afterConnectionEstablished(WebSocketSession session) {
-            System.out.println("Playwright WebSocket session established.");
+        	PlaywrightRecorderClient.this.log.info("Playwright WebSocket session established.");
         }
 
 
@@ -270,24 +317,19 @@ public class PlaywrightRecorderClient {
 
             String payload = message.getPayload();
 
-            System.out.println("<< " + payload);
+            PlaywrightRecorderClient.this.log.info("<< {}", payload);
 
-            JsonNode root = objectMapper.readTree(payload);
+            JsonNode root = PlaywrightRecorderClient.this.objectMapper.readTree(payload);
 
             /*
              * id가 있으면 RPC response
              */
             if (root.has("id")) {
-
                 long id = root.get("id").asLong();
-
                 CompletableFuture<JsonNode> future = pendingRequests.remove(id);
-
                 if (future == null) return;
-
                 if (root.has("error")) {
                     future.completeExceptionally(new RuntimeException(root.get("error").toPrettyString()));
-
                 } else {
                     future.complete(root.get("result"));
                 }
@@ -300,11 +342,8 @@ public class PlaywrightRecorderClient {
              * id가 없으면 server -> client event
              */
             if (root.has("method")) {
-
                 String method = root.get("method").asText();
-
                 JsonNode params = root.get("params");
-
                 handleEvent(method, params);
             }
         }
@@ -318,7 +357,7 @@ public class PlaywrightRecorderClient {
 
         @Override
         public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-            System.out.println("WebSocket closed: " + status);
+        	PlaywrightRecorderClient.this.log.info("WebSocket closed: {}", status);
         }
     }
 
@@ -327,9 +366,9 @@ public class PlaywrightRecorderClient {
      * Playwright Recorder event 처리
      */
     private void handleEvent(String method, JsonNode params) {
-    	System.out.println("-----------------------");
-    	System.out.println(method + ":" + params);
-    	System.out.println("-----------------------");
+    	this.log.info("-----------------------");
+    	this.log.info("{} : {}", method, params);
+    	this.log.info("-----------------------");
     	
     	
         switch (method) {
@@ -337,13 +376,25 @@ public class PlaywrightRecorderClient {
              * Recorder가 새로운 코드를 생성했을 때
              */
             case "sourceChanged" -> {
-
-                System.out.println("\n===== Recorded Source =====");
+            	this.log.info("\n===== Recorded Source =====");
 
                 if (params != null && params.has("actions")) {
-
                     for (JsonNode action : params.get("actions")) {
-                        System.out.println(action.asText());
+                    	this.log.info(action.asText());
+                    	
+                    	List<BrowserContext> contexts = this.browser.contexts();
+                    	
+                    	this.log.info("Browser Contexts: {}", contexts);
+                    	
+                    	for(BrowserContext context : contexts) {
+                    		List<Page> pages = context.pages();
+                    		for(Page page : pages) {
+                    			this.log.info("Page url: {}, title: {}", page.url(), page.title());
+                    			
+                    			Locator loc = page.getByRole(AriaRole.TEXTBOX, new GetByRoleOptions().setName("아이디"));
+                    			this.log.info("==Searched Components: {}", loc == null ? "null" : loc.isVisible());
+                    		}
+                    	}
                     }
                 }
             }
@@ -351,28 +402,27 @@ public class PlaywrightRecorderClient {
              * Locator picker에서 element를 선택
              */
             case "inspectRequested" -> {
-                System.out.println("\n===== Element Selected =====");
+            	this.log.info("\n===== Element Selected =====");
 
                 if (params != null) {
-                    System.out.println("locator = " + params.path("locator").asText());
-
-                    System.out.println("selector = " + params.path("selector").asText());
+                	this.log.info("locator = {}", params.path("locator").asText());
+                	this.log.info("selector = {}", params.path("selector").asText());
                 }
             }
             /*
              * browser/page 상태 변경
              */
             case "stateChanged" -> {
-                System.out.println("State changed: " + params);
+            	this.log.info("State changed: {}", params);
             }
             case "setModeRequested" -> {
-                System.out.println("Recorder mode: " + params);
+            	this.log.info("Recorder mode: {}", params);
             }
             case "paused" -> {
-                System.out.println("Paused: " + params);
+            	this.log.info("Paused: {}", params);
             }
             default -> {
-                System.out.println("Event [" + method + "] " + params);
+            	this.log.info("Event [{}]", params);
             }
         }
     }
@@ -383,15 +433,22 @@ public class PlaywrightRecorderClient {
      */
     public void close() {
         try {
-            if (session != null && session.isOpen()) {
-                session.close();
+            if (this.session != null && this.session.isOpen()) {
+            	this.session.close();
             }
         } catch (Exception ignored) {
         	ignored.printStackTrace();
         }
+        
+        if(this.browser != null) {
+        	this.browser.close();
+        }
+        if(this.playwright != null) {
+        	this.playwright.close();
+        }
 
-        if (playwrightProcess != null) {
-            playwrightProcess.destroy();
+        if (this.playwrightProcess != null) {
+        	this.playwrightProcess.destroy();
         }
     }
 
@@ -406,7 +463,6 @@ public class PlaywrightRecorderClient {
              * 1. Playwright run-server 실행
              */
             String wsEndpoint = client.startPlaywrightServer();
-            System.out.println("WebSocket EndPoint: " + wsEndpoint);
 
             /*
              * 2. ?debug-controller WebSocket 연결
@@ -417,11 +473,16 @@ public class PlaywrightRecorderClient {
              * 3. DebugController initialize
              */
             client.initialize();
-
+            
             /*
              * 4. Recorder 시작
              */
             client.startRecording();
+            
+            /*
+             * 
+             */
+            client.connectBrowser(wsEndpoint);
 
 
             System.out.println();
