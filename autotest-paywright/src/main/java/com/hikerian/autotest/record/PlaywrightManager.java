@@ -21,6 +21,9 @@ public class PlaywrightManager {
 	}
 	
 	public Playwright createPlaywright() throws AlreadyExistsException {
+		/*
+		 * Playwright CreateOption이 필요하면 여기에 구현 추가
+		 */
 		if(this.playwrightWrapper == null || this.playwrightWrapper.isClosed()) {
 			this.playwrightWrapper = this.new PlaywrightWrapper(Playwright.create());
 			
