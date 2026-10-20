@@ -8,11 +8,11 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 
-public class BrowserRecordingWebSocketHandler extends TextWebSocketHandler {
-	private final Logger log = LoggerFactory.getLogger(BrowserRecordingWebSocketHandler.class);
+public class RecordingWebSocketHandler extends TextWebSocketHandler {
+	private final Logger log = LoggerFactory.getLogger(RecordingWebSocketHandler.class);
 	
 	
-	public BrowserRecordingWebSocketHandler() {
+	public RecordingWebSocketHandler() {
 		
 	}
 
