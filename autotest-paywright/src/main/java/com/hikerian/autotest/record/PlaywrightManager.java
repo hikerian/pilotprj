@@ -27,7 +27,7 @@ public final class PlaywrightManager {
 	private PlaywrightManager() {
 	}
 	
-	public Playwright createPlaywright() throws AlreadyExistsException {
+	public synchronized Playwright createPlaywright() throws AlreadyExistsException {
 		/*
 		 * Playwright CreateOption이 필요하면 여기에 구현 추가
 		 */
@@ -61,32 +61,22 @@ public final class PlaywrightManager {
 		public BrowserType chromium() {
 			return this.playwright.chromium();
 		}
-
-
 		@Override
 		public BrowserType firefox() {
 			return this.playwright.firefox();
 		}
-
-
 		@Override
 		public APIRequest request() {
 			return this.playwright.request();
 		}
-
-
 		@Override
 		public Selectors selectors() {
 			return this.playwright.selectors();
 		}
-
-
 		@Override
 		public BrowserType webkit() {
 			return this.playwright.webkit();
 		}
-
-
 		@Override
 		public void close() {
 			this.playwright.close();

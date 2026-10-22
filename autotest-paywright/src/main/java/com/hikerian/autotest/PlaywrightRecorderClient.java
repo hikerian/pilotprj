@@ -217,8 +217,8 @@ public class PlaywrightRecorderClient {
         			/*
         			 * 이동한 직후에는 WebSocket Client에 이벤트가 잡히지 않으나, 이동한 페이지에서 Event가 발생하면 페이지 이동 부터 이벤트가 잡힘.
         			 */
-        			System.out.println("@@@@Page Navigate http://211.109.22.33:8791/");
-        			page.navigate("http://211.109.22.33:8791/");
+//        			System.out.println("@@@@Page Navigate http://211.109.22.33:8791/");
+//        			page.navigate("http://211.109.22.33:8791/");
         		}
         	}
         }

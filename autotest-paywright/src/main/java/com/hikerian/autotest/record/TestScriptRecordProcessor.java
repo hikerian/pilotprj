@@ -9,13 +9,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,11 +30,16 @@ import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.impl.driver.Driver;
 
 
-public class TestScriptRecordProcessor implements AutoCloseable {
+public class TestScriptRecordProcessor {
 	private final Logger log = LoggerFactory.getLogger(TestScriptRecordProcessor.class);
 	
-	private final Playwright playwright;
 	private final ObjectMapper objectMapper = new ObjectMapper();
+	
+	private final AtomicLong reqId = new AtomicLong();
+	private final Map<Long, CompletableFuture<JsonNode>> pendingReqs = new ConcurrentHashMap<>();
+	
+//	private final Playwright playwright;
+	private Playwright playwright;
 	
 	private Process playwrightServer;
 	private String wsEndpoint;
@@ -39,9 +48,9 @@ public class TestScriptRecordProcessor implements AutoCloseable {
 	
 	
 	public TestScriptRecordProcessor() throws AlreadyExistsException {
-		PlaywrightManager manager = PlaywrightManager.getInstance();
-		Playwright playwright = manager.createPlaywright();
-		this.playwright = playwright;
+//		PlaywrightManager manager = PlaywrightManager.getInstance();
+//		Playwright playwright = manager.createPlaywright();
+//		this.playwright = playwright;
 	}
 	
 	/**
@@ -92,12 +101,6 @@ public class TestScriptRecordProcessor implements AutoCloseable {
 		env.put("PW_CODEGEN_NO_INSPECTOR","1"); // 별도 Inspector window를 띄우지 않는다.
 		env.put("PW_EXTENSION_MODE","1"); // extension/debug-controller 형태로 동작하도록 한다.
 		
-		/*
-		 * 이 속성이 참(true)이면, 이 객체의 start() 메서드를 통해 이후에 시작되는 하위 프로세스에서 발생하는 모든 오류 출력은 표준 출력과 병합됩니다.
-		 * 따라서 Process.getInputStream() 메서드를 사용하여 이 두 출력을 모두 읽을 수 있게 됩니다.
-		 * 이를 통해 오류 메시지와 그에 대응하는 출력을 더 쉽게 연관 지어 확인할 수 있습니다.
-		 * 초기값은 거짓(false)입니다.
-		 */
 		builder.redirectErrorStream(true);
 		
 		this.playwrightServer = builder.start();
@@ -131,7 +134,7 @@ public class TestScriptRecordProcessor implements AutoCloseable {
 		
 		StandardWebSocketClient client = new StandardWebSocketClient();
 		CompletableFuture<WebSocketSession> wsConnFuture = client.execute(
-				handler
+				this.new BrowserEventWebSocketHandler(handler)
 				, new WebSocketHttpHeaders()
 				, URI.create(debugEndpoint));
 		
@@ -172,16 +175,15 @@ public class TestScriptRecordProcessor implements AutoCloseable {
         this.log.info("Recorder started: {}", result);
 	}
 	
-	public void stopRecording() throws InterruptedException, ExecutionException {
-        ObjectNode params = this.objectMapper.createObjectNode();
-        params.put("mode", "none");
-
-        JsonNode result = this.sendByEventSession("setRecorderMode", params).get();
-
-        this.log.info("Recorder stopped: {}", result);
-	}
+	private BrowserEventHandler handler;
 	
-	public void connectBrowserClient(BrowserEventHandler handler)  {
+	public void connectBrowserClient(BrowserEventHandler handler) throws AlreadyExistsException  {
+		this.handler = handler;
+		
+		PlaywrightManager manager = PlaywrightManager.getInstance();
+		Playwright playwright = manager.createPlaywright();
+		this.playwright = playwright;
+		
 //		this.browser = this.playwright.chromium().connect(this.wsEndpoint + "?connect=first&browser=chromium");
 		this.browser = this.playwright.chromium().connect(this.wsEndpoint + "?connect=first");
 //		this.browser = this.playwright.chromium().connect(this.wsEndpoint);
@@ -189,34 +191,91 @@ public class TestScriptRecordProcessor implements AutoCloseable {
 		List<BrowserContext> contextList = this.browser.contexts();
 		// Context 및 Page 단위 이벤트를 감지하기 위해 Handler 등록
 		for(BrowserContext context : contextList) {
-			handler.init(context);
+//			handler.init(context);
+//			
+//			context.onRequest(req -> {
+//				System.out.println("---------------------------");
+//				handler.onRequest(req);
+//	    	});
+			
+	    	context.onPage(page -> {
+	    		System.out.println("###### Init New Page: " + page.url());
+	    	});
+	    	context.onPageLoad(page -> {
+	    		System.out.println("###### Init Page Load: " + page.url());
+	    	});
+	    	context.onPageClose(page -> {
+	    		System.out.println("###### Init Page Closed: " + page.url());
+	    	});
+	    	context.onClose(ctx -> {
+	    		System.out.println("###### Init Context Closed: " + ctx);
+	    	});
+	    	context.onDialog(dialog -> {
+	    		System.out.println("###### Init Dialog Load: " + dialog.message());
+	    		dialog.accept();
+	    	});
+	    	context.onRequest(req -> {
+	    		System.out.println("###### Init Request: " + req.url() + ":" + req + ":" + req.frame().page());
+	    	});
+	    	context.onResponse(res -> {
+	    		System.out.println("###### Init Response: " + res.url() + ":" + res + ":" + res.frame().page());
+	    		
+	    	});
 		}
 		
 		this.log.debug("Browser Connected");
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	public void stopRecording() throws InterruptedException, ExecutionException {
+        ObjectNode params = this.objectMapper.createObjectNode();
+        params.put("mode", "none");
+
+        JsonNode result = this.sendByEventSession("setRecorderMode", params).get();
+
+        this.log.info("Recorder stopped: {}", result);
+        
+        this.close();
+	}	
 	
 	private CompletableFuture<JsonNode> sendByEventSession(String method, JsonNode params) {
-		return null;
+		long id = this.reqId.incrementAndGet();
+		
+		ObjectNode cmd = this.objectMapper.createObjectNode();
+		cmd.put("id", id)
+		   .put("guid", "DebugController") // Playwright VS Code extension의 BackendClient도 항상 guid를 DebugController로 지정한다.
+		   .put("method", method)
+		   .set("params", params);
+		
+		ObjectNode meta = this.objectMapper.createObjectNode();
+		meta.put("timeout", 0);
+		
+		cmd.set("metadata", meta);
+		
+		CompletableFuture<JsonNode> future = new CompletableFuture<>();
+		this.pendingReqs.put(id, future);
+		
+		try {
+			String json = this.objectMapper.writeValueAsString(cmd);
+			
+			this.log.debug("browser event request message: {}" + json);
+			
+			this.browserEventWsSession.sendMessage(new TextMessage(json));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return future;
 	}
 
-	@Override
-	public void close() throws Exception {
+	private void close() {
 		if(this.browserEventWsSession != null && this.browserEventWsSession.isOpen()) {
-			this.browserEventWsSession.close();
+			try {
+				this.browserEventWsSession.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		if(this.browser != null) {
 			this.browser.close();
@@ -231,12 +290,57 @@ public class TestScriptRecordProcessor implements AutoCloseable {
 		
 	}
 	
-	
+	private class BrowserEventWebSocketHandler extends TextWebSocketHandler {
+		private final RecordingWebSocketHandler handler;
+		private final Logger log;
+		private final ObjectMapper objectMapper;
+		private final Map<Long, CompletableFuture<JsonNode>> pendingReqs;
+		
+		
+		public BrowserEventWebSocketHandler(RecordingWebSocketHandler handler) {
+			this.handler = handler;
+			this.log = TestScriptRecordProcessor.this.log;
+			this.objectMapper = TestScriptRecordProcessor.this.objectMapper;
+			this.pendingReqs = TestScriptRecordProcessor.this.pendingReqs;
+		}
 
 
+		@Override
+		protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+			String payload = message.getPayload();
+			
+			this.log.debug("browser event message: {}", payload);
+			
+			JsonNode root = this.objectMapper.readTree(payload);
+			
+			// id가 있으면 요청에 대한 응답
+			if(root.has("id")) {
+				long id = root.get("id").asLong();
+				CompletableFuture<JsonNode> future = this.pendingReqs.remove(id);
+				if(future == null)
+					return;
+				
+				if(root.has("error")) {
+					future.completeExceptionally(new RuntimeException(root.get("error").toPrettyString()));
+				} else {
+					future.complete(root.get("result"));
+				}
+				
+				return;
+			}
+			
+			// id가 없으면 server -> client event
+			if(root.has("method")) {
+				String method = root.get("method").asText();
+				JsonNode params = root.get("params");
+				this.handler.handleEvent(method, params);
+			} else {
+				this.log.warn("Unexpected message: {}", payload);
+			}
 
-
-
+		}
+		
+	}
 
 
 

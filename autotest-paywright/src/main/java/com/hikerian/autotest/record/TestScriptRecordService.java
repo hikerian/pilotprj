@@ -1,53 +1,84 @@
 package com.hikerian.autotest.record;
 
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import com.microsoft.playwright.Playwright;
 
 
 @Service
 public class TestScriptRecordService {
 	private final Logger log = LoggerFactory.getLogger(TestScriptRecordService.class);
 	
+	private String sessionId;
+	private TestScriptRecordProcessor processor;
+	private TestScriptAggregator aggregator;
+	
 	
 	public TestScriptRecordService() {
 	}
 	
 	public String record() throws AlreadyExistsException {
+		if(this.sessionId != null) {
+			throw new AlreadyExistsException("Already used");
+		}
+		
+		TestScriptRecordProcessor processor = new TestScriptRecordProcessor();
+		this.processor = processor;
+
+		TestScriptAggregator aggregator = new TestScriptAggregator();
+		this.aggregator = aggregator;
+		
 		// Playwright Instance를 미리 확보하여 소유권 획득
-		try(TestScriptRecordProcessor processor = new TestScriptRecordProcessor()) {
-			
-			
+		try {
 			processor.installChromium();
 			
 			processor.startPlaywrightServer();
 			
-			RecordingWebSocketHandler wsHandler = new RecordingWebSocketHandler();
+			RecordingWebSocketHandler wsHandler = new RecordingWebSocketHandler(aggregator);
 			processor.connectBrowserEventClient(wsHandler);
 			
 			processor.initializeBrowserEventListening();
 			
 			processor.startRecording();
 			
-			BrowserEventHandler brwsHandler = new BrowserEventHandler();
+			BrowserEventHandler brwsHandler = new BrowserEventHandler(aggregator);
 			processor.connectBrowserClient(brwsHandler);
-			
-			
-			// TODO 세션 관리 추가
-			// TODO Stop Recording 처리
-		} catch(AlreadyExistsException ex) {
-			throw ex;
 		} catch(Exception ex) {
 //			TODO 예외처리
+			ex.printStackTrace();
 		}
 		
+		UUID sessionUUID = UUID.randomUUID();
 		
+		this.sessionId = sessionUUID.toString();
 		
+		return sessionId;
+	}
+	
+	public String finish(String sessionId) {
+		if(this.processor == null
+				|| this.sessionId == null
+				|| this.sessionId.equals(sessionId) == false) {
+			return null;
+		}
 		
+		try {
+			this.processor.stopRecording();
+		} catch (Exception e) {
+//			TODO 예외처리
+			e.printStackTrace();
+		}
 		
-		return "";
+		this.processor = null;
+		this.sessionId = null;
+		
+		String testScript = this.aggregator.finish();
+		this.aggregator = null;
+		
+		return testScript;
+		
 	}
 	
 	
