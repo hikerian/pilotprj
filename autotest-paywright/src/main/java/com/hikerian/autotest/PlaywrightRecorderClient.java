@@ -36,6 +36,7 @@ import com.microsoft.playwright.options.AriaRole;
 
 /**
  * vscode extension과 유사한 방식으로 playwright server와 연동하여 시나리오를 레코딩 하는 예시.
+ * http://211.109.22.33:8791/index.do
  */
 public class PlaywrightRecorderClient {
 	private final Logger log = LoggerFactory.getLogger(PlaywrightRecorderClient.class);
@@ -62,21 +63,22 @@ public class PlaywrightRecorderClient {
     	Driver driver = Driver.ensureDriverInstalled(Collections.emptyMap(), false);
     	ProcessBuilder builder = driver.createProcessBuilder();
     	
-    	this.log.info("ProcessBuilder Command: {}", builder.command());
+//    	this.log.info("ProcessBuilder Command: {}", builder.command());
 
     	String[] args = new String[]{"install", "chromium"};
     	
     	builder.command().addAll(Arrays.asList(args));
     	
 //    	builder.directory(new File("C:/Temp/playwright"));
+    	this.log.info("ProcessBuilder Command: {}, env: {}", builder.command(), builder.environment());
     	
         builder.inheritIO();
 
         Process process = builder.start();
-        BufferedReader reader = process.inputReader(StandardCharsets.UTF_8);
-        String txt = reader.readAllAsString();
-        
-        System.out.println("&&&&&&&&&&&&&&&&& INSTALL &&&&&&&&&&&&&&&&&::" + txt); // 아무 데이터도 없음.
+//        BufferedReader reader = process.inputReader(StandardCharsets.UTF_8);
+//        String txt = reader.readAllAsString();
+//        
+//        System.out.println("&&&&&&&&&&&&&&&&& INSTALL &&&&&&&&&&&&&&&&&::" + txt); // 아무 데이터도 없음.
 
         int exitCode = process.waitFor();
 
@@ -120,6 +122,8 @@ public class PlaywrightRecorderClient {
         builder.environment().put("PW_EXTENSION_MODE","1");
 
         builder.redirectErrorStream(true);
+        
+        this.log.info("Server Cmd: {}, env: {}", builder.command(), builder.environment());
 
         this.playwrightProcess = builder.start();
 

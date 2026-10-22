@@ -26,10 +26,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.impl.driver.Driver;
 
 
+/**
+ * Browser를 사용해야만 Browser 이벤트를 수신할 수 있는 듯 하다!!
+ */
 public class TestScriptRecordProcessor {
 	private final Logger log = LoggerFactory.getLogger(TestScriptRecordProcessor.class);
 	
@@ -67,7 +71,7 @@ public class TestScriptRecordProcessor {
 		
 		builder.command().addAll(Arrays.asList(args));
 		
-		this.log.debug("cmd: {}, env: {}", builder.command(), builder.environment());
+		this.log.info("cmd: {}, env: {}", builder.command(), builder.environment());
 		
 		builder.inheritIO();
 		
@@ -103,6 +107,8 @@ public class TestScriptRecordProcessor {
 		
 		builder.redirectErrorStream(true);
 		
+		this.log.info("Server Cmd: {}, env: {}", builder.command(), builder.environment());
+		
 		this.playwrightServer = builder.start();
 		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(this.playwrightServer.getInputStream()));
@@ -111,7 +117,7 @@ public class TestScriptRecordProcessor {
              * Playwright run-server 출력 예:
              * Listening on ws://127.0.0.1:53219/java-recorder
              */
-			this.log.debug("Playwright Server Message: {}", line);
+			this.log.info("Playwright Server Message: {}", line);
 			
 			if(line.startsWith("Listening on ")) {
 				String wsEndpoint = line.substring("Listening on ".length()).trim();
@@ -135,7 +141,8 @@ public class TestScriptRecordProcessor {
 		StandardWebSocketClient client = new StandardWebSocketClient();
 		CompletableFuture<WebSocketSession> wsConnFuture = client.execute(
 				this.new BrowserEventWebSocketHandler(handler)
-				, new WebSocketHttpHeaders()
+//				, new WebSocketHttpHeaders()
+				, null
 				, URI.create(debugEndpoint));
 		
 		this.browserEventWsSession = wsConnFuture.get();
@@ -151,7 +158,7 @@ public class TestScriptRecordProcessor {
         
         JsonNode result = this.sendByEventSession("initialize", params).get();
         
-        this.log.debug("initialize completed: {}", result);
+        this.log.info("initialize completed: {}", result);
         
         // VS Code extension 역시 initialize 이후 setReportStateChanged(true)를 호출한다.
         params = this.objectMapper.createObjectNode();
@@ -159,7 +166,7 @@ public class TestScriptRecordProcessor {
         
         result = this.sendByEventSession("setReportStateChanged", params).get();
         
-        this.log.debug("setReportStateChanged completed: {}", result);
+        this.log.info("setReportStateChanged completed: {}", result);
 	}
 	
 	public void startRecording() throws InterruptedException, ExecutionException {
@@ -178,11 +185,13 @@ public class TestScriptRecordProcessor {
 	private BrowserEventHandler handler;
 	
 	public void connectBrowserClient(BrowserEventHandler handler) throws AlreadyExistsException  {
+		/*
 		this.handler = handler;
 		
 		PlaywrightManager manager = PlaywrightManager.getInstance();
 		Playwright playwright = manager.createPlaywright();
 		this.playwright = playwright;
+//		this.playwright = Playwright.create();
 		
 //		this.browser = this.playwright.chromium().connect(this.wsEndpoint + "?connect=first&browser=chromium");
 		this.browser = this.playwright.chromium().connect(this.wsEndpoint + "?connect=first");
@@ -223,7 +232,58 @@ public class TestScriptRecordProcessor {
 	    	});
 		}
 		
-		this.log.debug("Browser Connected");
+		this.log.info("Browser Connected");
+		*/
+		
+        this.playwright = Playwright.create();
+//      this.browser = this.playwright.chromium().connect(wsEndpoint + "?connect=first&browser=chromium");
+      this.browser = this.playwright.chromium().connect(this.wsEndpoint + "?connect=first");
+//      this.browser = this.playwright.chromium().connect(wsEndpoint);
+
+      List<BrowserContext> contextList = this.browser.contexts();
+      
+      // Context 및 Page 단위 이벤트를 감지하기 위해 Handler 등록
+      System.out.println("@@@@@@ BrowserContextList: " + contextList);
+      for(BrowserContext context : contextList) {
+      	context.onPage(page -> {
+      		System.out.println("###### Init New Page: " + page.url());
+      	});
+      	context.onPageLoad(page -> {
+      		System.out.println("###### Init Page Load: " + page.url());
+      	});
+      	context.onPageClose(page -> {
+      		System.out.println("###### Init Page Closed: " + page.url());
+      	});
+      	context.onClose(ctx -> {
+      		System.out.println("###### Init Context Closed: " + ctx);
+      	});
+      	context.onDialog(dialog -> {
+      		System.out.println("###### Init Dialog Load: " + dialog.message());
+      		dialog.accept();
+      	});
+      	context.onRequest(req -> {
+      		System.out.println("###### Init Request: " + req.url() + ":" + req + ":" + req.frame().page());
+      	});
+      	context.onResponse(res -> {
+      		System.out.println("###### Init Response: " + res.url() + ":" + res + ":" + res.frame().page());
+      		
+      	});
+      	
+      	List<Page> pageList = context.pages();
+      	System.out.println("@@@@PageList");
+      	for(Page page : pageList) {
+      		if(page != null) {
+      			/*
+      			 * 이동한 직후에는 WebSocket Client에 이벤트가 잡히지 않으나, 이동한 페이지에서 Event가 발생하면 페이지 이동 부터 이벤트가 잡힘.
+      			 */
+//      			System.out.println("@@@@Page Navigate http://211.109.22.33:8791/");
+//      			page.navigate("http://211.109.22.33:8791/");
+      		}
+      	}
+      }
+      
+      this.log.info("Browser connected");
+		
 	}
 	
 	public void stopRecording() throws InterruptedException, ExecutionException {
@@ -257,7 +317,7 @@ public class TestScriptRecordProcessor {
 		try {
 			String json = this.objectMapper.writeValueAsString(cmd);
 			
-			this.log.debug("browser event request message: {}" + json);
+			this.log.info("browser event request message: {}" + json);
 			
 			this.browserEventWsSession.sendMessage(new TextMessage(json));
 		} catch (Exception e) {
@@ -309,7 +369,7 @@ public class TestScriptRecordProcessor {
 		protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 			String payload = message.getPayload();
 			
-			this.log.debug("browser event message: {}", payload);
+			this.log.info("browser event message: {}", payload);
 			
 			JsonNode root = this.objectMapper.readTree(payload);
 			

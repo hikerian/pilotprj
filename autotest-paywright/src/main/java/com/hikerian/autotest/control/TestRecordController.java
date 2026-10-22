@@ -12,6 +12,9 @@ import com.hikerian.autotest.record.TestScriptRecordService;
 import jakarta.servlet.http.HttpSession;
 
 
+/**
+ * http://211.109.22.33:8791/index.do
+ */
 @RestController
 @RequestMapping("/record")
 public class TestRecordController {

@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 
+/**
+ * http://211.109.22.33:8791/index.do
+ */
 @Service
 public class TestScriptRecordService {
 	private final Logger log = LoggerFactory.getLogger(TestScriptRecordService.class);
@@ -15,6 +18,23 @@ public class TestScriptRecordService {
 	private TestScriptRecordProcessor processor;
 	private TestScriptAggregator aggregator;
 	
+	
+    public static void main(String[] args) throws Exception {
+    	TestScriptRecordService client = new TestScriptRecordService();
+    	
+    	String uuid = client.record();
+    	
+        System.out.println();
+        System.out.println("================================");
+        System.out.println("Browser에서 동작을 수행하세요.");
+        System.out.println("Enter를 누르면 종료합니다.");
+        System.out.println("================================");
+        System.in.read();
+        
+        String script = client.finish(uuid);
+        
+        System.out.println(script);
+    }
 	
 	public TestScriptRecordService() {
 	}
