@@ -2,7 +2,6 @@ package com.hikerian.autotest.record;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import com.microsoft.playwright.APIRequest;
 import com.microsoft.playwright.BrowserType;
@@ -10,14 +9,22 @@ import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.Selectors;
 
 
-@Service
-public class PlaywrightManager {
+/**
+ * com.microsoft.playwright.Playwright의 생명주기를 관리하는 Class.
+ */
+public final class PlaywrightManager {
 	private final Logger log = LoggerFactory.getLogger(PlaywrightManager.class);
 	
 	private PlaywrightWrapper playwrightWrapper;
 	
+	private static final PlaywrightManager instance = new PlaywrightManager();
 	
-	public PlaywrightManager() {
+	
+	public static final PlaywrightManager getInstance() {
+		return PlaywrightManager.instance;
+	}
+	
+	private PlaywrightManager() {
 	}
 	
 	public Playwright createPlaywright() throws AlreadyExistsException {

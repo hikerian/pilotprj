@@ -18,7 +18,10 @@ public class BrowserEventHandler {
 	private final Logger log = LoggerFactory.getLogger(BrowserEventHandler.class);
 	
 	
-	public BrowserEventHandler(BrowserContext context) {
+	public BrowserEventHandler() {
+	}
+	
+	public void init(BrowserContext context) {
 		// register event handler
 		context.onPage(this::onPage);
 		context.onPageLoad(this::onPageLoad);
