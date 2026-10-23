@@ -19,10 +19,15 @@ public class TestScriptRecordService {
 	private TestScriptAggregator aggregator;
 	
 	
-    public static void main(String[] args) throws Exception {
+	/**
+	 * Only test
+	 * @param args
+	 * @throws Exception
+	 */
+	public static void main(String[] args) throws Exception {
     	TestScriptRecordService client = new TestScriptRecordService();
     	
-    	String uuid = client.record();
+    	String uuid = client.record("http://211.109.22.33:8791/index.do");
     	
         System.out.println();
         System.out.println("================================");
@@ -34,12 +39,12 @@ public class TestScriptRecordService {
         String script = client.finish(uuid);
         
         System.out.println(script);
-    }
+	}
 	
 	public TestScriptRecordService() {
 	}
 	
-	public String record() throws AlreadyExistsException {
+	public String record(String entrypointUrl) throws AlreadyExistsException {
 		if(this.sessionId != null) {
 			throw new AlreadyExistsException("Already used");
 		}
@@ -47,7 +52,7 @@ public class TestScriptRecordService {
 		TestScriptRecordProcessor processor = new TestScriptRecordProcessor();
 		this.processor = processor;
 
-		TestScriptAggregator aggregator = new TestScriptAggregator();
+		TestScriptAggregator aggregator = new TestScriptAggregator(entrypointUrl);
 		this.aggregator = aggregator;
 		
 		// Playwright Instance를 미리 확보하여 소유권 획득
@@ -65,9 +70,13 @@ public class TestScriptRecordService {
 			
 			BrowserEventHandler brwsHandler = new BrowserEventHandler(aggregator);
 			processor.connectBrowserClient(brwsHandler);
+			
+			
+			processor.openEntryopint();
+			
 		} catch(Exception ex) {
+			this.log.error("Record error: {}", ex);
 //			TODO 예외처리
-			ex.printStackTrace();
 		}
 		
 		UUID sessionUUID = UUID.randomUUID();
@@ -87,8 +96,8 @@ public class TestScriptRecordService {
 		try {
 			this.processor.stopRecording();
 		} catch (Exception e) {
+			this.log.error("Record error: {}", e);
 //			TODO 예외처리
-			e.printStackTrace();
 		}
 		
 		this.processor = null;

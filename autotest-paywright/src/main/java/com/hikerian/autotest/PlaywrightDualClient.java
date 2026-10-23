@@ -22,6 +22,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.microsoft.playwright.impl.driver.Driver;
 
 
+/**
+ * vscode extension과 유사한 방식으로 playwright server와 연동하여 시나리오를 레코딩 하는 예시.
+ */
 public class PlaywrightDualClient {
 
     private final ObjectMapper mapper = new ObjectMapper();

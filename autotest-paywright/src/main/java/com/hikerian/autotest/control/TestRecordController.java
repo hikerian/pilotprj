@@ -29,10 +29,11 @@ public class TestRecordController {
 	
 	@GetMapping("/start")
 	public String start(HttpSession session) {
+		String entrypointUrl = "http://211.109.22.33:8791/index.do";
 		String sessionId;
 		
 		try {
-			sessionId = this.testScriptRecordService.record();
+			sessionId = this.testScriptRecordService.record(entrypointUrl);
 		} catch (AlreadyExistsException e) {
 			e.printStackTrace();
 			return "Already Recording...";

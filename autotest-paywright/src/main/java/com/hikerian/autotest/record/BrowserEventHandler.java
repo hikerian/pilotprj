@@ -1,7 +1,5 @@
 package com.hikerian.autotest.record;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,102 +25,80 @@ public class BrowserEventHandler {
 	}
 	
 	public void init(BrowserContext context) {
-		this.log.debug("init: {}", context);
+		this.log.info("init: {}", context);
 		
-    	context.onPage(page -> {
-    		System.out.println("###### Init New Page: " + page.url());
-    	});
-    	context.onPageLoad(page -> {
-    		System.out.println("###### Init Page Load: " + page.url());
-    	});
-    	context.onPageClose(page -> {
-    		System.out.println("###### Init Page Closed: " + page.url());
-    	});
-    	context.onClose(ctx -> {
-    		System.out.println("###### Init Context Closed: " + ctx);
-    	});
-    	context.onDialog(dialog -> {
-    		System.out.println("###### Init Dialog Load: " + dialog.message());
-    		dialog.accept();
-    	});
-    	context.onRequest(req -> {
-    		System.out.println("###### Init Request: " + req.url() + ":" + req + ":" + req.frame().page());
-    	});
-    	context.onResponse(res -> {
-    		System.out.println("###### Init Response: " + res.url() + ":" + res + ":" + res.frame().page());
-    		
-    	});
+		// register event handler
+		this.aggregator.setBrowserContext(context);
 		
-//		// register event handler
-//		context.onPage(this::onPage);
-//		context.onPageLoad(this::onPageLoad);
-//		context.onPageClose(this::onPageClose);
-//		
-////		context.onRequest(this::onRequest);
-//		context.onRequest(req -> {
-//			System.out.println("************** onRequest ******************");
-//			this.onRequest(req);
-//		});
-//		context.onRequestFailed(this::onRequestFailed);
-//		context.onRequestFinished(this::onRequestFinished);
-//		context.onResponse(this::onResponse);
-//		
-//		context.onDownload(this::onDownload);
-//		context.onDialog(this::onDialog);
-//		context.onDialogClosed(this::onDialogClosed);
-//		
-//		context.onClose(this::onClose);
-//		
-//		// 최초에 열린 페이지에 대해 이벤트 강제 발생
-//		List<Page> pageList = context.pages();
-//		for(Page page : pageList) {
-//			this.onPage(page);
-//			
-//			page.onLoad(this::onPageLoad);
-//			page.onClose(this::onPageClose);
-//			page.onRequest(this::onRequest);
-//			page.onRequestFailed(this::onRequestFailed);
-//			page.onRequestFinished(this::onRequestFinished);
-//			page.onResponse(this::onResponse);
-//			
-//			page.onDownload(this::onDownload);
-//			page.onDialog(this::onDialog);
-//			page.onDialogClosed(this::onDialogClosed);
-//		}
+		context.onPage(this::onPage);
+		context.onPageLoad(this::onPageLoad);
+		context.onPageClose(this::onPageClose);
+		
+		context.onRequest(this::onRequest);
+		context.onRequestFailed(this::onRequestFailed);
+		context.onRequestFinished(this::onRequestFinished);
+		context.onResponse(this::onResponse);
+		
+		context.onDownload(this::onDownload);
+		context.onDialog(this::onDialog);
+		context.onDialogClosed(this::onDialogClosed);
+		
+		context.onClose(this::onClose);
+	}
+	
+	public void openEntrypoint(Page page) {
+		this.onPage(page); // Connection 전에 만들어진 페이지이기 때문에 초기 opPage를 호출
+		
+		// TODO 이벤트가 두번씩 오는지 체크 필요
+		page.onLoad(this::onPageLoad);
+		page.onClose(this::onPageClose);
+		
+		page.onRequest(this::onRequest);
+		page.onRequestFailed(this::onRequestFailed);
+		page.onRequestFinished(this::onRequestFinished);
+		page.onResponse(this::onResponse);
+		
+		page.onDownload(this::onDownload);
+		page.onDialog(this::onDialog);
+		page.onDialogClosed(this::onDialogClosed);
+		
+		
+		page.navigate(this.aggregator.getEntrypoint());
 	}
 	
 	void onPage(Page page) {
-		this.log.debug("onPage: {}", page.url());
+		this.log.info("onPage: {}", page.url());
 		// TODO process and send to aggregator
+		this.aggregator.pushPage(page);
 	}
 	
 	void onPageLoad(Page page) {
-		this.log.debug("onPageLoad: {}", page.url());
+		this.log.info("onPageLoad: {}", page.url());
 		// TODO process and send to aggregator
 	}
 	
 	void onPageClose(Page page) {
-		this.log.debug("onPageClose: {}", page);
+		this.log.info("onPageClose: {}", page);
 		// TODO process and send to aggregator
 	}
 	
 	void onRequest(Request request) {
-		this.log.debug("onRequest: {}", request);
+		this.log.info("onRequest: {}", request.url());
 		// TODO process and send to aggregator
 	}
 	
 	void onRequestFailed(Request request) {
-		this.log.debug("onRequestFailed: {}", request);
+		this.log.debug("onRequestFailed: {}", request.url());
 		// TODO process and send to aggregator
 	}
 	
 	void onRequestFinished(Request request) {
-		this.log.debug("onRequestFinished: {}", request);
+		this.log.debug("onRequestFinished: {}", request.url());
 		// TODO process and send to aggregator
 	}
 	
 	void onResponse(Response response) {
-		this.log.debug("onResponse", response);
+		this.log.info("onResponse", response.url());
 		// TODO process and send to aggregator
 	}
 	

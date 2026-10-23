@@ -42,19 +42,20 @@ public class TestScriptRecordProcessor {
 	private final AtomicLong reqId = new AtomicLong();
 	private final Map<Long, CompletableFuture<JsonNode>> pendingReqs = new ConcurrentHashMap<>();
 	
-//	private final Playwright playwright;
-	private Playwright playwright;
+	private final Playwright playwright;
 	
 	private Process playwrightServer;
 	private String wsEndpoint;
 	private WebSocketSession browserEventWsSession;
 	private Browser browser;
 	
+	private BrowserEventHandler handler;
+	
 	
 	public TestScriptRecordProcessor() throws AlreadyExistsException {
-//		PlaywrightManager manager = PlaywrightManager.getInstance();
-//		Playwright playwright = manager.createPlaywright();
-//		this.playwright = playwright;
+		PlaywrightManager manager = PlaywrightManager.getInstance();
+		Playwright playwright = manager.createPlaywright();
+		this.playwright = playwright;
 	}
 	
 	/**
@@ -87,8 +88,7 @@ public class TestScriptRecordProcessor {
 		Driver driver = Driver.ensureDriverInstalled(Collections.emptyMap(), false);
 		ProcessBuilder builder = driver.createProcessBuilder();
 		
-    	/*
-    	 * --mode:
+    	/* --mode:
     	 * ㆍdefault: 일반 Playwright WebSocket 서버로 동작하며, 클라이언트 연결에 사용할 브라우저를 실행하고 원격 브라우저 자동화에 사용
     	 * ㆍextension: 브라우저 재사용 및 DebugController 연결을 지원하는 모드로 Recorder, Inspector, VS Code 연동시 사용
     	 */
@@ -113,10 +113,7 @@ public class TestScriptRecordProcessor {
 		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(this.playwrightServer.getInputStream()));
 		for(String line; (line = reader.readLine()) != null;) {
-            /*
-             * Playwright run-server 출력 예:
-             * Listening on ws://127.0.0.1:53219/java-recorder
-             */
+            // Playwright run-server 출력 예: Listening on ws://127.0.0.1:53219/java-recorder
 			this.log.info("Playwright Server Message: {}", line);
 			
 			if(line.startsWith("Listening on ")) {
@@ -141,8 +138,7 @@ public class TestScriptRecordProcessor {
 		StandardWebSocketClient client = new StandardWebSocketClient();
 		CompletableFuture<WebSocketSession> wsConnFuture = client.execute(
 				this.new BrowserEventWebSocketHandler(handler)
-//				, new WebSocketHttpHeaders()
-				, null
+				, new WebSocketHttpHeaders()
 				, URI.create(debugEndpoint));
 		
 		this.browserEventWsSession = wsConnFuture.get();
@@ -182,117 +178,50 @@ public class TestScriptRecordProcessor {
         this.log.info("Recorder started: {}", result);
 	}
 	
-	private BrowserEventHandler handler;
-	
 	public void connectBrowserClient(BrowserEventHandler handler) throws AlreadyExistsException  {
-		/*
 		this.handler = handler;
-		
-		PlaywrightManager manager = PlaywrightManager.getInstance();
-		Playwright playwright = manager.createPlaywright();
-		this.playwright = playwright;
-//		this.playwright = Playwright.create();
 		
 //		this.browser = this.playwright.chromium().connect(this.wsEndpoint + "?connect=first&browser=chromium");
 		this.browser = this.playwright.chromium().connect(this.wsEndpoint + "?connect=first");
 //		this.browser = this.playwright.chromium().connect(this.wsEndpoint);
 		
 		List<BrowserContext> contextList = this.browser.contexts();
+		
+		this.log.error("Browser Context List: " + contextList);
+		
 		// Context 및 Page 단위 이벤트를 감지하기 위해 Handler 등록
 		for(BrowserContext context : contextList) {
-//			handler.init(context);
-//			
-//			context.onRequest(req -> {
-//				System.out.println("---------------------------");
-//				handler.onRequest(req);
-//	    	});
-			
-	    	context.onPage(page -> {
-	    		System.out.println("###### Init New Page: " + page.url());
-	    	});
-	    	context.onPageLoad(page -> {
-	    		System.out.println("###### Init Page Load: " + page.url());
-	    	});
-	    	context.onPageClose(page -> {
-	    		System.out.println("###### Init Page Closed: " + page.url());
-	    	});
-	    	context.onClose(ctx -> {
-	    		System.out.println("###### Init Context Closed: " + ctx);
-	    	});
-	    	context.onDialog(dialog -> {
-	    		System.out.println("###### Init Dialog Load: " + dialog.message());
-	    		dialog.accept();
-	    	});
-	    	context.onRequest(req -> {
-	    		System.out.println("###### Init Request: " + req.url() + ":" + req + ":" + req.frame().page());
-	    	});
-	    	context.onResponse(res -> {
-	    		System.out.println("###### Init Response: " + res.url() + ":" + res + ":" + res.frame().page());
-	    		
-	    	});
+			handler.init(context);
 		}
 		
 		this.log.info("Browser Connected");
-		*/
-		
-        this.playwright = Playwright.create();
-//      this.browser = this.playwright.chromium().connect(wsEndpoint + "?connect=first&browser=chromium");
-      this.browser = this.playwright.chromium().connect(this.wsEndpoint + "?connect=first");
-//      this.browser = this.playwright.chromium().connect(wsEndpoint);
-
-      List<BrowserContext> contextList = this.browser.contexts();
-      
-      // Context 및 Page 단위 이벤트를 감지하기 위해 Handler 등록
-      System.out.println("@@@@@@ BrowserContextList: " + contextList);
-      for(BrowserContext context : contextList) {
-      	context.onPage(page -> {
-      		System.out.println("###### Init New Page: " + page.url());
-      	});
-      	context.onPageLoad(page -> {
-      		System.out.println("###### Init Page Load: " + page.url());
-      	});
-      	context.onPageClose(page -> {
-      		System.out.println("###### Init Page Closed: " + page.url());
-      	});
-      	context.onClose(ctx -> {
-      		System.out.println("###### Init Context Closed: " + ctx);
-      	});
-      	context.onDialog(dialog -> {
-      		System.out.println("###### Init Dialog Load: " + dialog.message());
-      		dialog.accept();
-      	});
-      	context.onRequest(req -> {
-      		System.out.println("###### Init Request: " + req.url() + ":" + req + ":" + req.frame().page());
-      	});
-      	context.onResponse(res -> {
-      		System.out.println("###### Init Response: " + res.url() + ":" + res + ":" + res.frame().page());
-      		
-      	});
-      	
-      	List<Page> pageList = context.pages();
-      	System.out.println("@@@@PageList");
-      	for(Page page : pageList) {
-      		if(page != null) {
-      			/*
-      			 * 이동한 직후에는 WebSocket Client에 이벤트가 잡히지 않으나, 이동한 페이지에서 Event가 발생하면 페이지 이동 부터 이벤트가 잡힘.
-      			 */
-//      			System.out.println("@@@@Page Navigate http://211.109.22.33:8791/");
-//      			page.navigate("http://211.109.22.33:8791/");
-      		}
-      	}
-      }
-      
-      this.log.info("Browser connected");
-		
 	}
 	
-	public void stopRecording() throws InterruptedException, ExecutionException {
+	public void openEntryopint() {
+		List<BrowserContext> contextList = this.browser.contexts();
+		
+		this.log.error("Browser Context List: " + contextList);
+		
+		BrowserContext context = contextList.getFirst();
+		List<Page> pageList = context.pages();
+		
+		this.log.error("Page List: " + pageList);
+		
+		Page page = pageList.getFirst();
+		this.handler.openEntrypoint(page);
+	}
+	
+	public void stopRecording() {
         ObjectNode params = this.objectMapper.createObjectNode();
         params.put("mode", "none");
 
-        JsonNode result = this.sendByEventSession("setRecorderMode", params).get();
-
-        this.log.info("Recorder stopped: {}", result);
+        JsonNode result;
+		try {
+			result = this.sendByEventSession("setRecorderMode", params).get();
+	        this.log.info("Recorder stopped: {}", result);
+		} catch (Exception e) {
+			this.log.error("ws send error", e);
+		}
         
         this.close();
 	}	
@@ -321,8 +250,8 @@ public class TestScriptRecordProcessor {
 			
 			this.browserEventWsSession.sendMessage(new TextMessage(json));
 		} catch (Exception e) {
+			this.log.error("ws message send error: {}", e);
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 		return future;
@@ -333,8 +262,8 @@ public class TestScriptRecordProcessor {
 			try {
 				this.browserEventWsSession.close();
 			} catch (IOException e) {
+				this.log.error("close error: {}", e);
 				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 		if(this.browser != null) {

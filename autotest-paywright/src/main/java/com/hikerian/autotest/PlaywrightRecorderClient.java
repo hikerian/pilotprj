@@ -3,7 +3,6 @@ package com.hikerian.autotest;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -57,14 +56,17 @@ public class PlaywrightRecorderClient {
      */
     private Playwright playwright;
     private Browser browser;
-
+    
+    
+    
+    public PlaywrightRecorderClient() {
+    	this.playwright = Playwright.create();
+    }
     
     public void installChromium() throws Exception {
     	Driver driver = Driver.ensureDriverInstalled(Collections.emptyMap(), false);
     	ProcessBuilder builder = driver.createProcessBuilder();
     	
-//    	this.log.info("ProcessBuilder Command: {}", builder.command());
-
     	String[] args = new String[]{"install", "chromium"};
     	
     	builder.command().addAll(Arrays.asList(args));
@@ -75,10 +77,6 @@ public class PlaywrightRecorderClient {
         builder.inheritIO();
 
         Process process = builder.start();
-//        BufferedReader reader = process.inputReader(StandardCharsets.UTF_8);
-//        String txt = reader.readAllAsString();
-//        
-//        System.out.println("&&&&&&&&&&&&&&&&& INSTALL &&&&&&&&&&&&&&&&&::" + txt); // 아무 데이터도 없음.
 
         int exitCode = process.waitFor();
 
@@ -180,7 +178,6 @@ public class PlaywrightRecorderClient {
      * @throws Exception
      */
     public void connectBrowser(String wsEndpoint) throws Exception {
-        this.playwright = Playwright.create();
 //        this.browser = this.playwright.chromium().connect(wsEndpoint + "?connect=first&browser=chromium");
         this.browser = this.playwright.chromium().connect(wsEndpoint + "?connect=first");
 //        this.browser = this.playwright.chromium().connect(wsEndpoint);
@@ -429,6 +426,7 @@ public class PlaywrightRecorderClient {
                     				if(page.isClosed()) {
                     					this.log.info("Page url: {} Closed", page.url());
                     				} else {
+                    					// Page를 통해 DOM을 직접 Access해야 Browser Event를 받을 수 있음!! 20261023
                     					this.log.info("Page url: {}, title: {}", page.url(), page.title());
                     					
                             			Locator loc = page.getByRole(AriaRole.TEXTBOX, new GetByRoleOptions().setName("아이디"));
