@@ -13,11 +13,15 @@ import com.google.javascript.rhino.Node;
 
 /**
  * Google Closure-Compiler.
+ * 시간이 오래 걸림!! Driver를 수정하는 쪽으로 정리 필요....
  */
 public class JsParser2 {
 	private final Logger log = LoggerFactory.getLogger(JsParser2.class);
 	
 	public static void main(String[] args) {
+		
+		long start = System.currentTimeMillis();
+		
 		// 1. 분석할 자바스크립트 소스코드 변수 정의
 		String jsCode = """
 async ({ page }) => {
@@ -72,6 +76,10 @@ async ({ page }) => {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+		
+		long end = System.currentTimeMillis();
+		
+		System.out.println("Time Spent: " + (end - start) + " ms."); //Time Spent: 360 ms.
 	}
 	private static void printAst(Node node, int depth) {
 		String indent = "  ".repeat(depth);
