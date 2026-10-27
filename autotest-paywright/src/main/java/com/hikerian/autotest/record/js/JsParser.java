@@ -17,6 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+/**
+ * Rhino.
+ */
 public class JsParser {
 	private final Logger log = LoggerFactory.getLogger(JsParser.class);
 	

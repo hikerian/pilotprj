@@ -11,6 +11,9 @@ import com.google.javascript.jscomp.SourceFile;
 import com.google.javascript.rhino.Node;
 
 
+/**
+ * Google Closure-Compiler.
+ */
 public class JsParser2 {
 	private final Logger log = LoggerFactory.getLogger(JsParser2.class);
 	
