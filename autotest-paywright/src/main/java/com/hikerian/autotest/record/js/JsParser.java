@@ -36,7 +36,8 @@ public class JsParser {
 		env.setRecoverFromErrors(true);
 		env.setAllowMemberExprAsFunctionName(true);
 		env.setReservedKeywordAsIdentifier(true);
-		env.setLanguageVersion(Context.VERSION_ECMASCRIPT);
+//		env.setLanguageVersion(Context.VERSION_ECMASCRIPT);
+		env.setLanguageVersion(Context.VERSION_ES6);
 		
 		this.env = env;
 	}
@@ -52,7 +53,20 @@ public class JsParser {
 		final String script = syntax;
 		
 		Parser jsParser = new Parser(this.env);
-		AstRoot root = jsParser.parse(script, "action.js", 0);
+		
+		AstRoot root = null;
+		try {
+			root = jsParser.parse(script, "action.js", 0);
+		} catch(RuntimeException e) {
+			/* Rhino는 aync/await와 같은 구문을 처리하지 못함.
+			 * EX)
+			 * const page2Promise = page1.waitForEvent('popup');
+			 * await page1.getByRole('link', { name: '블로그' }).click();
+			 * const page2 = await page2Promise;"
+			 */
+			this.log.error("JavaScript parse error: {}\n syntax: {}", e, syntax);
+			throw e;
+		}
 		
 		final List<FuncCall> funcCallList = new ArrayList<>();
 		

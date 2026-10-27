@@ -38,6 +38,8 @@ public class TestScriptAggregator {
 	}
 	
 	public void pushPage(Page page) {
+		this.log.info("pushPage: {}", page);
+		
 		if(this.pageList.contains(page) == false) {
 			this.pageList.add(page);
 		}
@@ -52,6 +54,11 @@ public class TestScriptAggregator {
 			
 			if(this.context != null) {
 				List<Page> pageList = this.context.pages();
+				this.log.info("context pages: {}", pageList);
+				
+				List<BrowserContext> contextList = this.context.browser().contexts();
+				this.log.info("contexts: {}", contextList);
+				
 				for(Page page : pageList) {
 					if(this.pageList.contains(page) == false) {
 						this.pageList.add(page);
