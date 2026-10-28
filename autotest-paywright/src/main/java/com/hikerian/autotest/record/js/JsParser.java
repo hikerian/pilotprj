@@ -32,7 +32,37 @@ public class JsParser {
 	public static JsParser getInstance() {
 		return JsParser.instance;
 	}
-	
+
+	public static void main(String[] args) {
+		long start = System.currentTimeMillis();
+
+		// 1. 분석할 자바스크립트 소스코드 변수 정의
+		String[] jsCodes = {
+				"page.goto('http://ustiblue.com:8791/index.do');"
+				, "page.getByRole('textbox', { name: '아이디' }).click();"
+				, "page.getByRole('textbox', { name: '아이디' }).fill('****');"
+				, "page.getByRole('textbox', { name: '아이디' }).press('Tab');"
+				, "page.getByRole('textbox', { name: '비밀번호' }).fill('****');"
+				, "page.getByRole('textbox', { name: '비밀번호' }).press('Enter');"
+				, "page1.goto('http://211.109.22.33:8791/index.do');"
+				, "page1.getByRole('menubar').filter({ hasText: '학생서비스학사행정일반행정정보통계공통관리기본업무' }).click();"
+				, "page1.getByRole('menuitem', { name: '복무관리' }).click();"
+				, "page1.getByRole('menuitem', { name: '출장관리' }).click();"
+				, "page1.getByRole('menuitem', { name: '출장경비기준관리' }).click();"
+				, "page1.getByRole('combobox', { name: '검색어를 입력해 주세요' }).click();"
+				, "page2Promise = page1.waitForEvent('popup');"
+				, "page1.getByRole('link', { name: '블로그' }).click();"
+				, "const page2 = page2Promise;"
+		};
+
+		JsParser parser = JsParser.getInstance();
+		
+		for(String code : jsCodes) {
+			FuncCall call = parser.parse(code);
+		}
+
+		System.out.println(" :: " + (System.currentTimeMillis() - start) + " ms.");
+	}
 
 	private JsParser() {
 		CompilerEnvirons env = new CompilerEnvirons();
@@ -105,7 +135,7 @@ public class JsParser {
 			return true;
 		});
 		
-		return funcCallList.getFirst();
+		return funcCallList.size() > 0 ? funcCallList.getFirst() : null;
 	}
 	
 	public VariableName parseVarName(String target) {
