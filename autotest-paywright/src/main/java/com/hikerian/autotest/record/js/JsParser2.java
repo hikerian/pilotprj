@@ -14,6 +14,7 @@ import com.google.javascript.rhino.Node;
 /**
  * Google Closure-Compiler.
  * 시간이 오래 걸림!! Driver를 수정하는 쪽으로 정리 필요....
+ * @deprecated 참고용
  */
 public class JsParser2 {
 	private final Logger log = LoggerFactory.getLogger(JsParser2.class);

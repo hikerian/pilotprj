@@ -6,10 +6,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.hikerian.autotest.record.js.JsParser;
-import com.hikerian.autotest.record.js.JsParser.FuncCall;
-import com.hikerian.autotest.record.js.JsParser.VariableName;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hikerian.autotest.record.mapper.ActionMapperFactory;
+import com.hikerian.autotest.record.mapper.ActionMapper;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 
@@ -17,10 +18,10 @@ import com.microsoft.playwright.Page;
 public class TestScriptAggregator {
 	private final Logger log = LoggerFactory.getLogger(TestScriptAggregator.class);
 	
-	private final JsParser jsParser = JsParser.getInstance();
-	
 	private final String entrypointUrl;
 	private final List<Page> pageList = new CopyOnWriteArrayList<>();
+	
+	private final ObjectMapper objectMapper = new ObjectMapper();
 	
 	private BrowserContext context;
 	
@@ -75,29 +76,45 @@ public class TestScriptAggregator {
 	public void onSourceChanged(JsonNode params) {
 		this.log.info("onSourceChanged: {}", params);
 		
-		JsonNode actionList = params.get("actions");
+		JsonNode actionInContext = params.get("aiqbot"); // playwright debugcontroller의 ActionInContext 배열, actionInContext.getNodeType() : STRING
 		
-		JsonNode lastAction = actionList.get(actionList.size() - 1);
+		String actionInContextStr = actionInContext.asText();
 		
-		String actionText = lastAction.asText();
-		
-		FuncCall funcCall = this.jsParser.parse(actionText);
-		String funcName = funcCall.getName();
-		if("goto".equals(funcName)) {
-			VariableName varNm = this.jsParser.parseVarName(funcCall.getTarget());
-			int seq = varNm.getSeq();
-			
-			if(this.pageList.size() > seq) {
-				Page page = this.pageList.get(seq);
-				String title = page.title();
-				
-				this.log.info("page title: {}" + title);
-			} else {
-				this.log.error("Page Not Found");
-			}
+		try {
+			actionInContext = this.objectMapper.readTree(actionInContextStr); // actionInContext.getNodeType() : ARRAY
+		} catch (JsonProcessingException e) {
+			this.log.error("ActionInContext ParsingError: {}", e);
+			throw new RuntimeException(e);
 		}
 		
-		// TODO translation to TestScript
+		int actionCount = actionInContext.size();
+		this.log.info("number of actions: {}", actionCount);
+		
+//		if(actionCount > 10) { // for debugging
+//			String node = actionInContext.toPrettyString();
+//			System.out.println(node);
+//		}
+		
+		for(int i = 0; i < actionCount; i++) {
+			/* export type ActionInContext = {
+			 *   pageGuid: string;
+			 *   action: Action;
+			 *   signals: Signal[];
+			 * };
+			 */
+			JsonNode actionDesc = actionInContext.get(i);
+			String pageGuid = actionDesc.get("pageGuid").asText();
+			JsonNode action = actionDesc.get("action");
+			JsonNode signals = actionDesc.get("signals");
+			
+			// 'check'|'click'|'hover'|'closePage'|'fill'|'navigate'|'openPage'|'press'|'select'|'uncheck'|'setInputFiles'|'assertText'|'assertValue'|'assertChecked'|'assertVisible'|'assertSnapshot'
+			final String actionName = action.get("name").asText();
+			
+			ActionMapperFactory mapperFactory = ActionMapperFactory.getInstance();
+			ActionMapper mapper = mapperFactory.getBuilder(actionName);
+			
+			mapper.map(pageGuid, action, signals, this);
+		}
 	}
 
 	public void onPaused(JsonNode params) {

@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Rhino.
+ * @deprecated 참고용
  */
 public class JsParser {
 	private final Logger log = LoggerFactory.getLogger(JsParser.class);

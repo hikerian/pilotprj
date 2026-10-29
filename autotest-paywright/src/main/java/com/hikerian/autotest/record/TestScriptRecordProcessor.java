@@ -10,11 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
@@ -96,6 +98,7 @@ public class TestScriptRecordProcessor {
 		String[] args = {
 				"run-server",
     			"--host", "127.0.0.1",
+    			"--port", "3000",             // Port 번호도 설정할 수 있음... 20261029
                 "--mode", "extension",
                 "--path", "/java-recorder"
 		};
@@ -104,6 +107,8 @@ public class TestScriptRecordProcessor {
 		Map<String, String> env = builder.environment();
 		env.put("PW_CODEGEN_NO_INSPECTOR","1"); // 별도 Inspector window를 띄우지 않는다.
 		env.put("PW_EXTENSION_MODE","1"); // extension/debug-controller 형태로 동작하도록 한다.
+		
+//		env.put("DEBUG", "pw:*"); // Playwright 디버그 로그 활성화(for playwright server debugging)
 		
 		builder.redirectErrorStream(true);
 		
@@ -121,6 +126,21 @@ public class TestScriptRecordProcessor {
 				this.log.info("Playwright Recording Server Endpoint: {}", wsEndpoint);
 				
 				this.wsEndpoint = wsEndpoint;
+				
+				// for playwright server debugging
+				/*
+				Thread processLogger = new Thread(() -> {
+					try {
+						for(String log; (log = reader.readLine()) != null;) {
+							System.err.println("@@@[PROCESSOR LOG]: " + log);
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				});
+				processLogger.setDaemon(true);
+				processLogger.start();
+				*/
 				
 				return;
 			}
@@ -152,7 +172,8 @@ public class TestScriptRecordProcessor {
 		params.put("codegenId", "playwright-test");
         params.put("sdkLanguage", "java");
         
-        JsonNode result = this.sendByEventSession("initialize", params).get();
+        JsonNode result = this.sendByEventSession("initialize", params);
+//        JsonNode result = this.sendByEventSession("initialize", params).get();
         
         this.log.info("initialize completed: {}", result);
         
@@ -160,7 +181,8 @@ public class TestScriptRecordProcessor {
         params = this.objectMapper.createObjectNode();
         params.put("enabled", true);
         
-        result = this.sendByEventSession("setReportStateChanged", params).get();
+        result = this.sendByEventSession("setReportStateChanged", params);
+//        result = this.sendByEventSession("setReportStateChanged", params).get();
         
         this.log.info("setReportStateChanged completed: {}", result);
 	}
@@ -173,7 +195,8 @@ public class TestScriptRecordProcessor {
          * 필요하다면:
          * params.put("testIdAttributeName", "data-testid");
          */
-        JsonNode result = this.sendByEventSession("setRecorderMode", params).get();
+        JsonNode result = this.sendByEventSession("setRecorderMode", params);
+//        JsonNode result = this.sendByEventSession("setRecorderMode", params).get();
 
         this.log.info("Recorder started: {}", result);
 	}
@@ -217,7 +240,8 @@ public class TestScriptRecordProcessor {
 
         JsonNode result;
 		try {
-			result = this.sendByEventSession("setRecorderMode", params).get();
+			result = this.sendByEventSession("setRecorderMode", params);
+//			result = this.sendByEventSession("setRecorderMode", params).get();
 	        this.log.info("Recorder stopped: {}", result);
 		} catch (Exception e) {
 			this.log.error("ws send error", e);
@@ -226,7 +250,7 @@ public class TestScriptRecordProcessor {
         this.close();
 	}	
 	
-	private CompletableFuture<JsonNode> sendByEventSession(String method, JsonNode params) {
+	private JsonNode sendByEventSession(String method, JsonNode params) {
 		long id = this.reqId.incrementAndGet();
 		
 		ObjectNode cmd = this.objectMapper.createObjectNode();
@@ -246,17 +270,58 @@ public class TestScriptRecordProcessor {
 		try {
 			String json = this.objectMapper.writeValueAsString(cmd);
 			
-			this.log.info("browser event request message: {}" + json);
+			this.log.info("browser event request message: {}", json);
 			
 			this.browserEventWsSession.sendMessage(new TextMessage(json));
-		} catch (Exception e) {
-			this.log.error("ws message send error: {}", e);
+			
+			JsonNode rtn = future.get();
+			
+			return rtn;
+		} catch (InterruptedException e) {
+			Thread.interrupted();
+			this.log.error("ws message send error: ", e);
+			
 			// TODO Auto-generated catch block
+			
+			return null;
+		} catch (Exception e) {
+			this.log.error("ws message send error: ", e);
+			// TODO Auto-generated catch block
+			
+			return null;
 		}
-		
-		return future;
 	}
-
+//	private CompletableFuture<JsonNode> sendByEventSession(String method, JsonNode params) {
+//		long id = this.reqId.incrementAndGet();
+//		
+//		ObjectNode cmd = this.objectMapper.createObjectNode();
+//		cmd.put("id", id)
+//		   .put("guid", "DebugController") // Playwright VS Code extension의 BackendClient도 항상 guid를 DebugController로 지정한다.
+//		   .put("method", method)
+//		   .set("params", params);
+//		
+//		ObjectNode meta = this.objectMapper.createObjectNode();
+//		meta.put("timeout", 0);
+//		
+//		cmd.set("metadata", meta);
+//		
+//		CompletableFuture<JsonNode> future = new CompletableFuture<>();
+//		this.pendingReqs.put(id, future);
+//		
+//		try {
+//			String json = this.objectMapper.writeValueAsString(cmd);
+//			
+//			this.log.info("browser event request message: {}" + json);
+//			
+//			this.browserEventWsSession.sendMessage(new TextMessage(json));
+//		} catch (Exception e) {
+//			this.log.error("ws message send error: {}", e);
+//			// TODO Auto-generated catch block
+//		}
+//		
+//		return future;
+//	}
+	
 	private void close() {
 		if(this.browserEventWsSession != null && this.browserEventWsSession.isOpen()) {
 			try {
@@ -285,6 +350,8 @@ public class TestScriptRecordProcessor {
 		private final ObjectMapper objectMapper;
 		private final Map<Long, CompletableFuture<JsonNode>> pendingReqs;
 		
+		private final List<String> partialMessage = new CopyOnWriteArrayList<>();
+		
 		
 		public BrowserEventWebSocketHandler(RecordingWebSocketHandler handler) {
 			this.handler = handler;
@@ -296,7 +363,17 @@ public class TestScriptRecordProcessor {
 
 		@Override
 		protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-			String payload = message.getPayload();
+			String partialPayload = message.getPayload();
+			this.partialMessage.add(partialPayload);
+			
+			this.log.info("ws msg: {}, isLast: {}", partialPayload, message.isLast());
+			
+			if(message.isLast() == false) {
+				return;
+			}
+			
+			String payload = String.join("", this.partialMessage);
+			this.partialMessage.clear();
 			
 			this.log.info("browser event message: {}", payload);
 			
@@ -328,7 +405,24 @@ public class TestScriptRecordProcessor {
 			}
 
 		}
+
+		@Override
+		public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+			this.log.error("WebSocket Session Closed, CloseStatus: {}", status);
+		}
+
+
+		/**
+		 * 레코딩하는 스크립트의 양이 많아지면 WebSocketClient가 한번에 처리해야 하는 메시지의 사이즈가 커져 에러가 발생하면서 웹소켓 연결이 끊김.
+		 * playload의 양을 줄이고 부분 메시지 처리를 활성화 해야 함.
+		 */
+		@Override
+		public boolean supportsPartialMessages() {
+			return true;
+		}
 		
+		
+
 	}
 
 
